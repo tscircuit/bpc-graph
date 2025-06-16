@@ -47,7 +47,7 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
     FORCE_LINE_MULTIPLIER: 10,
-    BOX_REPULSION_STRENGTH: 10,
+    BOX_REPULSION_STRENGTH: 1,
     PIN_PULL_STRENGTH: 0.1,
     PIN_ALIGNMENT_STRENGTH: 0.5,
     CENTER_OF_GRAPH_STRENGTH: 0.05,

@@ -15,8 +15,8 @@ export const addNetworkedPinPullingForces = (
 
     for (let i = 0; i < pinsInNetwork.length; i++) {
       for (let j = i + 1; j < pinsInNetwork.length; j++) {
-        const pin1 = pinsInNetwork[i];
-        const pin2 = pinsInNetwork[j];
+        const pin1 = pinsInNetwork[i]!
+        const pin2 = pinsInNetwork[j]!
 
         const pos1 = getPinPosition(g, pin1.pinId);
         const pos2 = getPinPosition(g, pin2.pinId);
