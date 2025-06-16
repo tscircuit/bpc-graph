@@ -3,6 +3,8 @@ export interface Vec2 {
   y: number
 }
 
+export type BpcGraph = FloatingBpcGraph | FixedBpcGraph
+
 export interface FloatingBpcGraph {
   boxes: BpcFloatingBox[]
   pins: BpcPin[]
@@ -14,17 +16,27 @@ export interface FixedBpcGraph {
 }
 
 export interface BpcFixedBox {
+  kind: "fixed"
   boxId: string,
   center: Vec2
 }
 
 export interface BpcFloatingBox {
+  kind: "floating"
   boxId: string
 }
 
 export interface BpcPin {
+  boxId: string
   pinId: string
   networkId: string
   color: string
   offset: Vec2
+}
+
+export interface Bounds {
+  minX: number,
+  minY: number,
+  maxX: number,
+  maxY: number
 }
