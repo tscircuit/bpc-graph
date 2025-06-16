@@ -1,6 +1,49 @@
 import type {BoxId, BpcGraph, ForceVec2, Vec2} from "lib/types"
 import type {ForceDirectedLayoutSolverHyperParameters} from "./ForceDirectedLayoutSolver"
+import { getPinPosition } from "lib/graph-utils/getPinPosition";
+import { getGraphNetworkIds } from "lib/graph-utils/getGraphNetworkIds";
 
-export const addNetworkedPinPullingForces = (g: BpcGraph, appliedForces: Map<BoxId, ForceVec2[]>, hyperParameters: ForceDirectedLayoutSolverHyperParameters) => {
-  // TODO
+export const addNetworkedPinPullingForces = (
+  g: BpcGraph,
+  appliedForces: Map<BoxId, ForceVec2[]>,
+  hyperParameters: ForceDirectedLayoutSolverHyperParameters
+) => {
+  const networkIds = getGraphNetworkIds(g);
+
+  for (const networkId of networkIds) {
+    const pinsInNetwork = g.pins.filter(p => p.networkId === networkId);
+
+    for (let i = 0; i < pinsInNetwork.length; i++) {
+      for (let j = i + 1; j < pinsInNetwork.length; j++) {
+        const pin1 = pinsInNetwork[i];
+        const pin2 = pinsInNetwork[j];
+
+        const pos1 = getPinPosition(g, pin1.pinId);
+        const pos2 = getPinPosition(g, pin2.pinId);
+
+        const dx = pos2.x - pos1.x; 
+        const dy = pos2.y - pos1.y;
+        
+        const springConstant = hyperParameters.PIN_PULL_STRENGTH;
+
+        const forceX = dx * springConstant;
+        const forceY = dy * springConstant;
+
+        const forceOnPin1Box: ForceVec2 = { x: forceX, y: forceY, source: `pull_pin_${pin2.pinId}` };
+        const forceOnPin2Box: ForceVec2 = { x: -forceX, y: -forceY, source: `pull_pin_${pin1.pinId}` };
+
+        const box1 = g.boxes.find(b => b.boxId === pin1.boxId);
+        const box2 = g.boxes.find(b => b.boxId === pin2.boxId);
+
+        if (box1 && box1.kind === "floating") {
+          if (!appliedForces.has(box1.boxId)) appliedForces.set(box1.boxId, []);
+          appliedForces.get(box1.boxId)!.push(forceOnPin1Box);
+        }
+        if (box2 && box2.kind === "floating") {
+          if (!appliedForces.has(box2.boxId)) appliedForces.set(box2.boxId, []);
+          appliedForces.get(box2.boxId)!.push(forceOnPin2Box);
+        }
+      }
+    }
+  }
 }

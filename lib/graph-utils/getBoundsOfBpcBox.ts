@@ -7,7 +7,7 @@ export const getBoundsOfBpcBox = (graph: BpcGraph, boxId: string): Bounds => {
     throw new Error(`Box "${boxId}" not found`)
   }
 
-  const boxCenter = box.kind === "fixed" ? box.center : {x: 0, y: 0}
+  const boxCenter = box.center ?? {x: 0, y: 0}
 
   let minX = Infinity
   let minY = Infinity

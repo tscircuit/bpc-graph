@@ -13,7 +13,15 @@ interface ForceDirectedLayoutSolverParams {
 }
 
 export interface ForceDirectedLayoutSolverHyperParameters {
-  FORCE_LINE_MULTIPLIER: number
+  FORCE_LINE_MULTIPLIER: number; // For visualization
+  BOX_REPULSION_STRENGTH: number;
+  PIN_PULL_STRENGTH: number; // Spring constant for networked pins
+  PIN_ALIGNMENT_STRENGTH: number;
+  CENTER_OF_GRAPH_STRENGTH: number;
+  LEARNING_RATE: number; // Step size for applying forces
+  MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
+  RANDOM_INITIAL_PLACEMENT_MAX_X: number; // For initializing floating box positions
+  RANDOM_INITIAL_PLACEMENT_MAX_Y: number; // For initializing floating box positions
 }
 
 /**
@@ -35,9 +43,18 @@ export interface ForceDirectedLayoutSolverHyperParameters {
  */
 export class ForceDirectedLayoutSolver extends BaseSolver {
   graph: BpcGraph
+  lastAppliedForces: Map<BoxId, ForceVec2[]> = new Map()
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
-    FORCE_LINE_MULTIPLIER: 100
+    FORCE_LINE_MULTIPLIER: 100,
+    BOX_REPULSION_STRENGTH: 10,
+    PIN_PULL_STRENGTH: 0.1,
+    PIN_ALIGNMENT_STRENGTH: 0.5,
+    CENTER_OF_GRAPH_STRENGTH: 0.01,
+    LEARNING_RATE: 0.1,
+    MAX_DISPLACEMENT_PER_STEP: 1,
+    RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
+    RANDOM_INITIAL_PLACEMENT_MAX_Y: 10,
   }
 
   constructor(inputParams: ForceDirectedLayoutSolverParams) {
@@ -47,7 +64,18 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
   }
 
   initializeFloatingBoxPositions() {
-    // TODO
+    this.graph.boxes = this.graph.boxes.map(box => {
+      if (box.kind === "floating" && box.center === undefined) {
+        return {
+          ...box,
+          center: {
+            x: (Math.random() - 0.5) * 2 * this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_X,
+            y: (Math.random() - 0.5) * 2 * this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_Y,
+          },
+        };
+      }
+      return box;
+    });
   }
 
   override _step() {
@@ -58,16 +86,40 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
     addCenterOfGraphForce(this.graph, appliedForces, this.hyperParameters)
     addNetworkedPinPullingForces(this.graph, appliedForces, this.hyperParameters)
 
+    this.lastAppliedForces = appliedForces;
 
-    this.graph = applyForcesToGraph(this.graph, appliedForces)
+    this.graph = applyForcesToGraph(this.graph, appliedForces, this.hyperParameters)
   }
 
   override visualize(): GraphicsObject {
     const baseGraphics = getGraphicsForBpcGraph(this.graph)
 
-    // TODO add lines indicating the forces, use FORCE_LINE_MULTIPLIER
-    // to scale the lines
+    // Add lines indicating the forces
+    for (const [boxId, forces] of this.lastAppliedForces) {
+      const box = this.graph.boxes.find(b => b.boxId === boxId)
+      if (!box) continue;
 
+      // Determine the center from which to draw force lines
+      // For floating boxes, center must be defined after initialization.
+      // For fixed boxes, center is always defined.
+      const boxCenter = box.kind === "fixed" ? box.center : box.center!;
+
+      if (!boxCenter) continue; // Should not happen if initialized
+
+      for (const force of forces) {
+        const startPoint = boxCenter;
+        const endPoint = {
+          x: startPoint.x + force.x * this.hyperParameters.FORCE_LINE_MULTIPLIER,
+          y: startPoint.y + force.y * this.hyperParameters.FORCE_LINE_MULTIPLIER,
+        }
+        if (!baseGraphics.lines) baseGraphics.lines = [];
+        baseGraphics.lines.push({
+          points: [startPoint, endPoint],
+          strokeColor: "rgba(255, 0, 0, 0.5)", // Red for forces
+          label: force.source || "force",
+        })
+      }
+    }
     return baseGraphics
   }
 }
