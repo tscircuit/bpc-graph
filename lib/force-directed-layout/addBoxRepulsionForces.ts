@@ -28,8 +28,8 @@ export const addBoxRepulsionForces = (
       const forceX = (dx / distance) * forceMagnitude;
       const forceY = (dy / distance) * forceMagnitude;
 
-      const force1: ForceVec2 = { x: forceX, y: forceY, source: `repel_${box2.boxId}` };
-      const force2: ForceVec2 = { x: -forceX, y: -forceY, source: `repel_${box1.boxId}` };
+      const force1: ForceVec2 = { x: forceX, y: forceY, sourceStage: "box-repel" };
+      const force2: ForceVec2 = { x: -forceX, y: -forceY, sourceStage: "box-repel" };
 
       if (box1.kind === "floating") {
         if (!appliedForces.has(box1.boxId)) appliedForces.set(box1.boxId, []);

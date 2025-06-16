@@ -1,5 +1,5 @@
 import {BaseSolver} from "lib/generic-solvers/BaseSolver"
-import type {BoxId, BpcGraph, ForceVec2, Vec2} from "lib/types"
+import type {BoxId, BpcFloatingBox, BpcGraph, ForceVec2, Vec2} from "lib/types"
 import {addBoxRepulsionForces} from "./addBoxRepulsionForces"
 import {addPinAlignmentForces} from "./addPinAlignmentForces"
 import {addCenterOfGraphForce} from "./addCenterOfGraphForce"
@@ -7,6 +7,7 @@ import {addNetworkedPinPullingForces} from "./addNetworkedPinPullingForces"
 import {applyForcesToGraph} from "./applyForcesToGraph"
 import type {GraphicsObject} from "graphics-debug"
 import {getGraphicsForBpcGraph} from "lib/debug/getGraphicsForBpcGraph"
+import { getPinPosition } from "lib/graph-utils/getPinPosition"
 
 interface ForceDirectedLayoutSolverParams {
   graph: BpcGraph
@@ -75,7 +76,7 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
         };
       }
       return box;
-    });
+    }) as BpcFloatingBox[]
   }
 
   override _step() {
@@ -99,38 +100,54 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
       const box = this.graph.boxes.find(b => b.boxId === boxId)
       if (!box) continue;
 
-      // Determine the center from which to draw force lines
-      // For floating boxes, center must be defined after initialization.
-      // For fixed boxes, center is always defined.
       const boxCenter = box.kind === "fixed" ? box.center : box.center!;
-
-      if (!boxCenter) continue; // Should not happen if initialized
+      if (!boxCenter && !forces.some(f => f.sourcePinId)) continue; 
 
       for (const force of forces) {
-        const startPoint = boxCenter;
+        let startPoint: Vec2;
+        if (force.sourcePinId) {
+          try {
+            startPoint = getPinPosition(this.graph, force.sourcePinId);
+          } catch (e) {
+            // Fallback to boxCenter if pin not found (should not happen in normal operation)
+            console.warn(`Could not find pin ${force.sourcePinId} for force visualization, falling back to box center.`);
+            startPoint = boxCenter;
+          }
+        } else {
+          startPoint = boxCenter;
+        }
+        
+        // If startPoint is still undefined (e.g. boxCenter was undefined and no sourcePinId)
+        // This can happen if a floating box hasn't been initialized yet, though unlikely here.
+        if (!startPoint) continue;
+
+
         const endPoint = {
           x: startPoint.x + force.x * this.hyperParameters.FORCE_LINE_MULTIPLIER,
           y: startPoint.y + force.y * this.hyperParameters.FORCE_LINE_MULTIPLIER,
         }
 
-        let strokeColor = "rgba(128, 128, 128, 0.5)"; // Default gray for unknown forces
-        if (force.source) {
-          if (force.source.startsWith("repel_")) {
-            strokeColor = "rgba(255, 0, 0, 0.5)"; // Red for repulsion
-          } else if (force.source.startsWith("align_")) {
-            strokeColor = "rgba(0, 255, 0, 0.5)"; // Green for alignment
-          } else if (force.source === "center_of_graph") {
-            strokeColor = "rgba(0, 0, 255, 0.5)"; // Blue for center of graph
-          } else if (force.source.startsWith("pull_pin_")) {
-            strokeColor = "rgba(255, 165, 0, 0.5)"; // Orange for pin pulling
-          }
+        let strokeColor = "rgba(128, 128, 128, 0.5)"; // Default gray
+        switch (force.sourceStage) {
+          case "box-repel":
+            strokeColor = "rgba(255, 0, 0, 0.5)"; // Red
+            break;
+          case "pin-align":
+            strokeColor = "rgba(0, 255, 0, 0.5)"; // Green
+            break;
+          case "center-pull":
+            strokeColor = "rgba(0, 0, 255, 0.5)"; // Blue
+            break;
+          case "networked-pin-pull":
+            strokeColor = "rgba(255, 165, 0, 0.5)"; // Orange
+            break;
         }
 
         if (!baseGraphics.lines) baseGraphics.lines = [];
         baseGraphics.lines.push({
           points: [startPoint, endPoint],
           strokeColor: strokeColor,
-          label: force.source || "force",
+          label: force.sourcePinId ? `${force.sourceStage}_${force.sourcePinId}` : (force.sourceStage || "force"),
         })
       }
     }

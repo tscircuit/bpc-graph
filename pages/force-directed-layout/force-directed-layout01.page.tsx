@@ -5,17 +5,17 @@ const g: BpcGraph = {
   boxes: [
     {
       boxId: "U1",
-      kind: "fixed",
+      kind: "floating",
       center: {x: 0, y: 0},
     },
     {
       boxId: "U2",
-      kind: "fixed",
+      kind: "floating",
       center: {x: 3, y: 0},
     },
     {
       boxId: "NL1",
-      kind: "fixed",
+      kind: "floating",
       center: {x: -2, y: 2},
     }
   ],
@@ -30,19 +30,10 @@ const g: BpcGraph = {
   ]
 }
 
-const floatingGraph: FloatingBpcGraph = {
-  ...g,
-  boxes: g.boxes.map(box => ({
-    ...box,
-    kind: "floating",
-    center: undefined
-  }))
-}
-
 export default () => {
   return (
     <ForceDirectedLayoutDebugger
-      floatingBpsGraph={floatingGraph}
+      floatingBpsGraph={g}
     />
   )
 }

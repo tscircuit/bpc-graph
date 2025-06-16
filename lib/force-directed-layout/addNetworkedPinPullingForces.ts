@@ -29,8 +29,18 @@ export const addNetworkedPinPullingForces = (
         const forceX = dx * springConstant;
         const forceY = dy * springConstant;
 
-        const forceOnPin1Box: ForceVec2 = { x: forceX, y: forceY, source: `pull_pin_${pin2.pinId}` };
-        const forceOnPin2Box: ForceVec2 = { x: -forceX, y: -forceY, source: `pull_pin_${pin1.pinId}` };
+        const forceOnPin1Box: ForceVec2 = { 
+          x: forceX, 
+          y: forceY, 
+          sourceStage: "networked-pin-pull", 
+          sourcePinId: pin1.pinId 
+        };
+        const forceOnPin2Box: ForceVec2 = { 
+          x: -forceX, 
+          y: -forceY, 
+          sourceStage: "networked-pin-pull", 
+          sourcePinId: pin2.pinId 
+        };
 
         const box1 = g.boxes.find(b => b.boxId === pin1.boxId);
         const box2 = g.boxes.find(b => b.boxId === pin2.boxId);

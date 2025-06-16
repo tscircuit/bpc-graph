@@ -47,7 +47,12 @@ export const addPinAlignmentForces = (
 
         const targetBox = g.boxes.find(b => b.boxId === pinTarget.boxId);
         if (targetBox && targetBox.kind === "floating") {
-          const force: ForceVec2 = { x: forceX, y: forceY, source: `align_${pinEmitter.pinId}_to_${pinTarget.pinId}` };
+          const force: ForceVec2 = { 
+            x: forceX, 
+            y: forceY, 
+            sourceStage: "pin-align", 
+            sourcePinId: pinTarget.pinId 
+          };
           if (!appliedForces.has(targetBox.boxId)) appliedForces.set(targetBox.boxId, []);
           appliedForces.get(targetBox.boxId)!.push(force);
         }

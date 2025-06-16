@@ -16,7 +16,7 @@ export const addCenterOfGraphForce = (
       const forceX = -boxCenter.x * forceMagnitude;
       const forceY = -boxCenter.y * forceMagnitude;
 
-      const force: ForceVec2 = { x: forceX, y: forceY, source: "center_of_graph" };
+      const force: ForceVec2 = { x: forceX, y: forceY, sourceStage: "center-pull" };
 
       if (!appliedForces.has(box.boxId)) {
         appliedForces.set(box.boxId, []);

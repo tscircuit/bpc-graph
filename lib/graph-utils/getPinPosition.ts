@@ -1,4 +1,4 @@
-import type {BpcGraph} from "../types";
+import type {BpcGraph, Vec2} from "../types";
 
 export const getPinPosition = (g: BpcGraph, pinId: string): Vec2 => {
   const pin = g.pins.find(p => p.pinId === pinId)
@@ -12,7 +12,7 @@ export const getPinPosition = (g: BpcGraph, pinId: string): Vec2 => {
     throw new Error(`Box "${pin.boxId}" not found`)
   }
 
-  const boxCenter = box.kind === "fixed" ? box.center : {x: 0, y: 0}
+  const boxCenter =  box.center ?? {x: 0, y: 0}
 
   return {
     x: pin.offset.x + boxCenter.x,
