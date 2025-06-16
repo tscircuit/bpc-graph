@@ -3,14 +3,23 @@ export interface Vec2 {
   y: number
 }
 
-export interface BpcGraph {
-  boxes: BpcBox[]
+export interface FloatingBpcGraph {
+  boxes: BpcFloatingBox[]
   pins: BpcPin[]
 }
 
-export interface BpcBox {
+export interface FixedBpcGraph {
+  boxes: BpcFixedBox[]
+  pins: BpcPin[]
+}
+
+export interface BpcFixedBox {
   boxId: string,
   center: Vec2
+}
+
+export interface BpcFloatingBox {
+  boxId: string
 }
 
 export interface BpcPin {

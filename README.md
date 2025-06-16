@@ -15,7 +15,7 @@ All pins have positions relative to the box.
 This library has BPC utilities that allow you to...
 
 1. Compare the similarity of two BPC graphs
-2. Performing operations on a BPC graph (often to transform a FloatingBox BPC graph into a StaticBox BPC graph)
+2. Performing operations on a BPC graph (often to transform a FloatingBox BPC graph into a FixedBox BPC graph)
 3. Converting a Floating Box BPC graph into a more legible Fixed Box BPC graph with force-directed auto layout
 
 Here are some properties of a BPC graph:
