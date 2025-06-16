@@ -5,6 +5,7 @@ A box pin color graph is a type of graph where:
 - There are boxes
 - There are pins connected to the boxes
 - There are colors associated with each pin
+- There are edges that connect pins to eachother
 
 There are two types of boxes, `FixedBox` and `FloatingBox`. A
 floating box does not have a position.
