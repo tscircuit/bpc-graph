@@ -23,6 +23,7 @@ export interface BpcFixedBox {
 
 export interface BpcFloatingBox {
   kind: "floating"
+  center?: undefined
   boxId: string
 }
 

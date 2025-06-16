@@ -19,21 +19,24 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
 
   for (const box of g.boxes) {
     const bounds = getBoundsOfBpcBox(g, box.boxId)
-    const boxCenter = center(bounds)
+    const boundsCenter = center(bounds)
 
     graphics.rects.push({
-      center: boxCenter,
+      label: box.boxId,
+      center: boundsCenter,
       width: bounds.maxX - bounds.minX,
       height: bounds.maxY - bounds.minY,
-      color: "rgba(0, 0, 0, 0.5)"
+      fill: "rgba(0, 0, 0, 0.2)"
     })
 
     const boxPins = g.pins.filter(p => p.boxId === box.boxId)
+    const boxCenter = box.center ?? boundsCenter
 
     for (const pin of boxPins) {
       graphics.points.push({
         x: pin.offset.x + boxCenter.x,
         y: pin.offset.y + boxCenter.y,
+        label: pin.pinId,
         color: pin.color
       })
     }
