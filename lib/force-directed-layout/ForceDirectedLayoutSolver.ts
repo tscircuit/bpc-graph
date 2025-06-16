@@ -46,11 +46,11 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
   lastAppliedForces: Map<BoxId, ForceVec2[]> = new Map()
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
-    FORCE_LINE_MULTIPLIER: 100,
+    FORCE_LINE_MULTIPLIER: 10,
     BOX_REPULSION_STRENGTH: 10,
     PIN_PULL_STRENGTH: 0.1,
     PIN_ALIGNMENT_STRENGTH: 0.5,
-    CENTER_OF_GRAPH_STRENGTH: 0.01,
+    CENTER_OF_GRAPH_STRENGTH: 0.05,
     LEARNING_RATE: 0.1,
     MAX_DISPLACEMENT_PER_STEP: 1,
     RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
@@ -112,10 +112,24 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
           x: startPoint.x + force.x * this.hyperParameters.FORCE_LINE_MULTIPLIER,
           y: startPoint.y + force.y * this.hyperParameters.FORCE_LINE_MULTIPLIER,
         }
+
+        let strokeColor = "rgba(128, 128, 128, 0.5)"; // Default gray for unknown forces
+        if (force.source) {
+          if (force.source.startsWith("repel_")) {
+            strokeColor = "rgba(255, 0, 0, 0.5)"; // Red for repulsion
+          } else if (force.source.startsWith("align_")) {
+            strokeColor = "rgba(0, 255, 0, 0.5)"; // Green for alignment
+          } else if (force.source === "center_of_graph") {
+            strokeColor = "rgba(0, 0, 255, 0.5)"; // Blue for center of graph
+          } else if (force.source.startsWith("pull_pin_")) {
+            strokeColor = "rgba(255, 165, 0, 0.5)"; // Orange for pin pulling
+          }
+        }
+
         if (!baseGraphics.lines) baseGraphics.lines = [];
         baseGraphics.lines.push({
           points: [startPoint, endPoint],
-          strokeColor: "rgba(255, 0, 0, 0.5)", // Red for forces
+          strokeColor: strokeColor,
           label: force.source || "force",
         })
       }
