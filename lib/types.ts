@@ -3,6 +3,10 @@ export interface Vec2 {
   y: number
 }
 
+export interface ForceVec2 extends Vec2 {
+  source?: string
+}
+
 export type BpcGraph = FloatingBpcGraph | FixedBpcGraph
 
 export interface FloatingBpcGraph {
@@ -42,3 +46,7 @@ export interface Bounds {
   maxY: number
 }
 export type Direction = "x-" | "x+" | "y+" | "y-"
+export type Axis = "x" | "y"
+
+export type BoxId = string
+export type PinId = string
