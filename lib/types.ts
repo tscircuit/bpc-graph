@@ -23,7 +23,7 @@ export interface BpcFixedBox {
 
 export interface BpcFloatingBox {
   kind: "floating"
-  center?: undefined
+  center?: undefined | Vec2
   boxId: string
 }
 
@@ -41,3 +41,4 @@ export interface Bounds {
   maxX: number,
   maxY: number
 }
+export type Direction = "x-" | "x+" | "y+" | "y-"
