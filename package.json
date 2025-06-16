@@ -1,0 +1,13 @@
+{
+  "name": "box-pin-color-graph",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "graphics-debug": "^0.0.46"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
