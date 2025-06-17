@@ -127,7 +127,9 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
   }
 
   override visualize(): GraphicsObject {
-    const baseGraphics = getGraphicsForBpcGraph(this.graph)
+    const baseGraphics = getGraphicsForBpcGraph(this.graph, {
+      grayNetworks: true,
+    })
 
     // Add lines indicating the forces
     for (const [boxId, forces] of this.lastAppliedForces) {

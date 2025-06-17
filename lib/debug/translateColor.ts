@@ -5,6 +5,7 @@ const COLOR_MAPPINGS = {
   normal: "blue",
   vcc: "orange",
   gnd: "purple",
+  component_center: "gray",
 }
 
 const COMMON_COLORS = [

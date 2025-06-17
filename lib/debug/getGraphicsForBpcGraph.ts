@@ -8,7 +8,12 @@ import type { BpcGraph } from "../types"
 import type { GraphicsObject } from "graphics-debug"
 import { translateColor } from "./translateColor"
 
-export const getGraphicsForBpcGraph = (g: BpcGraph) => {
+export const getGraphicsForBpcGraph = (
+  g: BpcGraph,
+  opts?: {
+    grayNetworks?: boolean
+  },
+) => {
   const graphics: Required<GraphicsObject> = {
     points: [],
     lines: [],
@@ -83,7 +88,9 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
           const { position: pos2 } = pinsInNetworkWithPosition[j]!
           graphics.lines.push({
             points: [pos1, pos2],
-            strokeColor: networkColor,
+            strokeColor: opts?.grayNetworks
+              ? "rgba(0, 0, 0, 0.05)"
+              : networkColor,
           })
         }
       }
