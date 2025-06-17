@@ -26,21 +26,44 @@ export const addPinAlignmentForces = (
         
         let forceX = 0;
         let forceY = 0;
-        const alignmentThreshold = hyperParameters.PIN_ALIGNMENT_THRESHOLD;
+        const activateDistance = hyperParameters.PIN_ALIGNMENT_ACTIVATE_DISTANCE;
+        const guidelineLength = hyperParameters.PIN_ALIGNMENT_GUIDELINE_LENGTH;
 
         if (emitterDir === "x+" || emitterDir === "x-") {
           // Alignment axis is horizontal (Y is constant: emitterPos.y)
           // Force is vertical.
-          const deltaY = emitterPos.y - targetPos.y;
-          if (Math.abs(deltaY) <= alignmentThreshold) {
-            forceY = deltaY * alignmentStrength;
+          const deltaYOrthogonal = emitterPos.y - targetPos.y; // Orthogonal distance
+          const deltaXParallel = targetPos.x - emitterPos.x; // Parallel distance from emitter
+
+          const withinActivateDistance = Math.abs(deltaYOrthogonal) <= activateDistance;
+          let withinGuidelineLength = false;
+
+          if (emitterDir === "x+") { // Guideline extends in +x direction
+            withinGuidelineLength = deltaXParallel >= 0 && deltaXParallel <= guidelineLength;
+          } else { // emitterDir === "x-", guideline extends in -x direction
+            withinGuidelineLength = deltaXParallel <= 0 && deltaXParallel >= -guidelineLength;
+          }
+
+          if (withinActivateDistance && withinGuidelineLength) {
+            forceY = deltaYOrthogonal * alignmentStrength;
           }
         } else { // emitterDir === "y+" || emitterDir === "y-"
           // Alignment axis is vertical (X is constant: emitterPos.x)
           // Force is horizontal.
-          const deltaX = emitterPos.x - targetPos.x;
-          if (Math.abs(deltaX) <= alignmentThreshold) {
-            forceX = deltaX * alignmentStrength;
+          const deltaXOrthogonal = emitterPos.x - targetPos.x; // Orthogonal distance
+          const deltaYParallel = targetPos.y - emitterPos.y; // Parallel distance from emitter
+
+          const withinActivateDistance = Math.abs(deltaXOrthogonal) <= activateDistance;
+          let withinGuidelineLength = false;
+
+          if (emitterDir === "y+") { // Guideline extends in +y direction
+            withinGuidelineLength = deltaYParallel >= 0 && deltaYParallel <= guidelineLength;
+          } else { // emitterDir === "y-", guideline extends in -y direction
+            withinGuidelineLength = deltaYParallel <= 0 && deltaYParallel >= -guidelineLength;
+          }
+
+          if (withinActivateDistance && withinGuidelineLength) {
+            forceX = deltaXOrthogonal * alignmentStrength;
           }
         }
 

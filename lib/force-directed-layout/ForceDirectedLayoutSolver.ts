@@ -18,7 +18,8 @@ export interface ForceDirectedLayoutSolverHyperParameters {
   BOX_REPULSION_STRENGTH: number;
   PIN_PULL_STRENGTH: number; // Spring constant for networked pins
   PIN_ALIGNMENT_STRENGTH: number;
-  PIN_ALIGNMENT_THRESHOLD: number; // Max distance for pin alignment force to activate
+  PIN_ALIGNMENT_ACTIVATE_DISTANCE: number; // Max orthogonal distance for pin alignment force to activate
+  PIN_ALIGNMENT_GUIDELINE_LENGTH: number; // Max parallel distance along the guideline for pin alignment
   CENTER_OF_GRAPH_STRENGTH: number;
   LEARNING_RATE: number; // Step size for applying forces
   MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
@@ -52,7 +53,8 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
     BOX_REPULSION_STRENGTH: 1,
     PIN_PULL_STRENGTH: 0.1,
     PIN_ALIGNMENT_STRENGTH: 0.5,
-    PIN_ALIGNMENT_THRESHOLD: 0.15, // Example: Only apply if within 0.5 units
+    PIN_ALIGNMENT_ACTIVATE_DISTANCE: 0.15, 
+    PIN_ALIGNMENT_GUIDELINE_LENGTH: 4,
     CENTER_OF_GRAPH_STRENGTH: 0.01,
     LEARNING_RATE: 0.1,
     MAX_DISPLACEMENT_PER_STEP: 1,
