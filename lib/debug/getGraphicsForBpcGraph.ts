@@ -1,11 +1,12 @@
-import {center} from "../graph-utils/center";
-import {getBoundsOfBpcBox} from "../graph-utils/getBoundsOfBpcBox";
-import {getColorByIndex} from "../graph-utils/getColorByIndex";
-import {getGraphBounds} from "../graph-utils/getGraphBounds";
-import {getGraphNetworkIds} from "../graph-utils/getGraphNetworkIds";
-import {getPinPosition} from "../graph-utils/getPinPosition";
-import type {BpcGraph} from "../types";
-import type {GraphicsObject} from "graphics-debug";
+import { center } from "../graph-utils/center"
+import { getBoundsOfBpcBox } from "../graph-utils/getBoundsOfBpcBox"
+import { getColorByIndex } from "../graph-utils/getColorByIndex"
+import { getGraphBounds } from "../graph-utils/getGraphBounds"
+import { getGraphNetworkIds } from "../graph-utils/getGraphNetworkIds"
+import { getPinPosition } from "../graph-utils/getPinPosition"
+import type { BpcGraph } from "../types"
+import type { GraphicsObject } from "graphics-debug"
+import { translateColor } from "./translateColor"
 
 export const getGraphicsForBpcGraph = (g: BpcGraph) => {
   const graphics: Required<GraphicsObject> = {
@@ -14,7 +15,7 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
     rects: [],
     circles: [],
     coordinateSystem: "cartesian",
-    title: "BPC Graph Graphics"
+    title: "BPC Graph Graphics",
   }
 
   for (const box of g.boxes) {
@@ -24,12 +25,12 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
     graphics.rects.push({
       label: box.boxId,
       center: boundsCenter,
-      width: (bounds.maxX - bounds.minX) + 0.1,
-      height: (bounds.maxY - bounds.minY) + 0.1,
-      fill: "rgba(0, 0, 0, 0.2)"
+      width: bounds.maxX - bounds.minX + 0.1,
+      height: bounds.maxY - bounds.minY + 0.1,
+      fill: "rgba(0, 0, 0, 0.2)",
     })
 
-    const boxPins = g.pins.filter(p => p.boxId === box.boxId)
+    const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
     const boxCenter = box.center ?? boundsCenter
 
     for (const pin of boxPins) {
@@ -37,7 +38,7 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
         x: pin.offset.x + boxCenter.x,
         y: pin.offset.y + boxCenter.y,
         label: pin.pinId,
-        color: pin.color
+        color: translateColor(pin.color),
       })
     }
   }
@@ -50,7 +51,7 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
   for (let ni = 0; ni < networks.length; ni++) {
     const networkId = networks[ni]
     const networkColor = getColorByIndex(ni, networks.length, 0.2)
-    const pins = g.pins.filter(p => p.networkId === networkId)
+    const pins = g.pins.filter((p) => p.networkId === networkId)
 
     for (let i = 0; i < pins.length; i++) {
       for (let j = i + 1; j < pins.length; j++) {

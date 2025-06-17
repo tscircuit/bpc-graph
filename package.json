@@ -8,7 +8,9 @@
   ],
   "scripts": {
     "start": "cosmos",
-    "build": "tsup-node ./lib/index.ts --format esm --dts -d dist"
+    "build": "tsup-node ./lib/index.ts --format esm --dts -d dist",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   },
   "devDependencies": {
     "@react-hook/resize-observer": "^2.0.2",
