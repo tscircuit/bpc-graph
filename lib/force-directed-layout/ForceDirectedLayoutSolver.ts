@@ -1,12 +1,18 @@
-import {BaseSolver} from "lib/generic-solvers/BaseSolver"
-import type {BoxId, BpcFloatingBox, BpcGraph, ForceVec2, Vec2} from "lib/types"
-import {addBoxRepulsionForces} from "./addBoxRepulsionForces"
-import {addPinAlignmentForces} from "./addPinAlignmentForces"
-import {addCenterOfGraphForce} from "./addCenterOfGraphForce"
-import {addNetworkedPinPullingForces} from "./addNetworkedPinPullingForces"
-import {applyForcesToGraph} from "./applyForcesToGraph"
-import type {GraphicsObject} from "graphics-debug"
-import {getGraphicsForBpcGraph} from "lib/debug/getGraphicsForBpcGraph"
+import { BaseSolver } from "lib/generic-solvers/BaseSolver"
+import type {
+  BoxId,
+  BpcFloatingBox,
+  BpcGraph,
+  ForceVec2,
+  Vec2,
+} from "lib/types"
+import { addBoxRepulsionForces } from "./addBoxRepulsionForces"
+import { addPinAlignmentForces } from "./addPinAlignmentForces"
+import { addCenterOfGraphForce } from "./addCenterOfGraphForce"
+import { addNetworkedPinPullingForces } from "./addNetworkedPinPullingForces"
+import { applyForcesToGraph } from "./applyForcesToGraph"
+import type { GraphicsObject } from "graphics-debug"
+import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getPinPosition } from "lib/graph-utils/getPinPosition"
 
 interface ForceDirectedLayoutSolverParams {
@@ -14,20 +20,22 @@ interface ForceDirectedLayoutSolverParams {
 }
 
 export interface ForceDirectedLayoutSolverHyperParameters {
-  DISPLAY_FORCE_LINE_MULTIPLIER: number; // For visualization
-  BOX_REPULSION_STRENGTH: number;
-  PIN_PULL_STRENGTH: number; // Spring constant for networked pins
-  PIN_ALIGNMENT_STRENGTH: number;
-  PIN_ALIGNMENT_ACTIVATE_DISTANCE: number; // Max orthogonal distance for pin alignment force to activate
-  PIN_ALIGNMENT_GUIDELINE_LENGTH: number; // Max parallel distance along the guideline for pin alignment
-  CENTER_OF_GRAPH_STRENGTH: number;
-  BOX_REPEL_DISTANCE1: number; // Edge-to-edge distance at or below which box repulsion is at full strength
-  BOX_REPEL_DISTANCE2: number; // Edge-to-edge distance at or above which box repulsion is zero
-  LEARNING_RATE: number; // Step size for applying forces
-  MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
-  RANDOM_INITIAL_PLACEMENT_MAX_X: number; // For initializing floating box positions
-  RANDOM_INITIAL_PLACEMENT_MAX_Y: number; // For initializing floating box positions
-  PIN_MASS_MULTIPLIER: number; // How much each pin adds to the "mass" of a box, reducing its movement
+  DISPLAY_FORCE_LINE_MULTIPLIER: number // For visualization
+  BOX_REPULSION_STRENGTH: number
+  PIN_PULL_STRENGTH: number // Spring constant for networked pins
+  PIN_ALIGNMENT_STRENGTH: number
+  PIN_ALIGNMENT_ACTIVATE_DISTANCE: number // Max orthogonal distance for pin alignment force to activate
+  PIN_ALIGNMENT_GUIDELINE_LENGTH: number // Max parallel distance along the guideline for pin alignment
+  CENTER_OF_GRAPH_STRENGTH: number
+  BOX_REPEL_DISTANCE1: number // Edge-to-edge distance at or below which box repulsion is at full strength
+  BOX_REPEL_DISTANCE2: number // Edge-to-edge distance at or above which box repulsion is zero
+  LEARNING_RATE: number // Step size for applying forces
+  MAX_DISPLACEMENT_PER_STEP: number // Optional: to cap movement
+  RANDOM_INITIAL_PLACEMENT_MAX_X: number // For initializing floating box positions
+  RANDOM_INITIAL_PLACEMENT_MAX_Y: number // For initializing floating box positions
+  PIN_MASS_MULTIPLIER: number // How much each pin adds to the "mass" of a box, reducing its movement
+  BOX_CLOSE_REPULSION_POWER: number // Power for the inverse relationship with edge distance when boxes are very close
+  BOX_MIN_EFFECTIVE_EDGE_DISTANCE: number // Minimum edge distance used in repulsion calculation to prevent extreme forces
 }
 
 /**
@@ -39,7 +47,7 @@ export interface ForceDirectedLayoutSolverHyperParameters {
  *   into it's alignment axis (and only applies a force orthogonal
  *   to the alignment axis)
  * - Small force towards the center of the graph (0,0)
- * 
+ *
  * Starting conditions:
  * - Fixed boxes start at their fixed position and don't move
  * - Floating boxes start at either their center position or at
@@ -53,19 +61,21 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
     DISPLAY_FORCE_LINE_MULTIPLIER: 2,
-    BOX_REPULSION_STRENGTH: 0.5,
+    BOX_REPULSION_STRENGTH: 2,
     PIN_PULL_STRENGTH: 0.1,
     PIN_ALIGNMENT_STRENGTH: 2,
-    PIN_ALIGNMENT_ACTIVATE_DISTANCE: 0.15, 
-    PIN_ALIGNMENT_GUIDELINE_LENGTH: 4,
+    PIN_ALIGNMENT_ACTIVATE_DISTANCE: 0.15,
+    PIN_ALIGNMENT_GUIDELINE_LENGTH: 10,
     CENTER_OF_GRAPH_STRENGTH: 0.01,
-    BOX_REPEL_DISTANCE1: 0.1, 
-    BOX_REPEL_DISTANCE2: 1.0,
+    BOX_REPEL_DISTANCE1: 5,
+    BOX_REPEL_DISTANCE2: 10,
     LEARNING_RATE: 0.1,
     MAX_DISPLACEMENT_PER_STEP: 1,
     RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
     RANDOM_INITIAL_PLACEMENT_MAX_Y: 10,
     PIN_MASS_MULTIPLIER: 0.05, // Each pin adds 0.1 to the mass factor
+    BOX_CLOSE_REPULSION_POWER: 1.1, // Results in an inverse square relationship with effective edge distance
+    BOX_MIN_EFFECTIVE_EDGE_DISTANCE: 0.05, // Prevents division by zero or excessively large forces
   }
 
   constructor(inputParams: ForceDirectedLayoutSolverParams) {
@@ -75,17 +85,23 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
   }
 
   initializeFloatingBoxPositions() {
-    this.graph.boxes = this.graph.boxes.map(box => {
+    this.graph.boxes = this.graph.boxes.map((box) => {
       if (box.kind === "floating" && box.center === undefined) {
         return {
           ...box,
           center: {
-            x: (Math.random() - 0.5) * 2 * this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_X,
-            y: (Math.random() - 0.5) * 2 * this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_Y,
+            x:
+              (Math.random() - 0.5) *
+              2 *
+              this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_X,
+            y:
+              (Math.random() - 0.5) *
+              2 *
+              this.hyperParameters.RANDOM_INITIAL_PLACEMENT_MAX_Y,
           },
-        };
+        }
       }
-      return box;
+      return box
     }) as BpcFloatingBox[]
   }
 
@@ -95,11 +111,19 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
     addBoxRepulsionForces(this.graph, appliedForces, this.hyperParameters)
     addPinAlignmentForces(this.graph, appliedForces, this.hyperParameters)
     // addCenterOfGraphForce(this.graph, appliedForces, this.hyperParameters)
-    addNetworkedPinPullingForces(this.graph, appliedForces, this.hyperParameters)
+    addNetworkedPinPullingForces(
+      this.graph,
+      appliedForces,
+      this.hyperParameters,
+    )
 
-    this.lastAppliedForces = appliedForces;
+    this.lastAppliedForces = appliedForces
 
-    this.graph = applyForcesToGraph(this.graph, appliedForces, this.hyperParameters)
+    this.graph = applyForcesToGraph(
+      this.graph,
+      appliedForces,
+      this.hyperParameters,
+    )
   }
 
   override visualize(): GraphicsObject {
@@ -107,57 +131,64 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
     // Add lines indicating the forces
     for (const [boxId, forces] of this.lastAppliedForces) {
-      const box = this.graph.boxes.find(b => b.boxId === boxId)
-      if (!box) continue;
+      const box = this.graph.boxes.find((b) => b.boxId === boxId)
+      if (!box) continue
 
-      const boxCenter = box.kind === "fixed" ? box.center : box.center!;
-      if (!boxCenter && !forces.some(f => f.sourcePinId)) continue; 
+      const boxCenter = box.kind === "fixed" ? box.center : box.center!
+      if (!boxCenter && !forces.some((f) => f.sourcePinId)) continue
 
       for (const force of forces) {
-        let startPoint: Vec2;
+        let startPoint: Vec2
         if (force.sourcePinId) {
           try {
-            startPoint = getPinPosition(this.graph, force.sourcePinId);
+            startPoint = getPinPosition(this.graph, force.sourcePinId)
           } catch (e) {
             // Fallback to boxCenter if pin not found (should not happen in normal operation)
-            console.warn(`Could not find pin ${force.sourcePinId} for force visualization, falling back to box center.`);
-            startPoint = boxCenter;
+            console.warn(
+              `Could not find pin ${force.sourcePinId} for force visualization, falling back to box center.`,
+            )
+            startPoint = boxCenter
           }
         } else {
-          startPoint = boxCenter;
+          startPoint = boxCenter
         }
-        
+
         // If startPoint is still undefined (e.g. boxCenter was undefined and no sourcePinId)
         // This can happen if a floating box hasn't been initialized yet, though unlikely here.
-        if (!startPoint) continue;
-
+        if (!startPoint) continue
 
         const endPoint = {
-          x: startPoint.x + force.x * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
-          y: startPoint.y + force.y * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
+          x:
+            startPoint.x +
+            force.x * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
+          y:
+            startPoint.y +
+            force.y * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
         }
 
-        let strokeColor = "rgba(128, 128, 128, 0.5)"; // Default gray
+        let strokeColor = "rgba(128, 128, 128, 0.5)" // Default gray
         switch (force.sourceStage) {
           case "box-repel":
-            strokeColor = "rgba(255, 0, 0, 0.5)"; // Red
-            break;
+            strokeColor = "rgba(255, 0, 0, 0.5)" // Red
+            break
           case "pin-align":
-            strokeColor = "rgba(0, 255, 0, 0.5)"; // Green
-            break;
+            strokeColor = "rgba(0, 255, 0, 0.5)" // Green
+            break
           case "center-pull":
-            strokeColor = "rgba(0, 0, 255, 0.5)"; // Blue
-            break;
+            strokeColor = "rgba(0, 0, 255, 0.5)" // Blue
+            break
           case "networked-pin-pull":
-            strokeColor = "rgba(255, 165, 0, 0.5)"; // Orange
-            break;
+            strokeColor = "rgba(255, 165, 0, 0.5)" // Orange
+            break
         }
 
-        if (!baseGraphics.lines) baseGraphics.lines = [];
+        if (!baseGraphics.lines) baseGraphics.lines = []
         baseGraphics.lines.push({
           points: [startPoint, endPoint],
           strokeColor: strokeColor,
-          label: force.sourcePinId ? `${force.sourceStage}_${force.sourcePinId}` : (force.sourceStage || "force"),
+          label: force.sourcePinId
+            ? `${force.sourceStage}_${force.sourcePinId}`
+            : force.sourceStage || "force",
         })
       }
     }
