@@ -53,22 +53,39 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
     const networkColor = getColorByIndex(ni, networks.length, 0.2)
     const pins = g.pins.filter((p) => p.networkId === networkId)
 
-    for (let i = 0; i < pins.length; i++) {
-      for (let j = i + 1; j < pins.length; j++) {
-        const pin1 = pins[i]
-        const pin2 = pins[j]
+    // Precompute pin positions for efficiency
+    const pinsInNetworkWithPosition = pins.map((pin) => ({
+      pin,
+      position: getPinPosition(g, pin.pinId),
+    }))
 
-        if (!pin1 || !pin2) {
-          continue
+    for (let i = 0; i < pinsInNetworkWithPosition.length; i++) {
+      const { pin: pin1, position: pos1 } = pinsInNetworkWithPosition[i]!
+
+      // Compute distances to all other pins in the network
+      const distances: { index: number; dist: number }[] = []
+      for (let j = 0; j < pinsInNetworkWithPosition.length; j++) {
+        if (i === j) continue
+        const { position: pos2 } = pinsInNetworkWithPosition[j]!
+        const dx = pos1.x - pos2.x
+        const dy = pos1.y - pos2.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        distances.push({ index: j, dist })
+      }
+
+      // Sort by distance and take up to 3 nearest
+      distances.sort((a, b) => a.dist - b.dist)
+      const nearest = distances.slice(0, 3)
+
+      for (const { index: j } of nearest) {
+        // To avoid duplicate lines, only draw if i < j
+        if (i < j) {
+          const { position: pos2 } = pinsInNetworkWithPosition[j]!
+          graphics.lines.push({
+            points: [pos1, pos2],
+            strokeColor: networkColor,
+          })
         }
-
-        const pin1Position = getPinPosition(g, pin1.pinId)
-        const pin2Position = getPinPosition(g, pin2.pinId)
-
-        graphics.lines.push({
-          points: [pin1Position, pin2Position],
-          strokeColor: networkColor,
-        })
       }
     }
   }
