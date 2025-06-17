@@ -14,10 +14,11 @@ interface ForceDirectedLayoutSolverParams {
 }
 
 export interface ForceDirectedLayoutSolverHyperParameters {
-  FORCE_LINE_MULTIPLIER: number; // For visualization
+  DISPLAY_FORCE_LINE_MULTIPLIER: number; // For visualization
   BOX_REPULSION_STRENGTH: number;
   PIN_PULL_STRENGTH: number; // Spring constant for networked pins
   PIN_ALIGNMENT_STRENGTH: number;
+  PIN_ALIGNMENT_THRESHOLD: number; // Max distance for pin alignment force to activate
   CENTER_OF_GRAPH_STRENGTH: number;
   LEARNING_RATE: number; // Step size for applying forces
   MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
@@ -47,11 +48,12 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
   lastAppliedForces: Map<BoxId, ForceVec2[]> = new Map()
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
-    FORCE_LINE_MULTIPLIER: 10,
+    DISPLAY_FORCE_LINE_MULTIPLIER: 2,
     BOX_REPULSION_STRENGTH: 1,
     PIN_PULL_STRENGTH: 0.1,
     PIN_ALIGNMENT_STRENGTH: 0.5,
-    CENTER_OF_GRAPH_STRENGTH: 0.05,
+    PIN_ALIGNMENT_THRESHOLD: 0.15, // Example: Only apply if within 0.5 units
+    CENTER_OF_GRAPH_STRENGTH: 0.01,
     LEARNING_RATE: 0.1,
     MAX_DISPLACEMENT_PER_STEP: 1,
     RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
@@ -84,7 +86,7 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
     addBoxRepulsionForces(this.graph, appliedForces, this.hyperParameters)
     addPinAlignmentForces(this.graph, appliedForces, this.hyperParameters)
-    addCenterOfGraphForce(this.graph, appliedForces, this.hyperParameters)
+    // addCenterOfGraphForce(this.graph, appliedForces, this.hyperParameters)
     addNetworkedPinPullingForces(this.graph, appliedForces, this.hyperParameters)
 
     this.lastAppliedForces = appliedForces;
@@ -123,8 +125,8 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
 
         const endPoint = {
-          x: startPoint.x + force.x * this.hyperParameters.FORCE_LINE_MULTIPLIER,
-          y: startPoint.y + force.y * this.hyperParameters.FORCE_LINE_MULTIPLIER,
+          x: startPoint.x + force.x * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
+          y: startPoint.y + force.y * this.hyperParameters.DISPLAY_FORCE_LINE_MULTIPLIER,
         }
 
         let strokeColor = "rgba(128, 128, 128, 0.5)"; // Default gray

@@ -19,16 +19,16 @@ export const getPinDirection = (g: BpcGraph, pinId: string): Direction => {
   const width = bounds.maxX - bounds.minX
   const height = bounds.maxY - bounds.minY
 
-  if (pinPosition.x === bounds.minX && width !== 0) {
+  if (Math.abs(pinPosition.x - bounds.minX) < 0.0001 && width !== 0) {
     return "x-"
   }
-  if (pinPosition.x === bounds.maxX && width !== 0) {
+  if (Math.abs(pinPosition.x - bounds.maxX) < 0.0001 && width !== 0) {
     return "x+"
   }
-  if (pinPosition.y === bounds.minY && height !== 0) {
+  if (Math.abs(pinPosition.y - bounds.minY) < 0.0001 && height !== 0) {
     return "y-"
   }
-  if (pinPosition.y === bounds.maxY && height !== 0) {
+  if (Math.abs(pinPosition.y - bounds.maxY) < 0.0001 && height !== 0) {
     return "y+"
   }
 
