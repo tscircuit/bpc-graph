@@ -25,9 +25,13 @@ export const addNetworkedPinPullingForces = (
         const dy = pos2.y - pos1.y;
         
         const springConstant = hyperParameters.PIN_PULL_STRENGTH;
+        const networkSize = pinsInNetwork.length;
 
-        const forceX = dx * springConstant;
-        const forceY = dy * springConstant;
+        // Avoid division by zero, though networkSize should be >= 2 here
+        const forceDivisor = networkSize > 0 ? networkSize : 1;
+
+        const forceX = (dx * springConstant) / forceDivisor;
+        const forceY = (dy * springConstant) / forceDivisor;
 
         const forceOnPin1Box: ForceVec2 = { 
           x: forceX, 
