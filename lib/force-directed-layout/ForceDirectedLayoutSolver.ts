@@ -25,6 +25,7 @@ export interface ForceDirectedLayoutSolverHyperParameters {
   MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
   RANDOM_INITIAL_PLACEMENT_MAX_X: number; // For initializing floating box positions
   RANDOM_INITIAL_PLACEMENT_MAX_Y: number; // For initializing floating box positions
+  PIN_MASS_MULTIPLIER: number; // How much each pin adds to the "mass" of a box, reducing its movement
 }
 
 /**
@@ -50,9 +51,9 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
 
   hyperParameters: ForceDirectedLayoutSolverHyperParameters = {
     DISPLAY_FORCE_LINE_MULTIPLIER: 2,
-    BOX_REPULSION_STRENGTH: 1,
+    BOX_REPULSION_STRENGTH: 0.5,
     PIN_PULL_STRENGTH: 0.1,
-    PIN_ALIGNMENT_STRENGTH: 0.5,
+    PIN_ALIGNMENT_STRENGTH: 2,
     PIN_ALIGNMENT_ACTIVATE_DISTANCE: 0.15, 
     PIN_ALIGNMENT_GUIDELINE_LENGTH: 4,
     CENTER_OF_GRAPH_STRENGTH: 0.01,
@@ -60,6 +61,7 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
     MAX_DISPLACEMENT_PER_STEP: 1,
     RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
     RANDOM_INITIAL_PLACEMENT_MAX_Y: 10,
+    PIN_MASS_MULTIPLIER: 0.05, // Each pin adds 0.1 to the mass factor
   }
 
   constructor(inputParams: ForceDirectedLayoutSolverParams) {

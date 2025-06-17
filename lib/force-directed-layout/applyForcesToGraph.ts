@@ -23,9 +23,13 @@ export const applyForcesToGraph = (
       totalForce.y += force.y;
     }
 
+    // Calculate mass based on pin count
+    const pinCount = g.pins.filter(p => p.boxId === box.boxId).length;
+    const mass = 1 + (pinCount * hyperParameters.PIN_MASS_MULTIPLIER);
+
     let displacement: Vec2 = {
-      x: totalForce.x * hyperParameters.LEARNING_RATE,
-      y: totalForce.y * hyperParameters.LEARNING_RATE,
+      x: (totalForce.x / mass) * hyperParameters.LEARNING_RATE,
+      y: (totalForce.y / mass) * hyperParameters.LEARNING_RATE,
     };
 
     const displacementMagnitude = Math.sqrt(displacement.x ** 2 + displacement.y ** 2);
