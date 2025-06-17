@@ -21,6 +21,8 @@ export interface ForceDirectedLayoutSolverHyperParameters {
   PIN_ALIGNMENT_ACTIVATE_DISTANCE: number; // Max orthogonal distance for pin alignment force to activate
   PIN_ALIGNMENT_GUIDELINE_LENGTH: number; // Max parallel distance along the guideline for pin alignment
   CENTER_OF_GRAPH_STRENGTH: number;
+  BOX_REPEL_DISTANCE1: number; // Edge-to-edge distance at or below which box repulsion is at full strength
+  BOX_REPEL_DISTANCE2: number; // Edge-to-edge distance at or above which box repulsion is zero
   LEARNING_RATE: number; // Step size for applying forces
   MAX_DISPLACEMENT_PER_STEP: number; // Optional: to cap movement
   RANDOM_INITIAL_PLACEMENT_MAX_X: number; // For initializing floating box positions
@@ -57,6 +59,8 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
     PIN_ALIGNMENT_ACTIVATE_DISTANCE: 0.15, 
     PIN_ALIGNMENT_GUIDELINE_LENGTH: 4,
     CENTER_OF_GRAPH_STRENGTH: 0.01,
+    BOX_REPEL_DISTANCE1: 0.1, 
+    BOX_REPEL_DISTANCE2: 1.0,
     LEARNING_RATE: 0.1,
     MAX_DISPLACEMENT_PER_STEP: 1,
     RANDOM_INITIAL_PLACEMENT_MAX_X: 10,
