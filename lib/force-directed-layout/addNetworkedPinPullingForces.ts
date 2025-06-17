@@ -2,6 +2,7 @@ import type { BoxId, BpcGraph, ForceVec2, Vec2 } from "lib/types"
 import type { ForceDirectedLayoutSolverHyperParameters } from "./ForceDirectedLayoutSolver"
 import { getPinPosition } from "lib/graph-utils/getPinPosition"
 import { getGraphNetworkIds } from "lib/graph-utils/getGraphNetworkIds"
+import { getPinDirection } from "lib/graph-utils/getPinDirection"
 
 export const addNetworkedPinPullingForces = (
   g: BpcGraph,
@@ -17,6 +18,13 @@ export const addNetworkedPinPullingForces = (
       for (let j = i + 1; j < pinsInNetwork.length; j++) {
         const pin1 = pinsInNetwork[i]!
         const pin2 = pinsInNetwork[j]!
+
+        const dir1 = getPinDirection(g, pin1.pinId)
+        const dir2 = getPinDirection(g, pin2.pinId)
+
+        if (dir1 === dir2) {
+          continue // Pins facing the same direction do not pull each other
+        }
 
         const pos1 = getPinPosition(g, pin1.pinId)
         const pos2 = getPinPosition(g, pin2.pinId)
