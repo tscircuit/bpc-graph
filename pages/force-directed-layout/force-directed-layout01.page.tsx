@@ -21,7 +21,7 @@ const g: BpcGraph = {
   ],
   pins: [
     { boxId: "NL1", pinId: "NL1.P1", offset: { x: 0, y: 0 }, color: "red", networkId: "N1" },
-    { boxId: "NL1", pinId: "NL1.TL", offset: { x: 0, y: 0.1 }, color: "green", networkId: "N1" },
+    { boxId: "NL1", pinId: "NL1.TL", offset: { x: 0, y: 0.1 }, color: "green", networkId: "N3" },
     { boxId: "U1", pinId: "U1.P1", offset: { x: -0.5, y: 0 }, color: "red", networkId: "N1" },
     { boxId: "U1", pinId: "U1.P2", offset: { x: -0.5, y: -0.5 }, color: "blue", networkId: "N2" },
     { boxId: "U1", pinId: "U1.P3", offset: { x: 0.5, y: -0.5 }, color: "blue", networkId: "N4" },

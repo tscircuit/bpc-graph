@@ -24,8 +24,8 @@ export const getGraphicsForBpcGraph = (g: BpcGraph) => {
     graphics.rects.push({
       label: box.boxId,
       center: boundsCenter,
-      width: bounds.maxX - bounds.minX,
-      height: bounds.maxY - bounds.minY,
+      width: (bounds.maxX - bounds.minX) + 0.1,
+      height: (bounds.maxY - bounds.minY) + 0.1,
       fill: "rgba(0, 0, 0, 0.2)"
     })
 
