@@ -39,6 +39,7 @@ export class GraphNetworkTransformer extends BaseSolver {
   // To avoid re-exploring states, we can store stringified versions of visited graphs.
   // This is a simple approach; more sophisticated graph isomorphism checks might be needed for complex cases.
   visitedStates: Set<string> = new Set();
+  lastProcessedCandidate: Candidate | null = null;
 
 
   constructor(params: {
@@ -149,6 +150,7 @@ export class GraphNetworkTransformer extends BaseSolver {
     // Sort candidates by fCost (ascending) to pick the most promising one
     this.candidates.sort((a, b) => a.fCost - b.fCost)
     const currentCandidate = this.candidates.shift()! // Pop the candidate with the lowest fCost
+    this.lastProcessedCandidate = currentCandidate;
 
     // Check for goal state
     // hCost being 0 means the current graph is heuristically identical to the target network structure
