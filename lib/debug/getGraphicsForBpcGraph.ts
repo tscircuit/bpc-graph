@@ -42,7 +42,7 @@ export const getGraphicsForBpcGraph = (
       graphics.points.push({
         x: pin.offset.x + boxCenter.x,
         y: pin.offset.y + boxCenter.y,
-        label: pin.pinId,
+        label: [pin.pinId, pin.color, pin.networkId].join("\n"),
         color: translateColor(pin.color),
       })
     }
