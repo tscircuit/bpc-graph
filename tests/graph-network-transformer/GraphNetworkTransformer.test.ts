@@ -48,7 +48,7 @@ test("GraphNetworkTransformer - empty to single box with pin", () => {
       targetGraph,
       transformer.costConfiguration, // Use the full cost config from the transformer
     )
-    expect(finalDistance).toBe(0)
+    expect(finalDistance.distance).toBe(0)
   } else {
     // Should not happen if solved is true
     expect(transformer.stats.finalGraph).toBeDefined()
@@ -110,7 +110,7 @@ test("GraphNetworkTransformer - identical graphs", () => {
       graph,
       transformer.costConfiguration,
     )
-    expect(finalDistance).toBe(0)
+    expect(finalDistance.distance).toBe(0)
   } else {
     expect(transformer.stats.finalGraph).toBeDefined()
   }

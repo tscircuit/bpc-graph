@@ -7,6 +7,7 @@ import { applyOperation } from "lib/operations/applyOperation/applyOperation"
 import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
 import { getOperationCost } from "lib/operations/getOperationCost/getOperationCost"
 import { configureOperationCostFn } from "lib/operations/configureOperationCostFn"
+import { transformGraphWithAssignments } from "./transformGraphWithAssignments"
 
 interface Candidate {
   graph: BpcGraph // Current state of the graph
@@ -48,7 +49,8 @@ export class GraphNetworkTransformer extends BaseSolver {
   }) {
     super()
     // Deep copy initial graph to allow modifications
-    this.initialGraph = structuredClone(params.initialGraph)
+    // Deep copy initial graph to allow modifications
+    let initialGraphCopy = structuredClone(params.initialGraph)
     this.targetGraph = params.targetGraph // Target graph is read-only
 
     // Resolve the full cost configuration and create the operation cost function
@@ -61,6 +63,20 @@ export class GraphNetworkTransformer extends BaseSolver {
     }
     this.costConfiguration = fullCostConfig // Store the resolved full configuration
     this.operationCostFn = configureOperationCostFn(params.costConfiguration)
+
+    // Get initial assignments to align initialGraph IDs with targetGraph IDs
+    const initialAssignments = getHeuristicNetworkSimilarityDistance(
+      initialGraphCopy,
+      this.targetGraph,
+      this.costConfiguration,
+    )
+
+    // Transform initialGraph to use targetGraph's IDs where a mapping exists
+    this.initialGraph = transformGraphWithAssignments({
+      graph: initialGraphCopy,
+      boxAssignment: initialAssignments.boxAssignment,
+      networkAssignment: initialAssignments.networkAssignment,
+    })
 
     this.initialize()
   }
