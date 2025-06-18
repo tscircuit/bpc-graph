@@ -1,6 +1,7 @@
 import type { CostConfiguration } from "lib/operations/configureOperationCostFn"
 import type { BpcGraph, PinId, Direction } from "lib/types"
 import { getGraphNetworkIds } from "lib/graph-utils/getGraphNetworkIds"
+import type { HeuristicSimilarityCostContext } from "./types";
 import { precomputePinDirections } from "./precomputePinDirections"
 import { generateAssignments, type Assignment } from "./generateAssignments"
 import { calculateMappingCost } from "./calculateMappingCost"
@@ -40,20 +41,22 @@ export const getHeuristicNetworkSimilarityDistance = (
   const pinDirectionsG2 = precomputePinDirections(g2);
 
   let minTotalCost = Infinity;
-
   // Iterate over all possible assignments of g1 boxes to g2 boxes
   for (const boxAssignment of generateAssignments(boxIds1, boxIds2)) {
     // For each box assignment, iterate over all possible assignments of g1 networks to g2 networks
     for (const networkAssignment of generateAssignments(networkIds1, networkIds2)) {
-      const currentCost = calculateMappingCost(
+      const context: HeuristicSimilarityCostContext = {
         g1,
         g2,
-        boxAssignment as Assignment<string, string>, // Added type assertion
-        networkAssignment as Assignment<string, string>, // Added type assertion
+        networkAssignment: networkAssignment as Assignment<string, string>,
         costConfiguration,
         pinDirectionsG1,
         pinDirectionsG2,
-      );
+      };
+      const currentCost = calculateMappingCost({
+        context,
+        boxAssignment: boxAssignment as Assignment<string, string>,
+      });
       if (currentCost < minTotalCost) {
         minTotalCost = currentCost;
       }
