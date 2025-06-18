@@ -1,5 +1,5 @@
-import type {Bounds, BpcGraph} from "../types";
-import {getBoundsOfBpcBox} from "./getBoundsOfBpcBox";
+import type { Bounds, BpcGraph } from "../types"
+import { getBoundsOfBpcBox } from "./getBoundsOfBpcBox"
 
 export const getGraphBounds = (g: BpcGraph): Bounds => {
   let minX = Infinity
@@ -12,7 +12,7 @@ export const getGraphBounds = (g: BpcGraph): Bounds => {
       minX: 0,
       minY: 0,
       maxX: 0,
-      maxY: 0
+      maxY: 0,
     }
   }
 
@@ -28,6 +28,6 @@ export const getGraphBounds = (g: BpcGraph): Bounds => {
     minX,
     minY,
     maxX,
-    maxY
+    maxY,
   }
 }

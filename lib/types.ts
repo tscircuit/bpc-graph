@@ -3,18 +3,23 @@ export interface Vec2 {
   y: number
 }
 
-export type ForceSourceStage = 
-  | "box-repel" 
-  | "pin-align" 
-  | "center-pull" 
-  | "networked-pin-pull";
+export type ForceSourceStage =
+  | "box-repel"
+  | "pin-align"
+  | "center-pull"
+  | "networked-pin-pull"
 
 export interface ForceVec2 extends Vec2 {
-  sourceStage?: ForceSourceStage;
-  sourcePinId?: PinId; // The pin on the box that the force is applied to, if applicable
+  sourceStage?: ForceSourceStage
+  sourcePinId?: PinId // The pin on the box that the force is applied to, if applicable
 }
 
-export type BpcGraph = FloatingBpcGraph | FixedBpcGraph
+export type BpcGraph = FloatingBpcGraph | FixedBpcGraph | MixedBpcGraph
+
+export interface MixedBpcGraph {
+  boxes: (BpcFloatingBox | BpcFixedBox)[]
+  pins: BpcPin[]
+}
 
 export interface FloatingBpcGraph {
   boxes: BpcFloatingBox[]
@@ -28,7 +33,7 @@ export interface FixedBpcGraph {
 
 export interface BpcFixedBox {
   kind: "fixed"
-  boxId: string,
+  boxId: string
   center: Vec2
 }
 
@@ -47,9 +52,9 @@ export interface BpcPin {
 }
 
 export interface Bounds {
-  minX: number,
-  minY: number,
-  maxX: number,
+  minX: number
+  minY: number
+  maxX: number
   maxY: number
 }
 export type Direction = "x-" | "x+" | "y+" | "y-"

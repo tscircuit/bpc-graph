@@ -1,8 +1,10 @@
-import type {Bounds, Vec2} from "../types";
+import type { Bounds, Vec2 } from "../types"
 
-export const center = (obj: Bounds | { center: Vec2 } | Vec2 | undefined): Vec2 => {
+export const center = (
+  obj: Bounds | { center: Vec2 } | Vec2 | undefined,
+): Vec2 => {
   if (!obj) {
-    return {x: 0, y: 0}
+    return { x: 0, y: 0 }
   }
 
   if ("x" in obj && "y" in obj) {
@@ -15,6 +17,6 @@ export const center = (obj: Bounds | { center: Vec2 } | Vec2 | undefined): Vec2 
 
   return {
     x: (obj.minX + obj.maxX) / 2,
-    y: (obj.minY + obj.maxY) / 2
+    y: (obj.minY + obj.maxY) / 2,
   }
 }
