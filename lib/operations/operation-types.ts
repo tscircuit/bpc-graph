@@ -42,6 +42,12 @@ export type RemoveBoxOp = {
   pinsInBox: BpcPin[]
 }
 
+export type RemovePinFromBoxOp = {
+  operation_type: "remove_pin_from_box"
+  pinId: string
+  boxId: string // For context, though pinId should be enough
+}
+
 export type Operation =
   | AddPinToBoxOp
   | ChangePinNetworkOp
@@ -49,5 +55,6 @@ export type Operation =
   | AddBoxOp
   | ChangePinColorOp
   | RemoveBoxOp
+  | RemovePinFromBoxOp
 
 export type OperationCostFn = (g: BpcGraph, op: Operation[]) => number

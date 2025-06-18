@@ -1,21 +1,22 @@
 import type { BpcGraph } from "lib/types"
 import type { CostConfiguration } from "../configureOperationCostFn"
-import type { Operation } from "../operation-types"
+import type { RemovePinFromBoxOp } from "../operation-types"
 
-// Note: RemovePinFromBoxOp type doesn't exist in operation-types.ts
-// Using generic Operation type for now
 export const getRemovePinFromBoxCost = (params: {
-  op: Operation
+  op: RemovePinFromBoxOp
   costConfiguration: CostConfiguration
   g: BpcGraph
 }): number => {
   const { costConfiguration } = params
 
   // Base cost for removing a pin
-  let cost = costConfiguration.baseOperationCost || 1
+  let cost = costConfiguration.baseOperationCost
 
-  // Small additional cost for pin removal complexity
-  cost += costConfiguration.pinHandlingCost || 0.3
+  // Potentially add a specific pinHandlingCost if defined, otherwise baseOperationCost is fine.
+  // For example, if pinHandlingCost is meant to be an additional small cost:
+  // if (costConfiguration.pinHandlingCost) {
+  //   cost += costConfiguration.pinHandlingCost;
+  // }
 
   return cost
 }

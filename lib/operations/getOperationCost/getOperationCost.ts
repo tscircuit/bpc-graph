@@ -7,6 +7,7 @@ import { getChangePinNetworkCost } from "./getChangePinNetworkCost"
 import { getMovePinCost } from "./getMovePinCost"
 import { getRemoveBoxCost } from "./getRemoveBoxCost"
 import { getChangePinColorCost } from "./getChangePinColorCost"
+import { getRemovePinFromBoxCost } from "./getRemovePinFromBoxCost"
 
 export const getOperationCost = (params: {
   op: Operation
@@ -32,6 +33,9 @@ export const getOperationCost = (params: {
     }
     case "change_pin_color": {
       return getChangePinColorCost({ op, costConfiguration, g })
+    }
+    case "remove_pin_from_box": {
+      return getRemovePinFromBoxCost({ op, costConfiguration, g })
     }
     default: {
       throw new Error(`Unknown operation type: ${(op as any).operation_type}`)
