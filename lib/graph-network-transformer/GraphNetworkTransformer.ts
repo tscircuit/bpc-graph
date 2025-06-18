@@ -1,9 +1,11 @@
 import { BaseSolver } from "lib/generic-solvers/BaseSolver"
 import type { CostConfiguration } from "lib/operations/configureOperationCostFn"
+import type { Operation } from "lib/operations/operation-types"
 import type { BpcGraph } from "lib/types"
 
 interface Candidate {
   graph: BpcGraph
+  operationChain: Operation[]
   hCost: number
   gCost: number
   fCost: number
@@ -20,6 +22,7 @@ export class GraphNetworkTransformer extends BaseSolver {
   targetGraph: BpcGraph
   costConfiguration: CostConfiguration
 
+  initialCandidatesGenerated: boolean = false
   candidates: Candidate[] = []
 
   constructor(params: {
@@ -31,9 +34,33 @@ export class GraphNetworkTransformer extends BaseSolver {
     this.initialGraph = params.initialGraph
     this.targetGraph = params.targetGraph
     this.costConfiguration = params.costConfiguration
+    this.initialize()
+  }
+
+  initialize() {
+    // TODO
+  }
+
+  getNeighbors(candidate: Candidate): Candidate[] {
+    // TODO: getPossibleOperationsForGraph
+    // TODO
+  }
+
+  generateInitialCandidates() {
+    return this.getNeighbors({
+      graph: this.initialGraph,
+      operationChain: [],
+      hCost: 0,
+      gCost: 0,
+      fCost: 0,
+    })
   }
 
   override _step() {
+    if (!this.initialCandidatesGenerated) {
+      this.initialCandidatesGenerated = true
+      this.candidates = this.generateInitialCandidates()
+    }
     // TODO
   }
 }
