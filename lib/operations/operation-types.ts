@@ -22,6 +22,7 @@ export type MovePinOp =  {
   newPosition: Vec2
 }
 
+
 export type ChangePinColorOp =  {
   operation_type: "change_pin_color",
   pinId: string
