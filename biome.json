@@ -30,6 +30,9 @@
         "noForEach": "error",
         "useLiteralKeys": "off"
       },
+      "a11y": {
+        "useButtonType": "off"
+      },
       "style": {
         "useSingleVarDeclarator": "error",
         "noParameterAssign": "off",

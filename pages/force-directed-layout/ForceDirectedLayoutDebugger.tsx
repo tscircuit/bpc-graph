@@ -7,7 +7,7 @@ import { useEffect, useReducer, useRef, useState } from "react"
 export const ForceDirectedLayoutDebugger = ({
   floatingBpsGraph,
 }: {
-  floatingBpsGraph: FloatingBpcGraph
+  floatingBpsGraph: BpcGraph
 }) => {
   const [runCount, incRunCount] = useReducer((c: number) => c + 1, 0)
   const [playInterval, setPlayInterval] = useState<NodeJS.Timeout | null>(null)

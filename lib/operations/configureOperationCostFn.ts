@@ -11,6 +11,7 @@ export type CostConfiguration = {
 const defaultCostConfiguration: CostConfiguration = {
   colorChangeCostMap: {},
   baseOperationCost: 1,
+  costPerUnitDistanceMovingPin: 1,
 }
 
 export const configureOperationCostFn = (

@@ -60,10 +60,10 @@ test("GraphNetworkTransformer - empty to single box with pin", () => {
   expect(transformer.stats.finalOperationChain.length).toBeGreaterThanOrEqual(2)
 
   const hasAddBox = transformer.stats.finalOperationChain.some(
-    (op) => op.operation_type === "add_box",
+    (op: any) => op.operation_type === "add_box",
   )
   const hasAddPinToBox = transformer.stats.finalOperationChain.some(
-    (op) => op.operation_type === "add_pin_to_box",
+    (op: any) => op.operation_type === "add_pin_to_box",
   )
   expect(hasAddBox).toBe(true)
   expect(hasAddPinToBox).toBe(true)

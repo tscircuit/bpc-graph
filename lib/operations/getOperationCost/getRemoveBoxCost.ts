@@ -9,11 +9,5 @@ export const getRemoveBoxCost = (params: {
 }): number => {
   const { op, costConfiguration } = params
 
-  // Base cost for removing a box
-  let cost = costConfiguration.baseOperationCost || 1
-
-  // Add cost for each pin that needs to be handled
-  cost += op.pinsInBox.length * (costConfiguration.pinHandlingCost || 0.5)
-
-  return cost
+  return costConfiguration.baseOperationCost
 }

@@ -1,4 +1,4 @@
-import type { Direction } from "lib/types"
+import type { Direction, Vec2 } from "lib/types"
 
 export const getDirectionVec2 = (direction: Direction): Vec2 => {
   switch (direction) {

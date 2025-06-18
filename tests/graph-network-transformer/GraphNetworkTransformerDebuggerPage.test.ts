@@ -59,7 +59,7 @@ test("GraphNetworkTransformer - debugger page simple case", () => {
       targetGraphSimple,
       transformer.costConfiguration, // Use the full cost config from the transformer
     )
-    expect(finalDistance).toBe(0)
+    expect(finalDistance.distance).toBe(0)
   } else {
     // Should not happen if solved is true
     expect(transformer.stats.finalGraph).toBeDefined()
@@ -83,15 +83,17 @@ test("GraphNetworkTransformer - debugger page simple case", () => {
   // Let's check it's close to this value.
   expect(transformer.stats.gCost).toBeGreaterThan(0)
 
+  console.log(transformer.stats.finalOperationChain)
+
   // More specific checks for operation types if needed:
   const hasChangePinColor = transformer.stats.finalOperationChain.some(
-    (op) => op.operation_type === "change_pin_color",
+    (op: any) => op.operation_type === "change_pin_color",
   )
   const hasChangePinNetwork = transformer.stats.finalOperationChain.some(
-    (op) => op.operation_type === "change_pin_network",
+    (op: any) => op.operation_type === "change_pin_network",
   )
   const hasMovePin = transformer.stats.finalOperationChain.some(
-    (op) => op.operation_type === "move_pin",
+    (op: any) => op.operation_type === "move_pin",
   )
 
   expect(hasChangePinColor).toBe(true)

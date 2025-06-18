@@ -144,7 +144,7 @@ export const GraphNetworkTransformerDebugger = ({
                       {candidate.operationChain.length > 0
                         ? candidate.operationChain[
                             candidate.operationChain.length - 1
-                          ].operation_type
+                          ]!.operation_type
                         : "Initial State"}
                     </pre>
                   </li>
@@ -191,8 +191,6 @@ export const GraphNetworkTransformerDebugger = ({
               graphics={getGraphicsForBpcGraph(
                 transformer.lastProcessedCandidate.graph,
               )}
-              height={400}
-              width={400}
             />
           </div>
         )}
@@ -200,25 +198,17 @@ export const GraphNetworkTransformerDebugger = ({
           <h2>Initial Graph</h2>
           <InteractiveGraphics
             graphics={getGraphicsForBpcGraph(initialGraph)}
-            height={400}
-            width={400}
           />
         </div>
         <div>
           <h2>Target Graph</h2>
-          <InteractiveGraphics
-            graphics={getGraphicsForBpcGraph(targetGraph)}
-            height={400}
-            width={400}
-          />
+          <InteractiveGraphics graphics={getGraphicsForBpcGraph(targetGraph)} />
         </div>
         {finalGraph && (
           <div>
             <h2>Final Graph (from Transformer)</h2>
             <InteractiveGraphics
               graphics={getGraphicsForBpcGraph(finalGraph)}
-              height={400}
-              width={400}
             />
           </div>
         )}
