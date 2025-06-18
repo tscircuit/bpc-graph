@@ -1,7 +1,7 @@
 import type { CostConfiguration } from "lib/operations/configureOperationCostFn"
 import type { BpcGraph, PinId, Direction } from "lib/types"
 import { getGraphNetworkIds } from "lib/graph-utils/getGraphNetworkIds"
-import type { HeuristicSimilarityCostContext } from "./types";
+import type { HeuristicSimilarityCostContext } from "./types"
 import { precomputePinDirections } from "./precomputePinDirections"
 import { generateAssignments, type Assignment } from "./generateAssignments"
 import { calculateMappingCost } from "./calculateMappingCost"
@@ -31,20 +31,23 @@ export const getHeuristicNetworkSimilarityDistance = (
   g2: BpcGraph,
   costConfiguration: CostConfiguration,
 ): number => {
-  const boxIds1 = g1.boxes.map(b => b.boxId);
-  const boxIds2 = g2.boxes.map(b => b.boxId);
-  const networkIds1 = getGraphNetworkIds(g1);
-  const networkIds2 = getGraphNetworkIds(g2);
+  const boxIds1 = g1.boxes.map((b) => b.boxId)
+  const boxIds2 = g2.boxes.map((b) => b.boxId)
+  const networkIds1 = getGraphNetworkIds(g1)
+  const networkIds2 = getGraphNetworkIds(g2)
 
   // Precompute pin directions for efficiency
-  const pinDirectionsG1 = precomputePinDirections(g1);
-  const pinDirectionsG2 = precomputePinDirections(g2);
+  const pinDirectionsG1 = precomputePinDirections(g1)
+  const pinDirectionsG2 = precomputePinDirections(g2)
 
-  let minTotalCost = Infinity;
+  let minTotalCost = Infinity
   // Iterate over all possible assignments of g1 boxes to g2 boxes
   for (const boxAssignment of generateAssignments(boxIds1, boxIds2)) {
     // For each box assignment, iterate over all possible assignments of g1 networks to g2 networks
-    for (const networkAssignment of generateAssignments(networkIds1, networkIds2)) {
+    for (const networkAssignment of generateAssignments(
+      networkIds1,
+      networkIds2,
+    )) {
       const context: HeuristicSimilarityCostContext = {
         g1,
         g2,
@@ -52,18 +55,18 @@ export const getHeuristicNetworkSimilarityDistance = (
         costConfiguration,
         pinDirectionsG1,
         pinDirectionsG2,
-      };
+      }
       const currentCost = calculateMappingCost({
         context,
         boxAssignment: boxAssignment as Assignment<string, string>,
-      });
+      })
       if (currentCost < minTotalCost) {
-        minTotalCost = currentCost;
+        minTotalCost = currentCost
       }
     }
   }
 
   // If minTotalCost is still Infinity, it means no assignments were possible (e.g. loops didn't run, though they should at least once)
   // or graphs were empty. If both graphs are empty, calculateMappingCost returns 0.
-  return minTotalCost === Infinity ? 0 : minTotalCost;
-};
+  return minTotalCost === Infinity ? 0 : minTotalCost
+}

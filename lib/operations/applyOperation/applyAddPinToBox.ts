@@ -1,8 +1,8 @@
-import type {BpcGraph, FloatingBpcGraph, BpcPin} from "lib/types";
-import type {AddPinToBoxOp} from "../operation-types";
+import type { BpcGraph, FloatingBpcGraph, BpcPin } from "lib/types"
+import type { AddPinToBoxOp } from "../operation-types"
 
 export const applyAddPinToBox = (g: FloatingBpcGraph, op: AddPinToBoxOp) => {
-  const box = g.boxes.find(b => b.boxId === op.boxId)
+  const box = g.boxes.find((b) => b.boxId === op.boxId)
   if (!box) {
     throw new Error(`Box with id ${op.boxId} not found`)
   }
@@ -12,7 +12,7 @@ export const applyAddPinToBox = (g: FloatingBpcGraph, op: AddPinToBoxOp) => {
     pinId: `pin_${g.pins.length}`,
     networkId: op.newPinNetworkId,
     color: op.newPinColor,
-    offset: op.pinPosition
+    offset: op.pinPosition,
   }
 
   g.pins.push(newPin)

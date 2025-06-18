@@ -168,8 +168,23 @@ export const GraphNetworkTransformerDebugger = ({
           <div>
             <h2>Last Processed Candidate Graph</h2>
             {transformer.lastProcessedCandidate.operationChain.length > 0 && (
-              <pre style={{ fontSize: "0.8em", maxHeight: "100px", overflowY: "auto", border: "1px solid #ddd", padding: "5px" }}>
-                Last Op: {JSON.stringify(transformer.lastProcessedCandidate.operationChain[transformer.lastProcessedCandidate.operationChain.length - 1], null, 2)}
+              <pre
+                style={{
+                  fontSize: "0.8em",
+                  maxHeight: "100px",
+                  overflowY: "auto",
+                  border: "1px solid #ddd",
+                  padding: "5px",
+                }}
+              >
+                Last Op:{" "}
+                {JSON.stringify(
+                  transformer.lastProcessedCandidate.operationChain[
+                    transformer.lastProcessedCandidate.operationChain.length - 1
+                  ],
+                  null,
+                  2,
+                )}
               </pre>
             )}
             <InteractiveGraphics

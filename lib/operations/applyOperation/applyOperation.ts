@@ -1,11 +1,11 @@
-import type {FloatingBpcGraph} from "lib/types";
-import type {Operation} from "../operation-types";
-import {applyAddPinToBox} from "./applyAddPinToBox";
-import {applyChangePinNetwork} from "./applyChangePinNetwork";
-import {applyMovePin} from "./applyMovePin";
-import {applyAddBox} from "./applyAddBox";
-import {applyChangePinColor} from "./applyChangePinColor";
-import {applyRemoveBox} from "./applyRemoveBox";
+import type { FloatingBpcGraph } from "lib/types"
+import type { Operation } from "../operation-types"
+import { applyAddPinToBox } from "./applyAddPinToBox"
+import { applyChangePinNetwork } from "./applyChangePinNetwork"
+import { applyMovePin } from "./applyMovePin"
+import { applyAddBox } from "./applyAddBox"
+import { applyChangePinColor } from "./applyChangePinColor"
+import { applyRemoveBox } from "./applyRemoveBox"
 
 export const applyOperation = (g: FloatingBpcGraph, op: Operation) => {
   switch (op.operation_type) {

@@ -1,5 +1,5 @@
-import type {Bounds, BpcPin} from "../types";
-import {getPinPosition} from "./getPinPosition";
+import type { Bounds, BpcPin } from "../types"
+import { getPinPosition } from "./getPinPosition"
 
 export const getBoundsOfPins = (pins: BpcPin[]): Bounds => {
   if (pins.length === 0) {
@@ -22,6 +22,6 @@ export const getBoundsOfPins = (pins: BpcPin[]): Bounds => {
     minX,
     minY,
     maxX,
-    maxY
+    maxY,
   }
 }

@@ -1,13 +1,13 @@
-import type {Bounds, BpcFixedBox, BpcFloatingBox, BpcGraph} from "../types";
+import type { Bounds, BpcFixedBox, BpcFloatingBox, BpcGraph } from "../types"
 
 export const getBoundsOfBpcBox = (graph: BpcGraph, boxId: string): Bounds => {
-  const box = graph.boxes.find(b => b.boxId === boxId)
-  const pins = graph.pins.filter(p => p.boxId === boxId)
+  const box = graph.boxes.find((b) => b.boxId === boxId)
+  const pins = graph.pins.filter((p) => p.boxId === boxId)
   if (!box) {
     throw new Error(`Box "${boxId}" not found`)
   }
 
-  const boxCenter = box.center ?? {x: 0, y: 0}
+  const boxCenter = box.center ?? { x: 0, y: 0 }
 
   let minX = Infinity
   let minY = Infinity
@@ -24,6 +24,6 @@ export const getBoundsOfBpcBox = (graph: BpcGraph, boxId: string): Bounds => {
     minX,
     minY,
     maxX,
-    maxY
+    maxY,
   }
 }

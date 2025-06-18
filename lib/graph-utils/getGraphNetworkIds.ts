@@ -1,4 +1,4 @@
-import type {BpcGraph} from "../types";
+import type { BpcGraph } from "../types"
 
 export const getGraphNetworkIds = (g: BpcGraph): string[] => {
   const networkIds = new Set<string>()

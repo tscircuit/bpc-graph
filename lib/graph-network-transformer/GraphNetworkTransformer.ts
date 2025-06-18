@@ -29,18 +29,16 @@ export class GraphNetworkTransformer extends BaseSolver {
   costConfiguration: CostConfiguration
   operationCostFn: OperationCostFn
 
-
   // Precomputed properties of the targetGraph for efficiency
-  targetGraphAllPins!: BpcPin[];
-  targetGraphPinConfigurations!: Set<string>; // "offsetX_offsetY_color_networkId"
+  targetGraphAllPins!: BpcPin[]
+  targetGraphPinConfigurations!: Set<string> // "offsetX_offsetY_color_networkId"
 
   // A* search state
   candidates: Candidate[] = [] // Open set
   // To avoid re-exploring states, we can store stringified versions of visited graphs.
   // This is a simple approach; more sophisticated graph isomorphism checks might be needed for complex cases.
-  visitedStates: Set<string> = new Set();
-  lastProcessedCandidate: Candidate | null = null;
-
+  visitedStates: Set<string> = new Set()
+  lastProcessedCandidate: Candidate | null = null
 
   constructor(params: {
     initialGraph: BpcGraph
@@ -57,10 +55,11 @@ export class GraphNetworkTransformer extends BaseSolver {
     const fullCostConfig: CostConfiguration = {
       colorChangeCostMap: params.costConfiguration.colorChangeCostMap ?? {},
       baseOperationCost: params.costConfiguration.baseOperationCost ?? 1,
-      costPerUnitDistanceMovingPin: params.costConfiguration.costPerUnitDistanceMovingPin ?? 0,
+      costPerUnitDistanceMovingPin:
+        params.costConfiguration.costPerUnitDistanceMovingPin ?? 0,
       // Ensure all fields from CostConfiguration are here, possibly from a default
-    };
-    this.costConfiguration = fullCostConfig; // Store the resolved full configuration
+    }
+    this.costConfiguration = fullCostConfig // Store the resolved full configuration
     this.operationCostFn = configureOperationCostFn(params.costConfiguration)
 
     this.initialize()
@@ -68,26 +67,28 @@ export class GraphNetworkTransformer extends BaseSolver {
 
   initialize() {
     // Precompute target graph properties
-    this.targetGraphAllPins = [...this.targetGraph.pins];
+    this.targetGraphAllPins = [...this.targetGraph.pins]
     this.targetGraphPinConfigurations = new Set(
-      this.targetGraph.pins.map(p => `${p.offset.x}_${p.offset.y}_${p.color}_${p.networkId}`)
-    );
+      this.targetGraph.pins.map(
+        (p) => `${p.offset.x}_${p.offset.y}_${p.color}_${p.networkId}`,
+      ),
+    )
 
     // Initialize candidates with the starting graph
     const initialHCost = getHeuristicNetworkSimilarityDistance(
       this.initialGraph,
       this.targetGraph,
-      this.costConfiguration
-    );
+      this.costConfiguration,
+    )
     const initialCandidate: Candidate = {
       graph: this.initialGraph,
       operationChain: [],
       hCost: initialHCost,
       gCost: 0,
       fCost: initialHCost,
-    };
-    this.candidates.push(initialCandidate);
-    this.visitedStates.add(JSON.stringify(this.initialGraph)); // Mark initial state as visited
+    }
+    this.candidates.push(initialCandidate)
+    this.visitedStates.add(JSON.stringify(this.initialGraph)) // Mark initial state as visited
   }
 
   getNeighbors(candidate: Candidate): Candidate[] {
@@ -100,28 +101,32 @@ export class GraphNetworkTransformer extends BaseSolver {
 
       // Ensure the graph is suitable for applyOperation (expects FloatingBpcGraph)
       // This makes all boxes 'floating' for transformation purposes.
-      nextGraphState.boxes = nextGraphState.boxes.map(b => ({
+      nextGraphState.boxes = nextGraphState.boxes.map((b) => ({
         ...b,
         kind: "floating",
         // Ensure center is defined if it wasn't (e.g. for new boxes from AddBoxOp if it didn't set one)
-        center: b.center ?? { x: 0, y: 0 }
-      })) as FloatingBpcGraph["boxes"]; // Assert box types
+        center: b.center ?? { x: 0, y: 0 },
+      })) as FloatingBpcGraph["boxes"] // Assert box types
 
       try {
         applyOperation(nextGraphState as FloatingBpcGraph, op)
 
-        const graphKey = JSON.stringify(nextGraphState);
+        const graphKey = JSON.stringify(nextGraphState)
         if (this.visitedStates.has(graphKey)) {
-          continue; // Skip already visited state
+          continue // Skip already visited state
         }
 
-        const costOfThisOp = getOperationCost({ op, costConfiguration: this.costConfiguration, g: candidate.graph });
-        const newGCost = candidate.gCost + costOfThisOp;
+        const costOfThisOp = getOperationCost({
+          op,
+          costConfiguration: this.costConfiguration,
+          g: candidate.graph,
+        })
+        const newGCost = candidate.gCost + costOfThisOp
         const newHCost = getHeuristicNetworkSimilarityDistance(
           nextGraphState,
           this.targetGraph,
-          this.costConfiguration
-        );
+          this.costConfiguration,
+        )
 
         neighbors.push({
           graph: nextGraphState,
@@ -129,7 +134,7 @@ export class GraphNetworkTransformer extends BaseSolver {
           gCost: newGCost,
           hCost: newHCost,
           fCost: newGCost + newHCost,
-        });
+        })
       } catch (e) {
         // console.warn(`Error applying operation ${op.operation_type}: ${(e as Error).message}. Skipping this path.`);
         // Operation might be invalid for the current state (e.g., changing a non-existent pin).
@@ -150,7 +155,7 @@ export class GraphNetworkTransformer extends BaseSolver {
     // Sort candidates by fCost (ascending) to pick the most promising one
     this.candidates.sort((a, b) => a.fCost - b.fCost)
     const currentCandidate = this.candidates.shift()! // Pop the candidate with the lowest fCost
-    this.lastProcessedCandidate = currentCandidate;
+    this.lastProcessedCandidate = currentCandidate
 
     // Check for goal state
     // hCost being 0 means the current graph is heuristically identical to the target network structure
@@ -160,22 +165,22 @@ export class GraphNetworkTransformer extends BaseSolver {
       this.stats.finalOperationChain = currentCandidate.operationChain
       this.stats.finalGraph = currentCandidate.graph
       this.stats.gCost = currentCandidate.gCost
-      this.stats.iterations = this.iterations;
+      this.stats.iterations = this.iterations
       return
     }
 
     const neighbors = this.getNeighbors(currentCandidate)
 
     for (const neighbor of neighbors) {
-      const neighborGraphKey = JSON.stringify(neighbor.graph);
+      const neighborGraphKey = JSON.stringify(neighbor.graph)
       if (!this.visitedStates.has(neighborGraphKey)) {
-         this.candidates.push(neighbor);
-         this.visitedStates.add(neighborGraphKey);
+        this.candidates.push(neighbor)
+        this.visitedStates.add(neighborGraphKey)
       }
       // If allowing reopening states (e.g. found a shorter path), logic would be more complex here.
       // For now, simple visited set is fine.
     }
-    
+
     // Iteration limit check is handled by BaseSolver
   }
 }
