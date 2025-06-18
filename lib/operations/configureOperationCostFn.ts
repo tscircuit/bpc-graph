@@ -1,12 +1,16 @@
+import type { BpcGraph } from "lib/types"
 import { getOperationCost } from "./getOperationCost/getOperationCost"
 import type { Operation, OperationCostFn } from "./operation-types"
 
 export type CostConfiguration = {
   colorChangeCostMap: Record<string, number>
+  baseOperationCost: number
+  costPerUnitDistanceMovingPin: number
 }
 
 const defaultCostConfiguration: CostConfiguration = {
   colorChangeCostMap: {},
+  baseOperationCost: 1,
 }
 
 export const configureOperationCostFn = (
@@ -17,10 +21,10 @@ export const configureOperationCostFn = (
     ...params,
   }
 
-  return (ops: Operation[]) => {
+  return (g: BpcGraph, ops: Operation[]) => {
     let costSum = 0
     for (const op of ops) {
-      costSum += getOperationCost({ op, costConfiguration, getColor })
+      costSum += getOperationCost({ op, costConfiguration, g })
     }
     return costSum
   }

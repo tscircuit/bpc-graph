@@ -1,4 +1,4 @@
-import type { BpcPin, Vec2 } from "lib/types"
+import type { BpcGraph, BpcPin, Vec2 } from "lib/types"
 
 export type AddPinToBoxOp = {
   operation_type: "add_pin_to_box"
@@ -50,4 +50,4 @@ export type Operation =
   | ChangePinColorOp
   | RemoveBoxOp
 
-export type OperationCostFn = (op: Operation[]) => number
+export type OperationCostFn = (g: BpcGraph, op: Operation[]) => number
