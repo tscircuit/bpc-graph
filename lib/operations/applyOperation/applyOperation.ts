@@ -5,6 +5,7 @@ import {applyChangePinNetwork} from "./applyChangePinNetwork";
 import {applyMovePin} from "./applyMovePin";
 import {applyAddBox} from "./applyAddBox";
 import {applyChangePinColor} from "./applyChangePinColor";
+import {applyRemoveBox} from "./applyRemoveBox";
 
 export const applyOperation = (g: FloatingBpcGraph, op: Operation) => {
   switch (op.operation_type) {
@@ -18,5 +19,7 @@ export const applyOperation = (g: FloatingBpcGraph, op: Operation) => {
       return applyAddBox(g, op)
     case "change_pin_color":
       return applyChangePinColor(g, op)
+    case "remove_box":
+      return applyRemoveBox(g, op)
   }
 }
