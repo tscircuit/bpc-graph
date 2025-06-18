@@ -30,7 +30,11 @@ export const getHeuristicNetworkSimilarityDistance = (
   g1: BpcGraph,
   g2: BpcGraph,
   costConfiguration: CostConfiguration,
-): number => {
+): {
+  distance: number
+  boxAssignment: Assignment<string, string>
+  networkAssignment: Assignment<string, string>
+} => {
   const boxIds1 = g1.boxes.map((b) => b.boxId)
   const boxIds2 = g2.boxes.map((b) => b.boxId)
   const networkIds1 = getGraphNetworkIds(g1)
@@ -40,6 +44,8 @@ export const getHeuristicNetworkSimilarityDistance = (
   const pinDirectionsG1 = precomputePinDirections(g1)
   const pinDirectionsG2 = precomputePinDirections(g2)
 
+  let bestBoxAssignment: Assignment<string, string> | null = null
+  let bestNetworkAssignment: Assignment<string, string> | null = null
   let minTotalCost = Infinity
   // Iterate over all possible assignments of g1 boxes to g2 boxes
   for (const boxAssignment of generateAssignments(boxIds1, boxIds2)) {
@@ -62,11 +68,17 @@ export const getHeuristicNetworkSimilarityDistance = (
       })
       if (currentCost < minTotalCost) {
         minTotalCost = currentCost
+        bestBoxAssignment = boxAssignment
+        bestNetworkAssignment = networkAssignment
       }
     }
   }
 
   // If minTotalCost is still Infinity, it means no assignments were possible (e.g. loops didn't run, though they should at least once)
   // or graphs were empty. If both graphs are empty, calculateMappingCost returns 0.
-  return minTotalCost === Infinity ? 0 : minTotalCost
+  return {
+    distance: minTotalCost === Infinity ? 0 : minTotalCost,
+    boxAssignment: bestBoxAssignment!,
+    networkAssignment: bestNetworkAssignment!,
+  }
 }

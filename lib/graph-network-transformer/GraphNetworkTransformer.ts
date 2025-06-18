@@ -48,7 +48,7 @@ export class GraphNetworkTransformer extends BaseSolver {
   }) {
     super()
     // Deep copy initial graph to allow modifications
-    this.initialGraph = JSON.parse(JSON.stringify(params.initialGraph))
+    this.initialGraph = structuredClone(params.initialGraph)
     this.targetGraph = params.targetGraph // Target graph is read-only
 
     // Resolve the full cost configuration and create the operation cost function
@@ -79,7 +79,7 @@ export class GraphNetworkTransformer extends BaseSolver {
       this.initialGraph,
       this.targetGraph,
       this.costConfiguration,
-    )
+    ).distance
     const initialCandidate: Candidate = {
       graph: this.initialGraph,
       operationChain: [],
@@ -126,7 +126,7 @@ export class GraphNetworkTransformer extends BaseSolver {
           nextGraphState,
           this.targetGraph,
           this.costConfiguration,
-        )
+        ).distance
 
         neighbors.push({
           graph: nextGraphState,
@@ -136,7 +136,9 @@ export class GraphNetworkTransformer extends BaseSolver {
           fCost: newGCost + newHCost,
         })
       } catch (e) {
-        // console.warn(`Error applying operation ${op.operation_type}: ${(e as Error).message}. Skipping this path.`);
+        console.warn(
+          `Error applying operation ${op.operation_type}: ${(e as Error).message}. Skipping this path.`,
+        )
         // Operation might be invalid for the current state (e.g., changing a non-existent pin).
       }
     }
