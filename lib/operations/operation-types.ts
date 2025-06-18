@@ -19,7 +19,7 @@ export type MovePinOp =  {
   operation_type: "move_pin",
   pinId: string
   oldPosition: Vec2
-  newPosition: Vec2
+  newOffset: Vec2
 }
 
 
