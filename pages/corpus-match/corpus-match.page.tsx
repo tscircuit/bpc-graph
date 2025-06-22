@@ -1,7 +1,7 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
 import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
-import corpus from "@tscircuit/schematic-corpus/bpc"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 
 const costConfiguration: Partial<CostConfiguration> = {
   baseOperationCost: 1,
