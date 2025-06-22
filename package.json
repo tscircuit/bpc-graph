@@ -27,5 +27,8 @@
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "@tscircuit/schematic-corpus": "^0.0.2"
   }
 }
