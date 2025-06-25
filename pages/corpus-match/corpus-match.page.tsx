@@ -23,7 +23,8 @@ export default function CorpusMatchPage() {
     x: number
     y: number
     svgDataUrl: string
-  }>({ visible: false, x: 0, y: 0, svgDataUrl: "" })
+    currentGraph: BpcGraph | null
+  }>({ visible: false, x: 0, y: 0, svgDataUrl: "", currentGraph: null })
 
   const handleMatch = () => {
     let graph: BpcGraph
@@ -69,20 +70,43 @@ export default function CorpusMatchPage() {
       x: event.clientX,
       y: event.clientY,
       svgDataUrl,
+      currentGraph: graph,
     })
   }
 
   const handleMouseLeave = () => {
-    setHoverTooltip({ ...hoverTooltip, visible: false })
+    setHoverTooltip({ 
+      visible: false, 
+      x: 0, 
+      y: 0, 
+      svgDataUrl: "", 
+      currentGraph: null 
+    })
   }
 
-  const handleMouseMove = (event: React.MouseEvent) => {
+  const handleMouseMove = (graph: BpcGraph, event: React.MouseEvent) => {
     if (hoverTooltip.visible) {
-      setHoverTooltip({
-        ...hoverTooltip,
-        x: event.clientX,
-        y: event.clientY,
-      })
+      // Check if we're hovering over a different graph
+      if (hoverTooltip.currentGraph !== graph) {
+        const graphics = getGraphicsForBpcGraph(graph)
+        const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
+        const svgDataUrl = `data:image/svg+xml;base64,${btoa(svg)}`
+        
+        setHoverTooltip({
+          visible: true,
+          x: event.clientX,
+          y: event.clientY,
+          svgDataUrl,
+          currentGraph: graph,
+        })
+      } else {
+        // Same graph, just update position
+        setHoverTooltip({
+          ...hoverTooltip,
+          x: event.clientX,
+          y: event.clientY,
+        })
+      }
     }
   }
 
@@ -109,7 +133,7 @@ export default function CorpusMatchPage() {
                 <td
                   onMouseEnter={(e) => handleMouseEnter(r.graph, e)}
                   onMouseLeave={handleMouseLeave}
-                  onMouseMove={handleMouseMove}
+                  onMouseMove={(e) => handleMouseMove(r.graph, e)}
                   style={{ cursor: "pointer" }}
                 >
                   {r.name}
