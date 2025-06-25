@@ -82,7 +82,6 @@ test("GraphNetworkTransformer - debugger page simple case", () => {
   // Let's check it's close to this value.
   expect(transformer.stats.gCost).toBeGreaterThan(0)
 
-
   // More specific checks for operation types if needed:
   const hasChangePinColor = transformer.stats.finalOperationChain.some(
     (op: any) => op.operation_type === "change_pin_color",
