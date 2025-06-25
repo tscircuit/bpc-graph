@@ -1,6 +1,7 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
 import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
+import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
@@ -19,6 +20,13 @@ export default function CorpusMatchPage() {
     Array<{ name: string; distance: number; graph: BpcGraph }>
   >([])
   const [inputSvgDataUrl, setInputSvgDataUrl] = useState<string>("")
+  const [adaptedMatchSvgDataUrl, setAdaptedMatchSvgDataUrl] =
+    useState<string>("")
+  const [activeTab, setActiveTab] = useState<"input" | "output">("input")
+  const [bestMatch, setBestMatch] = useState<{
+    name: string
+    graph: BpcGraph
+  } | null>(null)
   const [hoverTooltip, setHoverTooltip] = useState<{
     visible: boolean
     x: number
@@ -31,11 +39,31 @@ export default function CorpusMatchPage() {
     try {
       const graph = JSON.parse(graphJson)
       const graphics = getGraphicsForBpcGraph(graph)
-      const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
+      const svg = getSvgFromGraphicsObject(graphics, {
+        backgroundColor: "white",
+      })
       const svgDataUrl = `data:image/svg+xml;base64,${btoa(svg)}`
       setInputSvgDataUrl(svgDataUrl)
     } catch {
       setInputSvgDataUrl("")
+    }
+  }
+
+  const generateAdaptedMatch = (
+    inputGraph: BpcGraph,
+    templateGraph: BpcGraph,
+  ) => {
+    try {
+      const transformer = new GraphNetworkTransformer({
+        initialGraph: templateGraph,
+        targetGraph: inputGraph,
+        costConfiguration,
+      })
+      transformer.solve()
+      return transformer.stats.finalGraph || templateGraph
+    } catch (error) {
+      console.error("Error generating adapted match:", error)
+      return templateGraph
     }
   }
 
@@ -62,6 +90,19 @@ export default function CorpusMatchPage() {
     }))
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
+
+    if (scores.length > 0) {
+      const bestTemplate = scores[0]!
+      setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
+
+      const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
+      const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
+      const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
+        backgroundColor: "white",
+      })
+      const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
+      setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+    }
   }
 
   const downloadJson = (graph: BpcGraph, name: string) => {
@@ -79,7 +120,12 @@ export default function CorpusMatchPage() {
     const graphStr = JSON.stringify(graph, null, 2)
     setInput(graphStr)
     updateInputSvg(graphStr)
-    
+
+    // Clear previous adapted match and reset to input tab
+    setAdaptedMatchSvgDataUrl("")
+    setBestMatch(null)
+    setActiveTab("input")
+
     // Re-match with the new input
     const corpusGraphs = corpus as Record<string, BpcGraph>
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
@@ -93,13 +139,26 @@ export default function CorpusMatchPage() {
     }))
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
+
+    if (scores.length > 0) {
+      const bestTemplate = scores[0]!
+      setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
+
+      const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
+      const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
+      const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
+        backgroundColor: "white",
+      })
+      const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
+      setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+    }
   }
 
   const handleMouseEnter = (graph: BpcGraph, event: React.MouseEvent) => {
     const graphics = getGraphicsForBpcGraph(graph)
     const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
     const svgDataUrl = `data:image/svg+xml;base64,${btoa(svg)}`
-    
+
     setHoverTooltip({
       visible: true,
       x: event.clientX,
@@ -110,12 +169,12 @@ export default function CorpusMatchPage() {
   }
 
   const handleMouseLeave = () => {
-    setHoverTooltip({ 
-      visible: false, 
-      x: 0, 
-      y: 0, 
-      svgDataUrl: "", 
-      currentGraph: null 
+    setHoverTooltip({
+      visible: false,
+      x: 0,
+      y: 0,
+      svgDataUrl: "",
+      currentGraph: null,
     })
   }
 
@@ -124,9 +183,11 @@ export default function CorpusMatchPage() {
       // Check if we're hovering over a different graph
       if (hoverTooltip.currentGraph !== graph) {
         const graphics = getGraphicsForBpcGraph(graph)
-        const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
+        const svg = getSvgFromGraphicsObject(graphics, {
+          backgroundColor: "white",
+        })
         const svgDataUrl = `data:image/svg+xml;base64,${btoa(svg)}`
-        
+
         setHoverTooltip({
           visible: true,
           x: event.clientX,
@@ -152,16 +213,66 @@ export default function CorpusMatchPage() {
           style={{ width: "600px", height: "200px" }}
           value={input}
           onChange={(e) => {
-            setInput(e.currentTarget.value)
-            updateInputSvg(e.currentTarget.value)
+            setInput(e.target.value)
+            updateInputSvg(e.target.value)
           }}
         />
-        {inputSvgDataUrl && (
-          <img
-            src={inputSvgDataUrl}
-            alt="Input BPC Graph Preview"
-            style={{ maxWidth: "300px", maxHeight: "200px", border: "1px solid #ccc" }}
-          />
+        {(inputSvgDataUrl || adaptedMatchSvgDataUrl) && (
+          <div style={{ border: "1px solid #ccc", minWidth: "300px" }}>
+            <div style={{ display: "flex", borderBottom: "1px solid #ccc" }}>
+              <button
+                onClick={() => setActiveTab("input")}
+                style={{
+                  padding: "8px 16px",
+                  border: "none",
+                  backgroundColor: activeTab === "input" ? "#e0e0e0" : "white",
+                  cursor: "pointer",
+                  borderRight: "1px solid #ccc",
+                }}
+              >
+                Input
+              </button>
+              <button
+                onClick={() => setActiveTab("output")}
+                style={{
+                  padding: "8px 16px",
+                  border: "none",
+                  backgroundColor: activeTab === "output" ? "#e0e0e0" : "white",
+                  cursor: "pointer",
+                }}
+                disabled={!adaptedMatchSvgDataUrl}
+              >
+                Output
+              </button>
+            </div>
+            <div style={{ padding: "10px" }}>
+              {activeTab === "input" && inputSvgDataUrl && (
+                <img
+                  src={inputSvgDataUrl}
+                  alt="Input BPC Graph Preview"
+                  style={{ maxWidth: "280px", maxHeight: "200px" }}
+                />
+              )}
+              {activeTab === "output" && adaptedMatchSvgDataUrl && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#666",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    Adapted Match: {bestMatch?.name}
+                  </div>
+                  <img
+                    src={adaptedMatchSvgDataUrl}
+                    alt="Adapted Match Preview"
+                    style={{ maxWidth: "280px", maxHeight: "200px" }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
       <button onClick={handleMatch}>Match</button>
@@ -169,9 +280,31 @@ export default function CorpusMatchPage() {
         <table style={{ borderCollapse: "collapse", border: "1px solid #ccc" }}>
           <thead>
             <tr>
-              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}>Design</th>
-              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}>Distance</th>
-              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}></th>
+              <th
+                style={{
+                  textAlign: "left",
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                }}
+              >
+                Design
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                }}
+              >
+                Distance
+              </th>
+              <th
+                style={{
+                  textAlign: "left",
+                  border: "1px solid #ccc",
+                  padding: "8px",
+                }}
+              ></th>
             </tr>
           </thead>
           <tbody>
@@ -181,11 +314,17 @@ export default function CorpusMatchPage() {
                   onMouseEnter={(e) => handleMouseEnter(r.graph, e)}
                   onMouseLeave={handleMouseLeave}
                   onMouseMove={(e) => handleMouseMove(r.graph, e)}
-                  style={{ cursor: "pointer", border: "1px solid #ccc", padding: "8px" }}
+                  style={{
+                    cursor: "pointer",
+                    border: "1px solid #ccc",
+                    padding: "8px",
+                  }}
                 >
                   {r.name}
                 </td>
-                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{r.distance.toFixed(2)}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                  {r.distance.toFixed(2)}
+                </td>
                 <td style={{ border: "1px solid #ccc", padding: "8px" }}>
                   <button
                     onClick={() => downloadJson(r.graph, r.name)}
