@@ -60,6 +60,25 @@ export default function CorpusMatchPage() {
     URL.revokeObjectURL(url)
   }
 
+  const loadAndMatch = (graph: BpcGraph) => {
+    const graphStr = JSON.stringify(graph, null, 2)
+    setInput(graphStr)
+    
+    // Re-match with the new input
+    const corpusGraphs = corpus as Record<string, BpcGraph>
+    const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
+      name,
+      graph: g,
+      distance: getHeuristicNetworkSimilarityDistance(
+        graph,
+        g,
+        costConfiguration as CostConfiguration,
+      ).distance,
+    }))
+    scores.sort((a, b) => a.distance - b.distance)
+    setResults(scores)
+  }
+
   const handleMouseEnter = (graph: BpcGraph, event: React.MouseEvent) => {
     const graphics = getGraphicsForBpcGraph(graph)
     const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
@@ -124,7 +143,7 @@ export default function CorpusMatchPage() {
             <tr>
               <th>Design</th>
               <th>Distance</th>
-              <th>JSON</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -142,9 +161,15 @@ export default function CorpusMatchPage() {
                 <td>
                   <button
                     onClick={() => downloadJson(r.graph, r.name)}
+                    style={{ cursor: "pointer", marginRight: "5px" }}
+                  >
+                    JSON
+                  </button>
+                  <button
+                    onClick={() => loadAndMatch(r.graph)}
                     style={{ cursor: "pointer" }}
                   >
-                    Download
+                    Match
                   </button>
                 </td>
               </tr>
