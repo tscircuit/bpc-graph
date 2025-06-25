@@ -22,7 +22,9 @@ export default function CorpusMatchPage() {
   const [inputSvgDataUrl, setInputSvgDataUrl] = useState<string>("")
   const [adaptedMatchSvgDataUrl, setAdaptedMatchSvgDataUrl] =
     useState<string>("")
-  const [activeTab, setActiveTab] = useState<"input" | "output">("input")
+  const [activeTab, setActiveTab] = useState<"input" | "match" | "adapted">(
+    "input",
+  )
   const [bestMatch, setBestMatch] = useState<{
     name: string
     graph: BpcGraph
@@ -34,6 +36,8 @@ export default function CorpusMatchPage() {
     svgDataUrl: string
     currentGraph: BpcGraph | null
   }>({ visible: false, x: 0, y: 0, svgDataUrl: "", currentGraph: null })
+
+  const [matchedSvgDataUrl, setMatchedSvgDataUrl] = useState<string>("")
 
   // New state for the toggle
   const [ignoreTopMatch, setIgnoreTopMatch] = useState<boolean>(false)
@@ -126,6 +130,12 @@ export default function CorpusMatchPage() {
     if (bestTemplate) {
       setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
 
+      const matchedGraphics = getGraphicsForBpcGraph(bestTemplate.graph)
+      const matchedSvg = getSvgFromGraphicsObject(matchedGraphics, {
+        backgroundColor: "white",
+      })
+      setMatchedSvgDataUrl(`data:image/svg+xml;base64,${btoa(matchedSvg)}`)
+
       const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
       const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
       const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
@@ -136,6 +146,7 @@ export default function CorpusMatchPage() {
     } else {
       setBestMatch(null)
       setAdaptedMatchSvgDataUrl("")
+      setMatchedSvgDataUrl("")
     }
   }
 
@@ -158,6 +169,7 @@ export default function CorpusMatchPage() {
 
     // Clear previous adapted match and reset to input tab
     setAdaptedMatchSvgDataUrl("")
+    setMatchedSvgDataUrl("")
     setBestMatch(null)
     setActiveTab("input")
 
@@ -177,14 +189,20 @@ export default function CorpusMatchPage() {
 
     // Use the toggle to determine which match to use
     let bestTemplate: { name: string; graph: BpcGraph } | undefined
-    if (!ignoreTopMatch && scores.length > 0) {
-      bestTemplate = scores[0]
-    } else if (ignoreTopMatch && scores.length > 1) {
+
+    // We always ignore the top match
+    if (scores.length > 1) {
       bestTemplate = scores[1]
     }
 
     if (bestTemplate) {
       setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
+
+      const matchedGraphics = getGraphicsForBpcGraph(bestTemplate.graph)
+      const matchedSvg = getSvgFromGraphicsObject(matchedGraphics, {
+        backgroundColor: "white",
+      })
+      setMatchedSvgDataUrl(`data:image/svg+xml;base64,${btoa(matchedSvg)}`)
 
       const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
       const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
@@ -196,6 +214,7 @@ export default function CorpusMatchPage() {
     } else {
       setBestMatch(null)
       setAdaptedMatchSvgDataUrl("")
+      setMatchedSvgDataUrl("")
     }
   }
 
@@ -278,16 +297,30 @@ export default function CorpusMatchPage() {
                 Input
               </button>
               <button
-                onClick={() => setActiveTab("output")}
+                onClick={() => setActiveTab("match")}
                 style={{
                   padding: "8px 16px",
                   border: "none",
-                  backgroundColor: activeTab === "output" ? "#e0e0e0" : "white",
+                  backgroundColor: activeTab === "match" ? "#e0e0e0" : "white",
+                  cursor: "pointer",
+                  borderRight: "1px solid #ccc",
+                }}
+                disabled={!matchedSvgDataUrl}
+              >
+                Match
+              </button>
+              <button
+                onClick={() => setActiveTab("adapted")}
+                style={{
+                  padding: "8px 16px",
+                  border: "none",
+                  backgroundColor:
+                    activeTab === "adapted" ? "#e0e0e0" : "white",
                   cursor: "pointer",
                 }}
                 disabled={!adaptedMatchSvgDataUrl}
               >
-                Output
+                Adapted
               </button>
             </div>
             <div style={{ padding: "10px" }}>
@@ -298,7 +331,25 @@ export default function CorpusMatchPage() {
                   style={{ maxWidth: "280px", maxHeight: "200px" }}
                 />
               )}
-              {activeTab === "output" && adaptedMatchSvgDataUrl && (
+              {activeTab === "match" && matchedSvgDataUrl && (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#666",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    Matched Template: {bestMatch?.name}
+                  </div>
+                  <img
+                    src={matchedSvgDataUrl}
+                    alt="Matched Template Preview"
+                    style={{ maxWidth: "280px", maxHeight: "200px" }}
+                  />
+                </div>
+              )}
+              {activeTab === "adapted" && adaptedMatchSvgDataUrl && (
                 <div>
                   <div
                     style={{
