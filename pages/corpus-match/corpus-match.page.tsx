@@ -35,6 +35,9 @@ export default function CorpusMatchPage() {
     currentGraph: BpcGraph | null
   }>({ visible: false, x: 0, y: 0, svgDataUrl: "", currentGraph: null })
 
+  // New state for the toggle
+  const [ignoreTopMatch, setIgnoreTopMatch] = useState<boolean>(false)
+
   const updateInputSvg = (graphJson: string) => {
     try {
       const graph = JSON.parse(graphJson)
@@ -49,18 +52,39 @@ export default function CorpusMatchPage() {
     }
   }
 
+  /*  Adapt the matched template so that it becomes functionally identical to
+      the input graph.  A GraphNetworkTransformer is used to compute and apply
+      the minimal-cost operation chain.  We accept any solution whose discrete
+      attributes (boxes / pins / networks / colours) match; absolute box
+      centres and pin offsets may differ.                                       */
   const generateAdaptedMatch = (
     inputGraph: BpcGraph,
     templateGraph: BpcGraph,
-  ) => {
+  ): BpcGraph => {
     try {
       const transformer = new GraphNetworkTransformer({
         initialGraph: templateGraph,
         targetGraph: inputGraph,
         costConfiguration,
       })
+
+      /* Give the solver more breathing room than the default. */
+      transformer.MAX_ITERATIONS = 5_000
+
       transformer.solve()
-      return transformer.stats.finalGraph || templateGraph
+
+      if (transformer.solved && transformer.stats.finalGraph) {
+        // Perfect adaptation achieved
+        return transformer.stats.finalGraph as BpcGraph
+      }
+
+      // Solver stopped early – use best candidate explored so far
+      if (transformer.lastProcessedCandidate?.graph) {
+        return transformer.lastProcessedCandidate.graph
+      }
+
+      // Fallback – return the template after initial ID remapping
+      return transformer.initialGraph
     } catch (error) {
       console.error("Error generating adapted match:", error)
       return templateGraph
@@ -91,8 +115,15 @@ export default function CorpusMatchPage() {
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
 
-    if (scores.length > 0) {
-      const bestTemplate = scores[0]!
+    // Use the toggle to determine which match to use
+    let bestTemplate: { name: string; graph: BpcGraph } | undefined
+    if (!ignoreTopMatch && scores.length > 0) {
+      bestTemplate = scores[0]
+    } else if (ignoreTopMatch && scores.length > 1) {
+      bestTemplate = scores[1]
+    }
+
+    if (bestTemplate) {
       setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
 
       const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
@@ -102,6 +133,9 @@ export default function CorpusMatchPage() {
       })
       const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
       setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+    } else {
+      setBestMatch(null)
+      setAdaptedMatchSvgDataUrl("")
     }
   }
 
@@ -120,6 +154,7 @@ export default function CorpusMatchPage() {
     const graphStr = JSON.stringify(graph, null, 2)
     setInput(graphStr)
     updateInputSvg(graphStr)
+    setIgnoreTopMatch(true)
 
     // Clear previous adapted match and reset to input tab
     setAdaptedMatchSvgDataUrl("")
@@ -140,8 +175,15 @@ export default function CorpusMatchPage() {
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
 
-    if (scores.length > 0) {
-      const bestTemplate = scores[0]!
+    // Use the toggle to determine which match to use
+    let bestTemplate: { name: string; graph: BpcGraph } | undefined
+    if (!ignoreTopMatch && scores.length > 0) {
+      bestTemplate = scores[0]
+    } else if (ignoreTopMatch && scores.length > 1) {
+      bestTemplate = scores[1]
+    }
+
+    if (bestTemplate) {
       setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
 
       const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
@@ -151,6 +193,9 @@ export default function CorpusMatchPage() {
       })
       const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
       setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+    } else {
+      setBestMatch(null)
+      setAdaptedMatchSvgDataUrl("")
     }
   }
 
@@ -274,6 +319,18 @@ export default function CorpusMatchPage() {
             </div>
           </div>
         )}
+      </div>
+      {/* Toggle for Ignore Top Match */}
+      <div style={{ margin: "8px 0" }}>
+        <label style={{ cursor: "pointer", userSelect: "none" }}>
+          <input
+            type="checkbox"
+            checked={ignoreTopMatch}
+            onChange={() => setIgnoreTopMatch((v) => !v)}
+            style={{ marginRight: "6px" }}
+          />
+          Ignore Top Match
+        </label>
       </div>
       <button onClick={handleMatch}>Match</button>
       {results.length > 0 && (
