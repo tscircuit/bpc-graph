@@ -18,6 +18,7 @@ export default function CorpusMatchPage() {
   const [results, setResults] = useState<
     Array<{ name: string; distance: number; graph: BpcGraph }>
   >([])
+  const [inputSvgDataUrl, setInputSvgDataUrl] = useState<string>("")
   const [hoverTooltip, setHoverTooltip] = useState<{
     visible: boolean
     x: number
@@ -25,6 +26,18 @@ export default function CorpusMatchPage() {
     svgDataUrl: string
     currentGraph: BpcGraph | null
   }>({ visible: false, x: 0, y: 0, svgDataUrl: "", currentGraph: null })
+
+  const updateInputSvg = (graphJson: string) => {
+    try {
+      const graph = JSON.parse(graphJson)
+      const graphics = getGraphicsForBpcGraph(graph)
+      const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
+      const svgDataUrl = `data:image/svg+xml;base64,${btoa(svg)}`
+      setInputSvgDataUrl(svgDataUrl)
+    } catch {
+      setInputSvgDataUrl("")
+    }
+  }
 
   const handleMatch = () => {
     let graph: BpcGraph
@@ -34,6 +47,8 @@ export default function CorpusMatchPage() {
       alert("Invalid JSON")
       return
     }
+
+    updateInputSvg(input)
 
     const corpusGraphs = corpus as Record<string, BpcGraph>
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
@@ -63,6 +78,7 @@ export default function CorpusMatchPage() {
   const loadAndMatch = (graph: BpcGraph) => {
     const graphStr = JSON.stringify(graph, null, 2)
     setInput(graphStr)
+    updateInputSvg(graphStr)
     
     // Re-match with the new input
     const corpusGraphs = corpus as Record<string, BpcGraph>
@@ -131,19 +147,31 @@ export default function CorpusMatchPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <textarea
-        style={{ width: "600px", height: "200px" }}
-        value={input}
-        onChange={(e) => setInput(e.currentTarget.value)}
-      />
+      <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+        <textarea
+          style={{ width: "600px", height: "200px" }}
+          value={input}
+          onChange={(e) => {
+            setInput(e.currentTarget.value)
+            updateInputSvg(e.currentTarget.value)
+          }}
+        />
+        {inputSvgDataUrl && (
+          <img
+            src={inputSvgDataUrl}
+            alt="Input BPC Graph Preview"
+            style={{ maxWidth: "300px", maxHeight: "200px", border: "1px solid #ccc" }}
+          />
+        )}
+      </div>
       <button onClick={handleMatch}>Match</button>
       {results.length > 0 && (
-        <table>
+        <table style={{ borderCollapse: "collapse", border: "1px solid #ccc" }}>
           <thead>
             <tr>
-              <th>Design</th>
-              <th>Distance</th>
-              <th></th>
+              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}>Design</th>
+              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}>Distance</th>
+              <th style={{ textAlign: "left", border: "1px solid #ccc", padding: "8px" }}></th>
             </tr>
           </thead>
           <tbody>
@@ -153,12 +181,12 @@ export default function CorpusMatchPage() {
                   onMouseEnter={(e) => handleMouseEnter(r.graph, e)}
                   onMouseLeave={handleMouseLeave}
                   onMouseMove={(e) => handleMouseMove(r.graph, e)}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: "pointer", border: "1px solid #ccc", padding: "8px" }}
                 >
                   {r.name}
                 </td>
-                <td>{r.distance.toFixed(2)}</td>
-                <td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>{r.distance.toFixed(2)}</td>
+                <td style={{ border: "1px solid #ccc", padding: "8px" }}>
                   <button
                     onClick={() => downloadJson(r.graph, r.name)}
                     style={{ cursor: "pointer", marginRight: "5px" }}
