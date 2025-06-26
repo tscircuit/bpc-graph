@@ -36,7 +36,9 @@ test("schematic-corpus01 – GraphNetworkTransformer should not hang (design006)
   const bestTemplate = scores[1]
   expect(bestTemplate).toBeDefined()
 
-  ctx.logger.info(`Selected template: ${bestTemplate.name} with distance ${bestTemplate.distance}`)
+  ctx.logger.info(
+    `Selected template: ${bestTemplate.name} with distance ${bestTemplate.distance}`,
+  )
 
   // Run the same adaptation step the page performs.
   const transformer = new GraphNetworkTransformer({
@@ -51,6 +53,8 @@ test("schematic-corpus01 – GraphNetworkTransformer should not hang (design006)
   transformer.solve()
 
   // The solver must either solve or fail, but never loop forever.
-  ctx.logger.info(`GraphNetworkTransformer finished: solved=${transformer.solved}, failed=${transformer.failed}, iterations=${transformer.iterations}`)
+  ctx.logger.info(
+    `GraphNetworkTransformer finished: solved=${transformer.solved}, failed=${transformer.failed}, iterations=${transformer.iterations}`,
+  )
   expect(transformer.solved || transformer.failed).toBe(true)
 })
