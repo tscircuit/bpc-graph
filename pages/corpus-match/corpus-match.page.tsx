@@ -277,8 +277,8 @@ export default function CorpusMatchPage() {
           style={{ width: "600px", height: "200px" }}
           value={input}
           onChange={(e) => {
-            setInput(e.target.value)
-            updateInputSvg(e.target.value)
+            setInput((e.target as HTMLTextAreaElement).value)
+            updateInputSvg((e.target as HTMLTextAreaElement).value)
           }}
         />
         {(inputSvgDataUrl || adaptedMatchSvgDataUrl) && (
