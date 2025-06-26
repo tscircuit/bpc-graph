@@ -5,6 +5,7 @@ import type { HeuristicSimilarityCostContext } from "./types"
 import { precomputePinDirections } from "./precomputePinDirections"
 import { generateAssignments, type Assignment } from "./generateAssignments"
 import { calculateMappingCost } from "./calculateMappingCost"
+import type { LibContext } from "lib/context"
 
 /**
  * The heuristic network similarity distance is a measure of how different
@@ -30,6 +31,7 @@ export const getHeuristicNetworkSimilarityDistance = (
   g1: BpcGraph,
   g2: BpcGraph,
   costConfiguration: CostConfiguration,
+  ctx?: LibContext,
 ): {
   distance: number
   boxAssignment: Assignment<string, string>
@@ -40,6 +42,9 @@ export const getHeuristicNetworkSimilarityDistance = (
   const networkIds1 = getGraphNetworkIds(g1)
   const networkIds2 = getGraphNetworkIds(g2)
 
+  ctx?.logger?.debug(`getHeuristicNetworkSimilarityDistance: comparing ${boxIds1.length} boxes (${boxIds1.join(',')}) vs ${boxIds2.length} boxes (${boxIds2.join(',')})`)
+  ctx?.logger?.debug(`getHeuristicNetworkSimilarityDistance: comparing ${networkIds1.length} networks vs ${networkIds2.length} networks`)
+
   // Precompute pin directions for efficiency
   const pinDirectionsG1 = precomputePinDirections(g1)
   const pinDirectionsG2 = precomputePinDirections(g2)
@@ -48,12 +53,20 @@ export const getHeuristicNetworkSimilarityDistance = (
   let bestNetworkAssignment: Assignment<string, string> | null = null
   let minTotalCost = Infinity
   // Iterate over all possible assignments of g1 boxes to g2 boxes
-  for (const boxAssignment of generateAssignments(boxIds1, boxIds2)) {
+  let boxAssignmentCount = 0
+  for (const boxAssignment of generateAssignments(boxIds1, boxIds2, ctx)) {
+    boxAssignmentCount++
+    if (boxAssignmentCount % 1000 === 0) {
+      ctx?.logger?.debug(`getHeuristicNetworkSimilarityDistance: processed ${boxAssignmentCount} box assignments`)
+    }
     // For each box assignment, iterate over all possible assignments of g1 networks to g2 networks
+    let networkAssignmentCount = 0
     for (const networkAssignment of generateAssignments(
       networkIds1,
       networkIds2,
+      ctx,
     )) {
+      networkAssignmentCount++
       const context: HeuristicSimilarityCostContext = {
         g1,
         g2,
@@ -72,7 +85,10 @@ export const getHeuristicNetworkSimilarityDistance = (
         bestNetworkAssignment = networkAssignment
       }
     }
+    ctx?.logger?.debug(`getHeuristicNetworkSimilarityDistance: box assignment ${boxAssignmentCount} had ${networkAssignmentCount} network assignments`)
   }
+  
+  ctx?.logger?.debug(`getHeuristicNetworkSimilarityDistance: total ${boxAssignmentCount} box assignments processed, min cost: ${minTotalCost}`)
 
   // If minTotalCost is still Infinity, it means no assignments were possible (e.g. loops didn't run, though they should at least once)
   // or graphs were empty. If both graphs are empty, calculateMappingCost returns 0.

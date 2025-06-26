@@ -8,6 +8,7 @@ import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-sim
 import { getOperationCost } from "lib/operations/getOperationCost/getOperationCost"
 import { configureOperationCostFn } from "lib/operations/configureOperationCostFn"
 import { transformGraphWithAssignments } from "./transformGraphWithAssignments"
+import type { LibContext } from "lib/context"
 
 interface Candidate {
   graph: BpcGraph // Current state of the graph
@@ -29,6 +30,7 @@ export class GraphNetworkTransformer extends BaseSolver {
   targetGraph: BpcGraph
   costConfiguration: CostConfiguration
   operationCostFn: OperationCostFn
+  context?: LibContext
 
   // Precomputed properties of the targetGraph for efficiency
   targetGraphAllPins!: BpcPin[]
@@ -46,8 +48,10 @@ export class GraphNetworkTransformer extends BaseSolver {
     targetGraph: BpcGraph
     // Pass the partial config, and the transformer will create the full config and cost function
     costConfiguration: Partial<CostConfiguration>
+    context?: LibContext
   }) {
     super()
+    this.context = params.context
     // Deep copy initial graph to allow modifications
     // Deep copy initial graph to allow modifications
     let initialGraphCopy = structuredClone(params.initialGraph)
@@ -65,10 +69,12 @@ export class GraphNetworkTransformer extends BaseSolver {
     this.operationCostFn = configureOperationCostFn(params.costConfiguration)
 
     // Get initial assignments to align initialGraph IDs with targetGraph IDs
+    this.context?.logger?.debug(`GraphNetworkTransformer: getting initial assignments`)
     const initialAssignments = getHeuristicNetworkSimilarityDistance(
       initialGraphCopy,
       this.targetGraph,
       this.costConfiguration,
+      this.context,
     )
 
     // Transform initialGraph to use targetGraph's IDs where a mapping exists
@@ -91,10 +97,12 @@ export class GraphNetworkTransformer extends BaseSolver {
     )
 
     // Initialize candidates with the starting graph
+    this.context?.logger?.debug(`GraphNetworkTransformer: computing initial heuristic cost`)
     const initialHCost = getHeuristicNetworkSimilarityDistance(
       this.initialGraph,
       this.targetGraph,
       this.costConfiguration,
+      this.context,
     ).distance
     const initialCandidate: Candidate = {
       graph: this.initialGraph,
@@ -142,6 +150,7 @@ export class GraphNetworkTransformer extends BaseSolver {
           nextGraphState,
           this.targetGraph,
           this.costConfiguration,
+          this.context,
         ).distance
 
         neighbors.push({
@@ -162,10 +171,13 @@ export class GraphNetworkTransformer extends BaseSolver {
   }
 
   override _step() {
+    this.context?.logger?.debug(`GraphNetworkTransformer._step: iteration ${this.iterations}, candidates: ${this.candidates.length}`)
+    
     if (this.candidates.length === 0) {
       if (!this.solved) {
         this.failed = true
         this.error = "No candidates left to explore and solution not found."
+        this.context?.logger?.error(`GraphNetworkTransformer._step: failed - no candidates left`)
       }
       return
     }
@@ -179,6 +191,7 @@ export class GraphNetworkTransformer extends BaseSolver {
     // hCost being 0 means the current graph is heuristically identical to the target network structure
     if (currentCandidate.hCost === 0) {
       // A hCost of 0 from getHeuristicNetworkSimilarityDistance means a perfect match.
+      this.context?.logger?.info(`GraphNetworkTransformer._step: SOLVED! hCost=0, operations: ${currentCandidate.operationChain.length}, gCost: ${currentCandidate.gCost}`)
       this.solved = true
       this.stats.finalOperationChain = currentCandidate.operationChain
       this.stats.finalGraph = currentCandidate.graph
@@ -188,6 +201,7 @@ export class GraphNetworkTransformer extends BaseSolver {
     }
 
     const neighbors = this.getNeighbors(currentCandidate)
+    this.context?.logger?.debug(`GraphNetworkTransformer._step: current candidate hCost=${currentCandidate.hCost}, gCost=${currentCandidate.gCost}, generated ${neighbors.length} neighbors`)
 
     for (const neighbor of neighbors) {
       const neighborGraphKey = JSON.stringify(neighbor.graph)
