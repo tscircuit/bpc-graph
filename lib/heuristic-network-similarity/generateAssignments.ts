@@ -1,3 +1,5 @@
+import type { LibContext } from "lib/context"
+
 // K: type of items in the first list (e.g., string for boxId or networkId)
 // V: type of items in the second list
 export interface Assignment<K, V> {
@@ -13,9 +15,14 @@ export interface Assignment<K, V> {
 export function* generateAssignments<K, V>(
   list1: K[],
   list2: V[],
+  ctx?: LibContext,
 ): Generator<Assignment<K, V>> {
   const n1 = list1.length
   const n2 = list2.length
+
+  ctx?.logger?.debug(`generateAssignments: starting with list1.length=${n1}, list2.length=${n2}`)
+  
+  let assignmentCount = 0
 
   // Inner recursive backtracking function
   function* backtrack(
@@ -30,6 +37,10 @@ export function* generateAssignments<K, V>(
         if (!usedList2Indices.has(i)) {
           unmappedRhsItems.add(list2[i]!)
         }
+      }
+      assignmentCount++
+      if (assignmentCount % 10000 === 0) {
+        ctx?.logger?.debug(`generateAssignments: yielded ${assignmentCount} assignments`)
       }
       yield { map: new Map(currentMap), unmappedRhs: unmappedRhsItems }
       return
@@ -59,4 +70,6 @@ export function* generateAssignments<K, V>(
   }
 
   yield* backtrack(0, new Map<K, V | null>(), new Set<number>())
+  
+  ctx?.logger?.debug(`generateAssignments: completed, total assignments generated: ${assignmentCount}`)
 }
