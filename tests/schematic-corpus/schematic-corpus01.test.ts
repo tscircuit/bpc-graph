@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test"
-import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import type { BpcGraph, CostConfiguration } from "lib"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
@@ -21,9 +21,9 @@ test("schematic-corpus01 – GraphNetworkTransformer should not hang (design006)
   const scores = Object.entries(corpus).map(([name, g]) => ({
     name,
     graph: g,
-    distance: getHeuristicNetworkSimilarityDistance(
-      inputGraph,
-      g,
+    distance: getAssignmentCombinationsNetworkSimilarityDistance(
+      inputGraph as BpcGraph,
+      g as BpcGraph,
       costConfiguration as CostConfiguration,
       ctx,
     ).distance,
@@ -37,13 +37,13 @@ test("schematic-corpus01 – GraphNetworkTransformer should not hang (design006)
   expect(bestTemplate).toBeDefined()
 
   ctx.logger.info(
-    `Selected template: ${bestTemplate.name} with distance ${bestTemplate.distance}`,
+    `Selected template: ${bestTemplate!.name} with distance ${bestTemplate!.distance}`,
   )
 
   // Run the same adaptation step the page performs.
   const transformer = new GraphNetworkTransformer({
-    initialGraph: bestTemplate.graph,
-    targetGraph: inputGraph,
+    initialGraph: bestTemplate!.graph as BpcGraph,
+    targetGraph: inputGraph as BpcGraph,
     costConfiguration,
     context: ctx,
   })

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
-import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
@@ -110,7 +110,7 @@ export default function CorpusMatchPage() {
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
       name,
       graph: g,
-      distance: getHeuristicNetworkSimilarityDistance(
+      distance: getAssignmentCombinationsNetworkSimilarityDistance(
         graph,
         g,
         costConfiguration as CostConfiguration,
@@ -178,7 +178,7 @@ export default function CorpusMatchPage() {
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
       name,
       graph: g,
-      distance: getHeuristicNetworkSimilarityDistance(
+      distance: getAssignmentCombinationsNetworkSimilarityDistance(
         graph,
         g,
         costConfiguration as CostConfiguration,
@@ -277,8 +277,8 @@ export default function CorpusMatchPage() {
           style={{ width: "600px", height: "200px" }}
           value={input}
           onChange={(e) => {
-            setInput(e.target.value)
-            updateInputSvg(e.target.value)
+            setInput((e.target as HTMLTextAreaElement).value)
+            updateInputSvg((e.target as HTMLTextAreaElement).value)
           }}
         />
         {(inputSvgDataUrl || adaptedMatchSvgDataUrl) && (

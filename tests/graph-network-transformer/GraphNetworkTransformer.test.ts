@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import type { BpcGraph, CostConfiguration } from "lib"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
-import { getHeuristicNetworkSimilarityDistance } from "lib/heuristic-network-similarity/getHeuristicSimilarityDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 
 const costConfiguration: Partial<CostConfiguration> = {
   baseOperationCost: 1,
@@ -43,7 +43,7 @@ test("GraphNetworkTransformer - empty to single box with pin", () => {
   // The final graph's network structure should match the target graph
   // This is confirmed if the heuristic distance is 0
   if (transformer.stats.finalGraph) {
-    const finalDistance = getHeuristicNetworkSimilarityDistance(
+    const finalDistance = getAssignmentCombinationsNetworkSimilarityDistance(
       transformer.stats.finalGraph,
       targetGraph,
       transformer.costConfiguration, // Use the full cost config from the transformer
@@ -105,7 +105,7 @@ test("GraphNetworkTransformer - identical graphs", () => {
   expect(transformer.stats.gCost).toBe(0)
 
   if (transformer.stats.finalGraph) {
-    const finalDistance = getHeuristicNetworkSimilarityDistance(
+    const finalDistance = getAssignmentCombinationsNetworkSimilarityDistance(
       transformer.stats.finalGraph,
       graph,
       transformer.costConfiguration,
