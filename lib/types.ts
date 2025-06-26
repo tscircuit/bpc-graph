@@ -3,17 +3,6 @@ export interface Vec2 {
   y: number
 }
 
-export type ForceSourceStage =
-  | "box-repel"
-  | "pin-align"
-  | "center-pull"
-  | "networked-pin-pull"
-
-export interface ForceVec2 extends Vec2 {
-  sourceStage?: ForceSourceStage
-  sourcePinId?: PinId // The pin on the box that the force is applied to, if applicable
-}
-
 export type BpcGraph = FloatingBpcGraph | FixedBpcGraph | MixedBpcGraph
 
 export interface MixedBpcGraph {
@@ -62,3 +51,20 @@ export type Axis = "x" | "y"
 
 export type BoxId = string
 export type PinId = string
+
+/**
+ * A flat BPC graph is a non-hierarchical and looks a lot like a regular graph.
+ * The boxes are converted to nodes with a color "box", the pins are converted
+ * to nodes, and the network ids are converted to fully connected edges
+ */
+export interface FlatBpcGraph {
+  nodes: FlatBpcGraphNode[]
+  undirectedEdges: Array<[string, string]>
+}
+
+export interface FlatBpcGraphNode {
+  id: string // `${boxId}-${pinId}` for pins and just the `boxId` for boxes
+  boxId?: BoxId
+  pinId?: BoxId
+  color: string
+}
