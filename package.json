@@ -19,6 +19,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "bun-match-svg": "^0.0.11",
     "graphics-debug": "^0.0.46",
+    "ml-matrix": "^6.12.1",
     "react-cosmos": "^7.0.0",
     "react-cosmos-plugin-vite": "^7.0.0",
     "repomix": "^0.3.9",
