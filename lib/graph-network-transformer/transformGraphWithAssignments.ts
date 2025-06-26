@@ -1,4 +1,4 @@
-import type { Assignment } from "lib/heuristic-network-similarity/generateAssignments"
+import type { Assignment } from "lib/assignment-combinations-network-similarity/generateAssignments"
 import type { BpcGraph } from "lib/types"
 
 interface TransformGraphWithAssignmentsParams {

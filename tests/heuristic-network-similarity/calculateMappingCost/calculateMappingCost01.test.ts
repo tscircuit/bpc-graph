@@ -1,10 +1,10 @@
 import { test, expect } from "bun:test"
 import type { BpcGraph, PinId, Direction } from "lib/types"
 import type { CostConfiguration } from "lib/operations/configureOperationCostFn"
-import type { Assignment } from "lib/heuristic-network-similarity/generateAssignments"
-import { calculateMappingCost } from "lib/heuristic-network-similarity/calculateMappingCost"
-import type { HeuristicSimilarityCostContext } from "lib/heuristic-network-similarity/types"
-import { precomputePinDirections } from "lib/heuristic-network-similarity/precomputePinDirections"
+import type { Assignment } from "lib/assignment-combinations-network-similarity/generateAssignments"
+import { calculateMappingCost } from "lib/assignment-combinations-network-similarity/calculateMappingCost"
+import type { HeuristicSimilarityCostContext } from "lib/assignment-combinations-network-similarity/types"
+import { precomputePinDirections } from "lib/assignment-combinations-network-similarity/precomputePinDirections"
 
 const testCostConfiguration: CostConfiguration = {
   baseOperationCost: 1,
