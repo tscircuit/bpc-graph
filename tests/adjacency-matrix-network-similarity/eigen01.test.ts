@@ -5,7 +5,6 @@ import { getGraphicsForBpcGraph, type MixedBpcGraph } from "lib/index"
 import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { computeEigenDistance } from "lib/adjacency-matrix-network-similarity/computeEigenDistance"
-
 test("eigen01", () => {
   const bpcGraph1 = corpus.design004
   const bpcGraph2 = corpus.design005
