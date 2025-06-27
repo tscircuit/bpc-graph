@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import type { BpcGraph, CostConfiguration } from "lib"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
-import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getAssignmentCombinationsNetworkSimilarityDistance"
 
 const initialGraphSimple: BpcGraph = {
   boxes: [{ boxId: "B1", kind: "floating", center: { x: 0, y: 0 } }],

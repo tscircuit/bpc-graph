@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
-import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getAssignmentCombinationsNetworkSimilarityDistance"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"

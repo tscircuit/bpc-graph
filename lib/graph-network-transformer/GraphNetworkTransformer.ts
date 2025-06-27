@@ -4,11 +4,12 @@ import type { Operation, OperationCostFn } from "lib/operations/operation-types"
 import type { BpcGraph, BpcPin, FloatingBpcGraph } from "lib/types"
 import { getPossibleOperationsForGraph } from "./getPossibleOperationsForGraph"
 import { applyOperation } from "lib/operations/applyOperation/applyOperation"
-import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 import { getOperationCost } from "lib/operations/getOperationCost/getOperationCost"
 import { configureOperationCostFn } from "lib/operations/configureOperationCostFn"
 import { transformGraphWithAssignments } from "./transformGraphWithAssignments"
 import type { LibContext } from "lib/context"
+import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
+import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getAssignmentCombinationsNetworkSimilarityDistance"
 
 interface Candidate {
   graph: BpcGraph // Current state of the graph
@@ -72,6 +73,7 @@ export class GraphNetworkTransformer extends BaseSolver {
     this.context?.logger?.debug(
       `GraphNetworkTransformer: getting initial assignments`,
     )
+    console.log("doing initial assignments")
     const initialAssignments =
       getAssignmentCombinationsNetworkSimilarityDistance(
         initialGraphCopy,
@@ -79,6 +81,7 @@ export class GraphNetworkTransformer extends BaseSolver {
         this.costConfiguration,
         this.context,
       )
+    process.exit(0)
 
     // Transform initialGraph to use targetGraph's IDs where a mapping exists
     this.initialGraph = transformGraphWithAssignments({
@@ -86,6 +89,7 @@ export class GraphNetworkTransformer extends BaseSolver {
       boxAssignment: initialAssignments.boxAssignment,
       networkAssignment: initialAssignments.networkAssignment,
     })
+    // this.initialGraph = initialGraphCopy
 
     this.initialize()
   }
@@ -109,6 +113,10 @@ export class GraphNetworkTransformer extends BaseSolver {
       this.costConfiguration,
       this.context,
     ).distance
+    // const initialHCost = getBpcGraphWlDistance(
+    //   this.initialGraph,
+    //   this.targetGraph,
+    // )
     const initialCandidate: Candidate = {
       graph: this.initialGraph,
       operationChain: [],
@@ -151,12 +159,13 @@ export class GraphNetworkTransformer extends BaseSolver {
           g: candidate.graph,
         })
         const newGCost = candidate.gCost + costOfThisOp
-        const newHCost = getAssignmentCombinationsNetworkSimilarityDistance(
-          nextGraphState,
-          this.targetGraph,
-          this.costConfiguration,
-          this.context,
-        ).distance
+        // const newHCost = getAssignmentCombinationsNetworkSimilarityDistance(
+        //   nextGraphState,
+        //   this.targetGraph,
+        //   this.costConfiguration,
+        //   this.context,
+        // ).distance
+        const newHCost = getBpcGraphWlDistance(nextGraphState, this.targetGraph)
 
         neighbors.push({
           graph: nextGraphState,
