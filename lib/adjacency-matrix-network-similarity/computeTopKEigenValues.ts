@@ -10,8 +10,10 @@ export const computeTopKEigenValues = (
   const e = new EigenvalueDecomposition(mat)
 
   if (e.realEigenvalues.length < k) {
-    return e.realEigenvalues.concat(zeroes(k - e.realEigenvalues.length))
+    return e.realEigenvalues
+      .concat(zeroes(k - e.realEigenvalues.length))
+      .sort((a, b) => b - a)
   } else {
-    return e.realEigenvalues.slice(0, k)
+    return e.realEigenvalues.slice(0, k).sort((a, b) => b - a)
   }
 }
