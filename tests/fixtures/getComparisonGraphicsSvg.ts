@@ -53,13 +53,17 @@ export const mergeGraphics = (
 export const getComparisonGraphicsSvg = (
   graphics1: GraphicsObject,
   graphics2: GraphicsObject,
+  opts: {
+    title?: string
+    caption?: string
+  } = {},
 ) => {
   const bounds1 = getBounds(graphics1)
   const bounds2 = getBounds(graphics2)
 
   const padding =
     ((bounds1.maxX - bounds2.minX) / 2 + (bounds2.maxX - bounds1.minX) / 2) *
-    0.1
+    0.25
 
   // Combine these graphics into a single graphics object, but shift everything
   // in graphics2 to the right
@@ -73,5 +77,34 @@ export const getComparisonGraphicsSvg = (
 
   const mergedGraphics = mergeGraphics(graphics1, shiftedGraphics2)
 
-  return getSvgFromGraphicsObject(mergedGraphics)
+  const bounds = getBounds(mergedGraphics)
+
+  // Add a title and caption to the graphics
+  if (opts.title) {
+    mergedGraphics.texts ??= []
+    mergedGraphics.texts.push({
+      x: bounds.minX,
+      y: bounds.maxY + (bounds.maxY - bounds.minY) * 0.025,
+      text: opts.title,
+      fontSize: (bounds.maxY - bounds.minY) * 0.05,
+      anchorSide: "bottom_left",
+      color: "black",
+    })
+  }
+
+  if (opts.caption) {
+    mergedGraphics.texts ??= []
+    mergedGraphics.texts.push({
+      x: bounds.minX,
+      y: bounds.minY - (bounds.maxY - bounds.minY) * 0.025,
+      text: opts.caption,
+      fontSize: (bounds.maxY - bounds.minY) * 0.05,
+      anchorSide: "top_left",
+    })
+  }
+
+  return getSvgFromGraphicsObject(mergedGraphics, {
+    backgroundColor: "white",
+    includeTextLabels: false,
+  })
 }

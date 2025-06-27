@@ -1,5 +1,5 @@
 /**
- * Compute the distance
+ * 
  */
 export const computeEigenDistance = (
   adjacencyMatrix1: number[][],
