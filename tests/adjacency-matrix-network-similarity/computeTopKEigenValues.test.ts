@@ -3,8 +3,8 @@ import { computeTopKEigenValues } from "lib/adjacency-matrix-network-similarity/
 
 test("computeTopKEigenValues returns correct eigenvalues for 2x2 swap matrix", () => {
   const mat = [
-    [0, 1],
     [1, 0],
+    [0, 1],
   ]
   const eigs = computeTopKEigenValues(mat, 2)
   expect(eigs.length).toBe(2)
