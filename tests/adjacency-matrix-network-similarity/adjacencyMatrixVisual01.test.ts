@@ -10,6 +10,7 @@ import {
   getSvgFromGraphicsObject,
   stackGraphicsHorizontally,
   stackGraphicsVertically,
+  createGraphicsGrid,
   type GraphicsObject,
 } from "graphics-debug"
 
@@ -18,7 +19,7 @@ test("adjacencyMatrixVisual01", () => {
     keyof typeof corpus
   >
 
-  let giantGraphics: GraphicsObject = {}
+  const graphicsGridCells: GraphicsObject[][] = []
   for (let i = 0; i < designs.length; i++) {
     const rowGraphics: GraphicsObject[] = []
     for (let j = 0; j < designs.length; j++) {
@@ -63,14 +64,12 @@ test("adjacencyMatrixVisual01", () => {
         },
       ])
 
-      rowGraphics.push(cellGraphics)
+      rowGraphics.unshift(cellGraphics)
     }
-
-    giantGraphics = stackGraphicsVertically([
-      giantGraphics,
-      stackGraphicsHorizontally(rowGraphics.reverse()),
-    ])
+    graphicsGridCells.push(rowGraphics)
   }
+
+  const giantGraphics = createGraphicsGrid(graphicsGridCells)
 
   expect(
     getSvgFromGraphicsObject(giantGraphics, {

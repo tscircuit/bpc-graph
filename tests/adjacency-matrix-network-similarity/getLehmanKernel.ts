@@ -1,14 +1,14 @@
 /**
  * Runs the Weisfeiler-Lehman algorithm on the adjacency matrix and returns,
  * for each refinement step (including the initial colouring), an array with
- * the counts of every colour that appears, ordered lexicographically by the
- * colour label so results are deterministic.
+ * the counts of every colour that appears, as a record mapping color labels
+ * to their counts.
  */
 export const getLehmanKernel = (
   adjMatrix: number[][],
   K: number,
   opts: { nodeInitialColors?: string[] } = {},
-): number[][] => {
+): Array<Record<string, number>> => {
   const n = adjMatrix.length
   if (adjMatrix.some((row) => row.length !== n)) {
     throw new Error("adjMatrix must be square")
@@ -19,14 +19,13 @@ export const getLehmanKernel = (
     opts.nodeInitialColors ?? Array.from({ length: n }, () => "_")
   ).slice()
 
-  const result: number[][] = []
+  const result: Array<Record<string, number>> = []
 
   /** Push the current colour multiset into `result` */
   const pushCounts = (cols: string[]) => {
-    const counts = new Map<string, number>()
-    for (const c of cols) counts.set(c, (counts.get(c) ?? 0) + 1)
-    const orderedKeys = [...counts.keys()].sort()
-    result.push(orderedKeys.map((k) => counts.get(k)!))
+    const counts: Record<string, number> = {}
+    for (const c of cols) counts[c] = (counts[c] ?? 0) + 1
+    result.push(counts)
   }
 
   // Record iteration 0 (initial colours)
