@@ -45,9 +45,8 @@ test("adjacencyMatrixVisual01", () => {
         10,
       )
 
-      const wlVec1 = wlFeatureVec(adjacencyMatrix1, 1)
-      const wlVec2 = wlFeatureVec(adjacencyMatrix2, 1)
-      console.log(wlVec1, wlVec2)
+      const wlVec1 = wlFeatureVec(adjacencyMatrix1, 2)
+      const wlVec2 = wlFeatureVec(adjacencyMatrix2, 2)
 
       const wlDotProduct = getWlDotProduct(wlVec1, wlVec2)
 
@@ -64,14 +63,14 @@ test("adjacencyMatrixVisual01", () => {
         {
           texts: [
             {
-              text: `Eigen distance: ${eigenDistance}`,
+              text: `Eigen distance: ${eigenDistance.toFixed(2)}`,
               x: 0,
               y: 0,
               fontSize,
               anchorSide: "top_left",
             },
             {
-              text: `WL Dot Product: ${wlDotProduct}`,
+              text: `WL Dot Product: ${wlDotProduct.toFixed(2)}`,
               x: 0,
               y: -fontSize * 1.5,
               fontSize,
@@ -86,7 +85,9 @@ test("adjacencyMatrixVisual01", () => {
     graphicsGridCells.push(rowGraphics)
   }
 
-  const giantGraphics = createGraphicsGrid(graphicsGridCells)
+  const giantGraphics = createGraphicsGrid(graphicsGridCells, {
+    gapAsCellWidthFraction: 0.2,
+  })
 
   expect(
     getSvgFromGraphicsObject(giantGraphics, {
