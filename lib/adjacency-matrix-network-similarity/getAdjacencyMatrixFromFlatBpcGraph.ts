@@ -19,5 +19,9 @@ export const getAdjacencyMatrixFromFlatBpcGraph = (
       matrix[j]![i] = 1
     }
   }
+  // Ones across the diagonal
+  for (let i = 0; i < N; ++i) {
+    matrix[i]![i] = 1
+  }
   return { matrix, mapping: nodeIdToIndex }
 }
