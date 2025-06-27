@@ -13,6 +13,8 @@ import {
   createGraphicsGrid,
   type GraphicsObject,
 } from "graphics-debug"
+import { wlFeatureVec } from "lib/adjacency-matrix-network-similarity/wlFeatureVec"
+import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
 
 test("adjacencyMatrixVisual01", () => {
   const designs = Object.keys(corpus).sort().slice(0, 6) as Array<
@@ -20,6 +22,7 @@ test("adjacencyMatrixVisual01", () => {
   >
 
   const graphicsGridCells: GraphicsObject[][] = []
+  let fontSize: number | undefined
   for (let i = 0; i < designs.length; i++) {
     const rowGraphics: GraphicsObject[] = []
     for (let j = 0; j < designs.length; j++) {
@@ -42,6 +45,12 @@ test("adjacencyMatrixVisual01", () => {
         10,
       )
 
+      const wlVec1 = wlFeatureVec(adjacencyMatrix1, 1)
+      const wlVec2 = wlFeatureVec(adjacencyMatrix2, 1)
+      console.log(wlVec1, wlVec2)
+
+      const wlDotProduct = getWlDotProduct(wlVec1, wlVec2)
+
       const sideBySideGraphics = stackGraphicsHorizontally([
         graphics1,
         graphics2,
@@ -49,6 +58,7 @@ test("adjacencyMatrixVisual01", () => {
 
       const sbsBounds = getBounds(sideBySideGraphics)
 
+      fontSize ??= (sbsBounds.maxX - sbsBounds.minX) * 0.05
       const cellGraphics = stackGraphicsVertically([
         sideBySideGraphics,
         {
@@ -57,7 +67,14 @@ test("adjacencyMatrixVisual01", () => {
               text: `Eigen distance: ${eigenDistance}`,
               x: 0,
               y: 0,
-              fontSize: (sbsBounds.maxX - sbsBounds.minX) * 0.05,
+              fontSize,
+              anchorSide: "top_left",
+            },
+            {
+              text: `WL Dot Product: ${wlDotProduct}`,
+              x: 0,
+              y: -fontSize * 1.5,
+              fontSize,
               anchorSide: "top_left",
             },
           ],

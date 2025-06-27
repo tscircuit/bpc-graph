@@ -1,10 +1,9 @@
 /**
- * Runs the Weisfeiler-Lehman algorithm on the adjacency matrix and returns,
- * for each refinement step (including the initial colouring), an array with
- * the counts of every colour that appears, as a record mapping color labels
- * to their counts.
+ * Runs the Weisfeiler-Lehman algorithm on the adjacency matrix and returns
+ * an array of color count records after each refinement step (including initial).
+ * Each entry is a record mapping color labels to their counts at that step.
  */
-export const getLehmanKernel = (
+export const wlFeatureVec = (
   adjMatrix: number[][],
   K: number,
   opts: { nodeInitialColors?: string[] } = {},
@@ -19,17 +18,15 @@ export const getLehmanKernel = (
     opts.nodeInitialColors ?? Array.from({ length: n }, () => "_")
   ).slice()
 
-  const result: Array<Record<string, number>> = []
-
-  /** Push the current colour multiset into `result` */
-  const pushCounts = (cols: string[]) => {
+  // Helper to count colors in an array
+  const getCounts = (cols: string[]): Record<string, number> => {
     const counts: Record<string, number> = {}
     for (const c of cols) counts[c] = (counts[c] ?? 0) + 1
-    result.push(counts)
+    return counts
   }
 
-  // Record iteration 0 (initial colours)
-  pushCounts(colors)
+  const countsArr: Array<Record<string, number>> = []
+  countsArr.push(getCounts(colors))
 
   for (let step = 0; step < K; step++) {
     const next: string[] = Array(n)
@@ -45,8 +42,8 @@ export const getLehmanKernel = (
     }
 
     colors = next
-    pushCounts(colors)
+    countsArr.push(getCounts(colors))
   }
 
-  return result
+  return countsArr
 }
