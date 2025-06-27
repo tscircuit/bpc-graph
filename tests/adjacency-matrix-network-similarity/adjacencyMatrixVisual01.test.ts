@@ -25,6 +25,11 @@ test("adjacencyMatrixVisual01", () => {
   let fontSize: number | undefined
   for (let i = 0; i < designs.length; i++) {
     const rowGraphics: GraphicsObject[] = []
+    let bestEigenDistance = Infinity
+    let bestWlDotProduct = -Infinity
+    let bestEigenIndex = -1
+    let bestWlDotProductIndex = -1
+
     for (let j = 0; j < designs.length; j++) {
       const bpcGraph1 = corpus[designs[i]!]
       const bpcGraph2 = corpus[designs[j]!]
@@ -57,6 +62,16 @@ test("adjacencyMatrixVisual01", () => {
 
       const sbsBounds = getBounds(sideBySideGraphics)
 
+      if (eigenDistance < bestEigenDistance && i !== j) {
+        bestEigenDistance = eigenDistance
+        bestEigenIndex = j
+      }
+
+      if (wlDotProduct > bestWlDotProduct && i !== j) {
+        bestWlDotProduct = wlDotProduct
+        bestWlDotProductIndex = j
+      }
+
       fontSize ??= (sbsBounds.maxX - sbsBounds.minX) * 0.05
       const cellGraphics = stackGraphicsVertically([
         sideBySideGraphics,
@@ -82,6 +97,18 @@ test("adjacencyMatrixVisual01", () => {
 
       rowGraphics.unshift(cellGraphics)
     }
+
+    // Modify the text adding an "*" at the end of the text if it is the best
+    // in the row
+    if (bestEigenIndex !== -1) {
+      rowGraphics[rowGraphics.length - 1 - bestEigenIndex]!.texts![0]!.text +=
+        "*"
+    }
+    if (bestWlDotProductIndex !== -1) {
+      rowGraphics[rowGraphics.length - 1 - bestWlDotProductIndex]!
+        .texts![1]!.text += "*"
+    }
+
     graphicsGridCells.push(rowGraphics)
   }
 
