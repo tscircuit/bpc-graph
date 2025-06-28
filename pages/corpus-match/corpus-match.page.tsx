@@ -5,6 +5,7 @@ import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetw
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
+import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
 const costConfiguration: Partial<CostConfiguration> = {
   baseOperationCost: 1,
@@ -82,6 +83,7 @@ export default function CorpusMatchPage() {
         return transformer.stats.finalGraph as BpcGraph
       }
 
+      throw new Error("Solver stopped early")
       // Solver stopped early – use best candidate explored so far
       if (transformer.lastProcessedCandidate?.graph) {
         return transformer.lastProcessedCandidate.graph
@@ -110,11 +112,7 @@ export default function CorpusMatchPage() {
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
       name,
       graph: g,
-      distance: getAssignmentCombinationsNetworkSimilarityDistance(
-        graph,
-        g,
-        costConfiguration as CostConfiguration,
-      ).distance,
+      distance: getBpcGraphWlDistance(graph, g),
     }))
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
@@ -136,13 +134,37 @@ export default function CorpusMatchPage() {
       })
       setMatchedSvgDataUrl(`data:image/svg+xml;base64,${btoa(matchedSvg)}`)
 
-      const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
-      const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
-      const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
-        backgroundColor: "white",
-      })
-      const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
-      setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+      try {
+        const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
+        const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
+        const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
+          backgroundColor: "white",
+        })
+        const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
+        setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
+      } catch (error) {
+        console.error("Error generating adapted match:", error)
+        setAdaptedMatchSvgDataUrl(
+          `data:image/svg+xml;base64,${btoa(
+            getSvgFromGraphicsObject(
+              {
+                texts: [
+                  {
+                    text: "Error generating adapted match: " + error.toString(),
+                    x: 0,
+                    y: 0,
+                    color: "red",
+                    fontSize: 12,
+                  },
+                ],
+              },
+              {
+                backgroundColor: "white",
+              },
+            ),
+          )}`,
+        )
+      }
     } else {
       setBestMatch(null)
       setAdaptedMatchSvgDataUrl("")
@@ -178,11 +200,7 @@ export default function CorpusMatchPage() {
     const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
       name,
       graph: g,
-      distance: getAssignmentCombinationsNetworkSimilarityDistance(
-        graph,
-        g,
-        costConfiguration as CostConfiguration,
-      ).distance,
+      distance: getBpcGraphWlDistance(graph, g),
     }))
     scores.sort((a, b) => a.distance - b.distance)
     setResults(scores)
