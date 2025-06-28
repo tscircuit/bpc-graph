@@ -45,22 +45,41 @@ test("adjacencyMatrixVisual01", () => {
       )
 
       const assignedBoxIds1 = Object.keys(boxAssignment)
+      const boxIdToNum = new Map<string, number>()
       const boxIdToColor = new Map<string, string>()
       assignedBoxIds1.forEach((boxId1, k) => {
         const boxId2 = boxAssignment[boxId1]!
         const color = getColorByIndex(k, assignedBoxIds1.length, 0.2)
         boxIdToColor.set(boxId1, color)
         boxIdToColor.set(boxId2, color)
+        boxIdToNum.set(boxId1, k)
+        boxIdToNum.set(boxId2, k)
       })
 
+      graphics1.texts ??= []
+      graphics2.texts ??= []
       for (const rect of graphics1.rects) {
         if (rect.label && boxIdToColor.has(rect.label)) {
           rect.fill = boxIdToColor.get(rect.label)
+          graphics1.texts.push({
+            text: `${boxIdToNum.get(rect.label)}`,
+            x: rect.center.x,
+            y: rect.center.y,
+            fontSize: (rect.width + rect.height) * 0.2,
+            anchorSide: "center",
+          })
         }
       }
       for (const rect of graphics2.rects) {
         if (rect.label && boxIdToColor.has(rect.label)) {
           rect.fill = boxIdToColor.get(rect.label)
+          graphics2.texts.push({
+            text: `${boxIdToNum.get(rect.label)}`,
+            x: rect.center.x,
+            y: rect.center.y,
+            fontSize: (rect.width + rect.height) * 0.2,
+            anchorSide: "center",
+          })
         }
       }
 
@@ -148,10 +167,22 @@ test("adjacencyMatrixVisual01", () => {
     // Modify the text adding an "*" at the end of the text if it is the best
     // in the row
     if (bestEigenIndex !== -1) {
-      rowGraphics[bestEigenIndex]!.texts![0]!.text += "*"
+      const texts = rowGraphics[bestEigenIndex]?.texts
+      if (texts) {
+        const eigenText = texts.find((t) => t.text.includes("Eigen"))
+        if (eigenText) {
+          eigenText.text += "*"
+        }
+      }
     }
     if (bestWlDotProductIndex !== -1) {
-      rowGraphics[bestWlDotProductIndex]!.texts![1]!.text += "*"
+      const texts = rowGraphics[bestWlDotProductIndex]?.texts
+      if (texts) {
+        const wlText = texts.find((t) => t.text.includes("WL Dot Product"))
+        if (wlText) {
+          wlText.text += "*"
+        }
+      }
     }
 
     graphicsGridCells.push(rowGraphics)
@@ -166,7 +197,7 @@ test("adjacencyMatrixVisual01", () => {
       { ...giantGraphics, points: [] },
       {
         backgroundColor: "white",
-        includeTextLabels: ["rects"],
+        includeTextLabels: false, // ["rects"],
       },
     ),
   ).toMatchSvgSnapshot(import.meta.path)
