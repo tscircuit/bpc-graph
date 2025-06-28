@@ -3,8 +3,8 @@ import type { BpcGraph } from "lib/types"
 
 interface TransformGraphWithAssignmentsParams {
   graph: BpcGraph
-  boxAssignment: Assignment<string, string>
-  networkAssignment: Assignment<string, string>
+  boxAssignment: Record<string, string>
+  networkAssignment: Record<string, string>
 }
 
 export const transformGraphWithAssignments = ({
@@ -24,7 +24,7 @@ export const transformGraphWithAssignments = ({
 
   // Process boxes
   for (const box of graph.boxes) {
-    const newBoxId = boxAssignment.map.get(box.boxId)
+    const newBoxId = boxAssignment[box.boxId]!
     // Only include the box if it's successfully mapped to a new ID (non-null)
     if (newBoxId) {
       const newBox = { ...box, boxId: newBoxId }
@@ -39,7 +39,7 @@ export const transformGraphWithAssignments = ({
     const newParentBoxId = mappedOldToNewBoxIds.get(pin.boxId)
     if (newParentBoxId) {
       // Check if the pin's original network ID was mapped to a non-null new ID
-      const newNetworkId = networkAssignment.map.get(pin.networkId)
+      const newNetworkId = networkAssignment[pin.networkId]
       if (newNetworkId) {
         const newPin = {
           ...pin,
