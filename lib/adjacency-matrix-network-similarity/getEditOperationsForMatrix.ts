@@ -255,10 +255,53 @@ export const getEditOperationsForMatrix = (params: {
     }
   }
 
-  // Step 3: Reorder the rows/columns of the source adjacency matrix to match
-  // the target adjacency matrix based on assignments. After this reordering,
-  // it is now expected that the source and target adjacency matrices can be
-  // directly compared
+  // Step 3: Reorder the rows/columns of the source adjacency matrix so that
+  // its order matches the target adjacency matrix according to the current
+  // boxAssignment.  After this reordering the two matrices can be compared
+  // element-by-element.
+  /**
+   * e.g.
+   * source (after Steps 1 & 2):
+   * [ [ 1, 0, 1 ],   // A connected to B (index 2), C is at index 1
+   *   [ 0, 1, 0 ],   // C only self-loop
+   *   [ 1, 0, 1 ] ]  // B connected back to A
+   *
+   * target:
+   * [ [ 1, 1, 0 ],   // Desired order is A, B, C
+   *   [ 1, 1, 0 ],
+   *   [ 0, 0, 1 ] ]
+   *
+   * currentSourceMatrixMapping:
+   * {
+   *   "sourceBoxA": 0,
+   *   "sourceBoxC": 1,
+   *   "sourceBoxB": 2,
+   * }
+   *
+   * targetMatrixMapping:
+   * {
+   *   "targetBoxA": 0,
+   *   "targetBoxB": 1,
+   *   "targetBoxC": 2,
+   * }
+   *
+   * boxAssignment:
+   * {
+   *   "sourceBoxA": "targetBoxA",
+   *   "sourceBoxB": "targetBoxB",
+   *   "sourceBoxC": "targetBoxC",
+   * }
+   *
+   * To match the target ordering we need to swap indices 1 and 2
+   * ("sourceBoxC" ↔ "sourceBoxB").
+   *
+   * operations:
+   * [ { type: "swap_indices",
+   *     rowAndColumnIndex1: 1,
+   *     rowAndColumnIndex2: 2,
+   *     sourceBoxId1: "sourceBoxC",
+   *     sourceBoxId2: "sourceBoxB" } ]
+   */
 
   // Step 4: Disconnect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   // We explore the newSourceAdjMatrix and look for 1s/0s that don't match
