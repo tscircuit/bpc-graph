@@ -5,7 +5,16 @@ import type { BpcGraph } from "lib/types"
 
 /* ------------------------------------------------------------------ */
 type Histogram = Record<string, number>
-type Assignment<K extends string, V extends string> = Record<K, V>
+
+/**
+ * Example:
+ * {
+ *   "sourceBox1": "targetBoxA",
+ *   "sourceBox2": "targetBoxB",
+ *   "sourceBox3": "targetBoxC",
+ * }
+ */
+export type Assignment<K extends string, V extends string> = Record<K, V>
 
 /* ------------------------------------------------------------------ */
 /*  Histogram utilities                                               */
@@ -115,6 +124,7 @@ export const getApproximateAssignments = (
 ): {
   boxAssignment: Assignment<string, string>
   networkAssignment: Assignment<string, string>
+  nodeAssignment: Assignment<string, string>
 } => {
   const s1 = summarise(g1)
   const s2 = summarise(g2)
@@ -177,5 +187,25 @@ export const getApproximateAssignments = (
     greedyMatch(unmatchedNets1, unmatchedNets2, s1.netHist, s2.netHist),
   )
 
-  return { boxAssignment, networkAssignment: netAssignment }
+  // Compute node assignment. Node assignment is for the flatBpcGraph, and
+  // maps each source pin to each target pin.
+  const nodeAssignment: Assignment<string, string> = {}
+  for (const box of g1.boxes) {
+    nodeAssignment[box.boxId] = boxAssignment[box.boxId]!
+    for (const pin of g1.pins) {
+      if (pin.boxId !== box.boxId) continue
+
+      const targetNet = netAssignment[pin.networkId]!
+      for (const targetPin of g2.pins) {
+        if (targetPin.networkId !== targetNet) continue
+        if (targetPin.boxId !== boxAssignment[box.boxId]!) continue
+        if (nodeAssignment[`${pin.boxId}-${pin.pinId}`]) continue
+
+        nodeAssignment[`${pin.boxId}-${pin.pinId}`] =
+          `${targetPin.boxId}-${targetPin.pinId}`
+      }
+    }
+  }
+
+  return { boxAssignment, networkAssignment: netAssignment, nodeAssignment }
 }
