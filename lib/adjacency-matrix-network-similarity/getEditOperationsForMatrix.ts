@@ -412,8 +412,8 @@ export const getEditOperationsForMatrix = (params: {
     const n = currentSourceAdjMatrix.length // after Steps 1-3 this must equal targetAdjMatrix.length
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
-        const sourceVal = currentSourceAdjMatrix[i][j]
-        const targetVal = targetAdjMatrix[i][j]
+        const sourceVal = currentSourceAdjMatrix[i]![j]
+        const targetVal = targetAdjMatrix[i]![j]
 
         // Edge exists in source but not in target → must be disconnected
         if (sourceVal === 1 && targetVal === 0) {
@@ -429,8 +429,8 @@ export const getEditOperationsForMatrix = (params: {
           })
 
           // Mutate the working matrix so later steps see the change
-          currentSourceAdjMatrix[i][j] = 0
-          currentSourceAdjMatrix[j][i] = 0
+          currentSourceAdjMatrix[i]![j] = 0
+          currentSourceAdjMatrix[j]![i] = 0
         }
       }
     }
@@ -438,6 +438,41 @@ export const getEditOperationsForMatrix = (params: {
 
   // Step 5: Connect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   // We explore the newSourceAdjMatrix and look for 1s/0s that don't match
+
+  /* ---------- STEP 5 – CONNECT EDGES PRESENT IN TARGET BUT NOT SOURCE ---------- */
+  {
+    // reverse lookup  (matrix index → sourceBoxId)
+    const indexToSourceBoxId = new Map<number, string>()
+    for (const [srcBoxId, idx] of currentSourceMatrixMapping) {
+      indexToSourceBoxId.set(idx, srcBoxId)
+    }
+
+    const n = currentSourceAdjMatrix.length
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const sourceVal = currentSourceAdjMatrix[i]![j]
+        const targetVal = targetAdjMatrix[i]![j]
+
+        // Edge exists in target but not in source → must be connected
+        if (sourceVal === 0 && targetVal === 1) {
+          const sourceBoxId1 = indexToSourceBoxId.get(i)!
+          const sourceBoxId2 = indexToSourceBoxId.get(j)!
+
+          operations.push({
+            type: "connect_nodes",
+            rowAndColumnIndex1: i,
+            rowAndColumnIndex2: j,
+            sourceBoxId1,
+            sourceBoxId2,
+          })
+
+          // update working matrix so later logic (future extensions / callers) is consistent
+          currentSourceAdjMatrix[i]![j] = 1
+          currentSourceAdjMatrix[j]![i] = 1
+        }
+      }
+    }
+  }
 
   return {
     newSourceAdjMatrix: currentSourceAdjMatrix,
