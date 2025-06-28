@@ -2,6 +2,7 @@ import { getComparisonGraphicsSvg } from "tests/fixtures/getComparisonGraphicsSv
 import { test, expect } from "bun:test"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { getGraphicsForBpcGraph, type MixedBpcGraph } from "lib/index"
+import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { computeEigenDistance } from "lib/adjacency-matrix-network-similarity/computeEigenDistance"
@@ -15,6 +16,7 @@ import {
 } from "graphics-debug"
 import { wlFeatureVec } from "lib/adjacency-matrix-network-similarity/wlFeatureVec"
 import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
+import { getApproximateAssignments } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
 
 test("adjacencyMatrixVisual01", () => {
   const designs = Object.keys(corpus).sort().slice(0, 6) as Array<
@@ -37,6 +39,31 @@ test("adjacencyMatrixVisual01", () => {
       const graphics1 = getGraphicsForBpcGraph(bpcGraph1 as MixedBpcGraph)
       const graphics2 = getGraphicsForBpcGraph(bpcGraph2 as MixedBpcGraph)
 
+      const { boxAssignment } = getApproximateAssignments(
+        bpcGraph1 as MixedBpcGraph,
+        bpcGraph2 as MixedBpcGraph,
+      )
+
+      const assignedBoxIds1 = Object.keys(boxAssignment)
+      const boxIdToColor = new Map<string, string>()
+      assignedBoxIds1.forEach((boxId1, k) => {
+        const boxId2 = boxAssignment[boxId1]!
+        const color = getColorByIndex(k, assignedBoxIds1.length, 0.2)
+        boxIdToColor.set(boxId1, color)
+        boxIdToColor.set(boxId2, color)
+      })
+
+      for (const rect of graphics1.rects) {
+        if (rect.label && boxIdToColor.has(rect.label)) {
+          rect.fill = boxIdToColor.get(rect.label)
+        }
+      }
+      for (const rect of graphics2.rects) {
+        if (rect.label && boxIdToColor.has(rect.label)) {
+          rect.fill = boxIdToColor.get(rect.label)
+        }
+      }
+
       const adjacencyMatrix1 = getAdjacencyMatrixFromFlatBpcGraph(
         convertToFlatBpcGraph(bpcGraph1 as MixedBpcGraph),
       ).matrix
@@ -54,6 +81,26 @@ test("adjacencyMatrixVisual01", () => {
       const wlVec2 = wlFeatureVec(adjacencyMatrix2, 2)
 
       const wlDotProduct = getWlDotProduct(wlVec1, wlVec2)
+
+      const bounds2 = getBounds(graphics2)
+      graphics2.lines.push({
+        points: [
+          {
+            x: bounds2.minX - (bounds2.maxX - bounds2.minX) * 0.05,
+            y: bounds2.minY,
+          },
+          {
+            x: bounds2.minX - (bounds2.maxX - bounds2.minX) * 0.05,
+            y: bounds2.maxY,
+          },
+        ],
+        strokeColor: "rgba(0, 0, 0, 0.5)",
+        strokeWidth: (bounds2.maxY - bounds2.minY) * 0.03,
+        strokeDash: [
+          (bounds2.maxY - bounds2.minY) * 0.5,
+          (bounds2.maxY - bounds2.minY) * 0.5,
+        ],
+      })
 
       const sideBySideGraphics = stackGraphicsHorizontally([
         graphics1,
@@ -95,18 +142,16 @@ test("adjacencyMatrixVisual01", () => {
         },
       ])
 
-      rowGraphics.unshift(cellGraphics)
+      rowGraphics.push(cellGraphics)
     }
 
     // Modify the text adding an "*" at the end of the text if it is the best
     // in the row
     if (bestEigenIndex !== -1) {
-      rowGraphics[rowGraphics.length - 1 - bestEigenIndex]!.texts![0]!.text +=
-        "*"
+      rowGraphics[bestEigenIndex]!.texts![0]!.text += "*"
     }
     if (bestWlDotProductIndex !== -1) {
-      rowGraphics[rowGraphics.length - 1 - bestWlDotProductIndex]!
-        .texts![1]!.text += "*"
+      rowGraphics[bestWlDotProductIndex]!.texts![1]!.text += "*"
     }
 
     graphicsGridCells.push(rowGraphics)
@@ -117,9 +162,12 @@ test("adjacencyMatrixVisual01", () => {
   })
 
   expect(
-    getSvgFromGraphicsObject(giantGraphics, {
-      backgroundColor: "white",
-      includeTextLabels: false,
-    }),
+    getSvgFromGraphicsObject(
+      { ...giantGraphics, points: [] },
+      {
+        backgroundColor: "white",
+        includeTextLabels: ["rects"],
+      },
+    ),
   ).toMatchSvgSnapshot(import.meta.path)
 })
