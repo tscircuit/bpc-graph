@@ -218,40 +218,47 @@ export const getEditOperationsForMatrix = (params: {
    */
   /* ---------- STEP 2 – CREATE NODES FOR UNMAPPED TARGET BOXES ---------- */
   {
-    // Identify target-side boxes that no source box is currently mapped to
-    const mappedTargetBoxIds = new Set(Object.values(currentBoxAssignment))
-    const unmappedTargetBoxIds = [...targetMatrixMapping.keys()].filter(
-      (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
-    )
+    // We only need to create nodes when the target matrix is bigger
+    const sizeDiff = targetAdjMatrix.length - currentSourceAdjMatrix.length
+    if (sizeDiff <= 0) {
+      /* nothing to create */ 
+    } else {
+      // Identify target-side boxes that no source box is currently mapped to
+      const mappedTargetBoxIds = new Set(Object.values(currentBoxAssignment))
+      const unmappedTargetBoxIds = [...targetMatrixMapping.keys()].filter(
+        (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
+      )
 
-    let newBoxCounter = 0
-    for (const targetBoxId of unmappedTargetBoxIds) {
-      // Generate a unique synthetic source-box id
-      const newSourceBoxId = `newly-inserted-box-${++newBoxCounter}`
+      let newBoxCounter = 0
+      // Only create as many nodes as needed to match the size difference
+      for (const targetBoxId of unmappedTargetBoxIds.slice(0, sizeDiff)) {
+        // Generate a unique synthetic source-box id
+        const newSourceBoxId = `newly-inserted-box-${++newBoxCounter}`
 
-      // We will append the new node at the end of the current matrix
-      const insertIndex = currentSourceAdjMatrix.length
+        // We will append the new node at the end of the current matrix
+        const insertIndex = currentSourceAdjMatrix.length
 
-      // Extend every existing row with a 0 (new column)
-      for (const row of currentSourceAdjMatrix) {
-        row.push(0)
+        // Extend every existing row with a 0 (new column)
+        for (const row of currentSourceAdjMatrix) {
+          row.push(0)
+        }
+
+        // Create a new row filled with 0s and add a self-loop (1 on the diagonal)
+        const newRow = new Array(insertIndex + 1).fill(0)
+        newRow[insertIndex] = 1
+        currentSourceAdjMatrix.push(newRow)
+
+        // Update mappings and assignments
+        currentSourceMatrixMapping.set(newSourceBoxId, insertIndex)
+        currentBoxAssignment[newSourceBoxId] = targetBoxId
+
+        // Record the create_node operation
+        operations.push({
+          type: "create_node",
+          newRowAndColumnIndex: insertIndex,
+          sourceBoxId: newSourceBoxId,
+        })
       }
-
-      // Create a new row filled with 0s and add a self-loop (1 on the diagonal)
-      const newRow = new Array(insertIndex + 1).fill(0)
-      newRow[insertIndex] = 1
-      currentSourceAdjMatrix.push(newRow)
-
-      // Update mappings and assignments
-      currentSourceMatrixMapping.set(newSourceBoxId, insertIndex)
-      currentBoxAssignment[newSourceBoxId] = targetBoxId
-
-      // Record the create_node operation
-      operations.push({
-        type: "create_node",
-        newRowAndColumnIndex: insertIndex,
-        sourceBoxId: newSourceBoxId,
-      })
     }
   }
 
@@ -302,6 +309,69 @@ export const getEditOperationsForMatrix = (params: {
    *     sourceBoxId1: "sourceBoxC",
    *     sourceBoxId2: "sourceBoxB" } ]
    */
+
+  /* ---------- STEP 3 – REORDER SOURCE MATRIX TO MATCH TARGET ORDER ---------- */
+  {
+    /* --------------------------------------------------------- */
+    /*  Helpers                                                  */
+    /* --------------------------------------------------------- */
+    const swapRowsAndColumns = (m: number[][], i: number, j: number) => {
+      if (i === j) return
+      // swap rows
+      ;[m[i], m[j]] = [m[j], m[i]]
+      // swap columns
+      for (const row of m) {
+        ;[row[i], row[j]] = [row[j], row[i]]
+      }
+    }
+
+    /* --------------------------------------------------------- */
+    /*  Build reverse mapping  (targetBoxId → sourceBoxId)       */
+    /* --------------------------------------------------------- */
+    const targetToSource = new Map<string, string>()
+    for (const [srcBoxId, tgtBoxId] of Object.entries(currentBoxAssignment)) {
+      targetToSource.set(tgtBoxId, srcBoxId)
+    }
+
+    /* --------------------------------------------------------- */
+    /*  Iterate over the desired ordering (target indices)       */
+    /* --------------------------------------------------------- */
+    for (const [targetBoxId, desiredIdx] of targetMatrixMapping.entries()) {
+      const srcBoxId = targetToSource.get(targetBoxId)
+      if (!srcBoxId) continue // no source box mapped → will be handled later
+      const currentIdx = currentSourceMatrixMapping.get(srcBoxId)
+      if (currentIdx === undefined || currentIdx === desiredIdx) continue
+
+      /* Who is sitting at the spot we want to occupy? */
+      const srcBoxIdAtDesiredIdx = [...currentSourceMatrixMapping.entries()].find(
+        ([, idx]) => idx === desiredIdx,
+      )?.[0]
+
+      if (srcBoxIdAtDesiredIdx === undefined) continue // should not happen
+
+      /* -------- perform swap in matrix & bookkeeping -------- */
+      swapRowsAndColumns(currentSourceAdjMatrix, currentIdx, desiredIdx)
+
+      currentSourceMatrixMapping.set(srcBoxId, desiredIdx)
+      currentSourceMatrixMapping.set(srcBoxIdAtDesiredIdx, currentIdx)
+
+      // Always record the lower index first to keep a stable ordering
+      const index1 = Math.min(currentIdx, desiredIdx)
+      const index2 = Math.max(currentIdx, desiredIdx)
+      const sourceBoxId1 =
+        index1 === currentIdx ? srcBoxId : srcBoxIdAtDesiredIdx
+      const sourceBoxId2 =
+        index1 === currentIdx ? srcBoxIdAtDesiredIdx : srcBoxId
+
+      operations.push({
+        type: "swap_indices",
+        rowAndColumnIndex1: index1,
+        rowAndColumnIndex2: index2,
+        sourceBoxId1,
+        sourceBoxId2,
+      })
+    }
+  }
 
   // Step 4: Disconnect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   // We explore the newSourceAdjMatrix and look for 1s/0s that don't match
