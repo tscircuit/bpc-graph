@@ -44,7 +44,6 @@ export const netAdaptBpcGraph = (
 
   const editOpsResult = getEditOperationsForMatrix({
     nodeAssignment: approxAssignmentsResult.boxAssignment,
-    netAssignment: approxAssignmentsResult.networkAssignment,
     sourceAdjMatrix: sourceAdjMatrixResult.matrix,
     targetAdjMatrix: targetAdjMatrixResult.matrix,
     sourceMatrixMapping: sourceAdjMatrixResult.mapping,
