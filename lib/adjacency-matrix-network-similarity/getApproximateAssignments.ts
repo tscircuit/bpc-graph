@@ -198,7 +198,7 @@ export const getApproximateAssignments = (
       const targetNet = netAssignment[pin.networkId]!
       for (const targetPin of g2.pins) {
         if (targetPin.networkId !== targetNet) continue
-        if (targetPin.boxId !== pin.boxId) continue
+        if (targetPin.boxId !== boxAssignment[box.boxId]!) continue
         if (nodeAssignment[`${pin.boxId}-${pin.pinId}`]) continue
 
         nodeAssignment[`${pin.boxId}-${pin.pinId}`] =
