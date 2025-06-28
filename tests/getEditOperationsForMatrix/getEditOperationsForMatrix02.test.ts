@@ -34,7 +34,7 @@ test("getEditOperationsForMatrix02", () => {
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -43,7 +43,7 @@ test("getEditOperationsForMatrix02", () => {
     {
       type: "delete_node",
       rowAndColumnIndexToRemove: 2,
-      sourceBoxId: expect.any(String),
+      nodeId: expect.any(String),
     },
   ])
 })

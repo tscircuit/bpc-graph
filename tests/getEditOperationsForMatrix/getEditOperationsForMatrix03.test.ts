@@ -37,7 +37,7 @@ test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -47,8 +47,8 @@ test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
       type: "swap_indices",
       rowAndColumnIndex1: 1,
       rowAndColumnIndex2: 2,
-      sourceBoxId1: "sourceBoxC",
-      sourceBoxId2: "sourceBoxB",
+      nodeId1: "sourceBoxC",
+      nodeId2: "sourceBoxB",
     },
   ])
 })

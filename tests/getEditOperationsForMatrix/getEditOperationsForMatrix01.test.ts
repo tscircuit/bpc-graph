@@ -33,7 +33,7 @@ test("getEditOperationsForMatrix01", () => {
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -42,7 +42,7 @@ test("getEditOperationsForMatrix01", () => {
     {
       type: "create_node",
       newRowAndColumnIndex: 2,
-      sourceBoxId: expect.any(String),
+      nodeId: expect.any(String),
     },
   ])
 })

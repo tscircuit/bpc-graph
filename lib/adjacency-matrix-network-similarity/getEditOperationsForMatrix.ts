@@ -6,37 +6,37 @@ export type EditOperation =
   | {
       type: "delete_node"
       rowAndColumnIndexToRemove: number
-      sourceBoxId: string
+      nodeId: string
     }
   // Added in step 2
   | {
       type: "create_node"
       newRowAndColumnIndex: number
-      sourceBoxId: string
+      nodeId: string
     }
   // Added in step 3
   | {
       type: "swap_indices"
       rowAndColumnIndex1: number
       rowAndColumnIndex2: number
-      sourceBoxId1: string
-      sourceBoxId2: string
+      nodeId1: string
+      nodeId2: string
     }
   // Added in step 4
   | {
       type: "disconnect_nodes"
       rowAndColumnIndex1: number
       rowAndColumnIndex2: number
-      sourceBoxId1: string
-      sourceBoxId2: string
+      nodeId1: string
+      nodeId2: string
     }
   // Added in step 5
   | {
       type: "connect_nodes"
       rowAndColumnIndex1: number
       rowAndColumnIndex2: number
-      sourceBoxId1: string
-      sourceBoxId2: string
+      nodeId1: string
+      nodeId2: string
     }
 
 export const getEditOperationsForMatrix = (params: {
@@ -53,21 +53,17 @@ export const getEditOperationsForMatrix = (params: {
   targetMatrixMapping: Map<string, number>
 
   // { [SourceBoxId]: TargetBoxId }
-  boxAssignment: Assignment<string, string>
-
-  // { [SourceNetId]: TargetNetId }
-  netAssignment: Assignment<string, string>
+  nodeAssignment: Assignment<string, string>
 }): {
   operations: EditOperation[]
   newSourceAdjMatrix: number[][]
   newSourceMatrixMapping: Map<string, number>
-  newBoxAssignment: Assignment<string, string>
+  newNodeAssignment: Assignment<string, string>
 } => {
   const {
     sourceAdjMatrix,
     targetAdjMatrix,
-    boxAssignment,
-    netAssignment,
+    nodeAssignment,
     sourceMatrixMapping,
     targetMatrixMapping,
   } = params
@@ -75,7 +71,7 @@ export const getEditOperationsForMatrix = (params: {
   const operations: EditOperation[] = []
 
   let currentSourceAdjMatrix = structuredClone(sourceAdjMatrix)
-  let currentBoxAssignment = structuredClone(boxAssignment)
+  let currentNodeAssignment = structuredClone(nodeAssignment)
   let currentSourceMatrixMapping = structuredClone(sourceMatrixMapping)
 
   // Step 1: If the source matrix is larger than the target matrix,
@@ -105,7 +101,7 @@ export const getEditOperationsForMatrix = (params: {
    *   "targetBox2": 1,
    * }
    *
-   * boxAssignment:
+   * nodeAssignment:
    * {
    *   "sourceBox1": "targetBox1",
    *   "sourceBox2": "targetBox2",
@@ -118,7 +114,7 @@ export const getEditOperationsForMatrix = (params: {
   {
     // Source boxes that have NO mapping to any target box
     const unmappedSourceBoxIds = [...currentSourceMatrixMapping.keys()].filter(
-      (boxId) => !(boxId in currentBoxAssignment),
+      (boxId) => !(boxId in currentNodeAssignment),
     )
 
     // Nothing to do
@@ -138,7 +134,7 @@ export const getEditOperationsForMatrix = (params: {
         operations.push({
           type: "delete_node",
           rowAndColumnIndexToRemove: index,
-          sourceBoxId: boxId,
+          nodeId: boxId,
         })
 
         // Remove the row
@@ -187,7 +183,7 @@ export const getEditOperationsForMatrix = (params: {
    *   "targetBox3": 2,
    * }
    *
-   * boxAssignment:
+   * nodeAssignment:
    * {
    *   "sourceBox1": "targetBox1",
    *   "sourceBox2": "targetBox2",
@@ -225,7 +221,7 @@ export const getEditOperationsForMatrix = (params: {
       /* nothing to create */
     } else {
       // Identify target-side boxes that no source box is currently mapped to
-      const mappedTargetBoxIds = new Set(Object.values(currentBoxAssignment))
+      const mappedTargetBoxIds = new Set(Object.values(currentNodeAssignment))
       const unmappedTargetBoxIds = [...targetMatrixMapping.keys()].filter(
         (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
       )
@@ -251,13 +247,13 @@ export const getEditOperationsForMatrix = (params: {
 
         // Update mappings and assignments
         currentSourceMatrixMapping.set(newSourceBoxId, insertIndex)
-        currentBoxAssignment[newSourceBoxId] = targetBoxId
+        currentNodeAssignment[newSourceBoxId] = targetBoxId
 
         // Record the create_node operation
         operations.push({
           type: "create_node",
           newRowAndColumnIndex: insertIndex,
-          sourceBoxId: newSourceBoxId,
+          nodeId: newSourceBoxId,
         })
       }
     }
@@ -265,7 +261,7 @@ export const getEditOperationsForMatrix = (params: {
 
   // Step 3: Reorder the rows/columns of the source adjacency matrix so that
   // its order matches the target adjacency matrix according to the current
-  // boxAssignment.  After this reordering the two matrices can be compared
+  // nodeAssignment.  After this reordering the two matrices can be compared
   // element-by-element.
   /**
    * e.g.
@@ -293,7 +289,7 @@ export const getEditOperationsForMatrix = (params: {
    *   "targetBoxC": 2,
    * }
    *
-   * boxAssignment:
+   * nodeAssignment:
    * {
    *   "sourceBoxA": "targetBoxA",
    *   "sourceBoxB": "targetBoxB",
@@ -317,7 +313,7 @@ export const getEditOperationsForMatrix = (params: {
     /*  Build reverse mapping  (targetBoxId → sourceBoxId)       */
     /* --------------------------------------------------------- */
     const targetToSource = new Map<string, string>()
-    for (const [srcBoxId, tgtBoxId] of Object.entries(currentBoxAssignment)) {
+    for (const [srcBoxId, tgtBoxId] of Object.entries(currentNodeAssignment)) {
       targetToSource.set(tgtBoxId, srcBoxId)
     }
 
@@ -355,8 +351,8 @@ export const getEditOperationsForMatrix = (params: {
         type: "swap_indices",
         rowAndColumnIndex1: index1,
         rowAndColumnIndex2: index2,
-        sourceBoxId1,
-        sourceBoxId2,
+        nodeId1: sourceBoxId1,
+        nodeId2: sourceBoxId2,
       })
     }
   }
@@ -384,7 +380,7 @@ export const getEditOperationsForMatrix = (params: {
    *   "targetBoxB": 1,
    * }
    *
-   * boxAssignment:
+   * nodeAssignment:
    * {
    *   "sourceBoxA": "targetBoxA",
    *   "sourceBoxB": "targetBoxB",
@@ -424,8 +420,8 @@ export const getEditOperationsForMatrix = (params: {
             type: "disconnect_nodes",
             rowAndColumnIndex1: i,
             rowAndColumnIndex2: j,
-            sourceBoxId1,
-            sourceBoxId2,
+            nodeId1: sourceBoxId1,
+            nodeId2: sourceBoxId2,
           })
 
           // Mutate the working matrix so later steps see the change
@@ -462,8 +458,8 @@ export const getEditOperationsForMatrix = (params: {
             type: "connect_nodes",
             rowAndColumnIndex1: i,
             rowAndColumnIndex2: j,
-            sourceBoxId1,
-            sourceBoxId2,
+            nodeId1: sourceBoxId1,
+            nodeId2: sourceBoxId2,
           })
 
           // update working matrix so later logic (future extensions / callers) is consistent
@@ -477,7 +473,7 @@ export const getEditOperationsForMatrix = (params: {
   return {
     newSourceAdjMatrix: currentSourceAdjMatrix,
     newSourceMatrixMapping: currentSourceMatrixMapping,
-    newBoxAssignment: currentBoxAssignment,
+    newNodeAssignment: currentNodeAssignment,
     operations,
   }
 }

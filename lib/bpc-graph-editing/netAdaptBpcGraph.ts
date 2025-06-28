@@ -1,4 +1,10 @@
-import type { Assignment } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
+import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
+import {
+  getApproximateAssignments,
+  type Assignment,
+} from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
+import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
+import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import type { BpcGraph, FixedBpcGraph, MixedBpcGraph } from "lib/types"
 
 /**
@@ -23,5 +29,61 @@ export const netAdaptBpcGraph = (
   netAssignment: Assignment<string, string>
   boxAssignment: Assignment<string, string>
 } => {
-  // TODO
+  const approxAssignmentsResult = getApproximateAssignments(
+    sourceBpcGraph,
+    targetBpcGraph,
+  )
+
+  const sourceFlatBpcGraph = convertToFlatBpcGraph(sourceBpcGraph)
+  const sourceAdjMatrixResult =
+    getAdjacencyMatrixFromFlatBpcGraph(sourceFlatBpcGraph)
+
+  const targetFlatBpcGraph = convertToFlatBpcGraph(targetBpcGraph)
+  const targetAdjMatrixResult =
+    getAdjacencyMatrixFromFlatBpcGraph(targetFlatBpcGraph)
+
+  const editOpsResult = getEditOperationsForMatrix({
+    nodeAssignment: approxAssignmentsResult.boxAssignment,
+    netAssignment: approxAssignmentsResult.networkAssignment,
+    sourceAdjMatrix: sourceAdjMatrixResult.matrix,
+    targetAdjMatrix: targetAdjMatrixResult.matrix,
+    sourceMatrixMapping: sourceAdjMatrixResult.mapping,
+    targetMatrixMapping: targetAdjMatrixResult.mapping,
+  })
+
+  let adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
+  for (const op of editOpsResult.operations) {
+    switch (op.type) {
+      case "create_node": {
+        adaptedBpcGraph.boxes.push({
+          boxId: op.nodeId,
+          kind: "floating",
+        })
+        break
+      }
+      case "delete_node": {
+        adaptedBpcGraph.boxes = adaptedBpcGraph.boxes.filter(
+          (box) => box.boxId !== op.nodeId,
+        )
+        adaptedBpcGraph.pins = adaptedBpcGraph.pins.filter(
+          (pin) => pin.boxId !== op.nodeId,
+        )
+        break
+      }
+      case "connect_nodes": {
+        break
+      }
+      case "disconnect_nodes": {
+        break
+      }
+      case "swap_indices": {
+        // noop for graph mutation
+        break
+      }
+    }
+  }
+
+  return {
+    adaptedBpcGraph: adaptedBpcGraph,
+  }
 }

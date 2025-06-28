@@ -32,7 +32,7 @@ test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -41,8 +41,8 @@ test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
       type: "connect_nodes",
       rowAndColumnIndex1: 0,
       rowAndColumnIndex2: 1,
-      sourceBoxId1: "sourceBoxA",
-      sourceBoxId2: "sourceBoxB",
+      nodeId1: "sourceBoxA",
+      nodeId2: "sourceBoxB",
     },
   ])
 })

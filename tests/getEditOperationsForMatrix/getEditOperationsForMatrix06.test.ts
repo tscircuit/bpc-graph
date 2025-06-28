@@ -43,7 +43,7 @@ test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap 
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -53,37 +53,37 @@ test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap 
     {
       type: "delete_node",
       rowAndColumnIndexToRemove: 1,
-      sourceBoxId: "sourceBox2",
+      nodeId: "sourceBox2",
     },
     /* Step 2 – create a new node for unmapped targetBox3 (index 2) */
     {
       type: "create_node",
       newRowAndColumnIndex: 2,
-      sourceBoxId: expect.any(String), // synthetic id
+      nodeId: expect.any(String), // synthetic id
     },
     /* Step 3 – reorder: swap sourceBox1 & sourceBox3 (indices 0↔1) */
     {
       type: "swap_indices",
       rowAndColumnIndex1: 0,
       rowAndColumnIndex2: 1,
-      sourceBoxId1: "sourceBox1",
-      sourceBoxId2: "sourceBox3",
+      nodeId1: "sourceBox1",
+      nodeId2: "sourceBox3",
     },
     /* Step 4 – disconnect edge that exists only in source (0,1) */
     {
       type: "disconnect_nodes",
       rowAndColumnIndex1: 0,
       rowAndColumnIndex2: 1,
-      sourceBoxId1: "sourceBox3", // after swap index 0 == sourceBox3
-      sourceBoxId2: "sourceBox1", // after swap index 1 == sourceBox1
+      nodeId1: "sourceBox3", // after swap index 0 == sourceBox3
+      nodeId2: "sourceBox1", // after swap index 1 == sourceBox1
     },
     /* Step 5 – connect edge that exists only in target (0,2) */
     {
       type: "connect_nodes",
       rowAndColumnIndex1: 0,
       rowAndColumnIndex2: 2,
-      sourceBoxId1: "sourceBox3",
-      sourceBoxId2: expect.any(String), // the synthetic box
+      nodeId1: "sourceBox3",
+      nodeId2: expect.any(String), // the synthetic box
     },
   ])
 })

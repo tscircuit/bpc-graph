@@ -32,7 +32,7 @@ test("getEditOperationsForMatrix04 – disconnect nodes (Step 4)", () => {
     targetAdjMatrix,
     sourceMatrixMapping,
     targetMatrixMapping,
-    boxAssignment,
+    nodeAssignment: boxAssignment,
     netAssignment,
   })
 
@@ -42,8 +42,8 @@ test("getEditOperationsForMatrix04 – disconnect nodes (Step 4)", () => {
       type: "disconnect_nodes",
       rowAndColumnIndex1: 0,
       rowAndColumnIndex2: 1,
-      sourceBoxId1: "sourceBoxA",
-      sourceBoxId2: "sourceBoxB",
+      nodeId1: "sourceBoxA",
+      nodeId2: "sourceBoxB",
     },
   ])
 })
