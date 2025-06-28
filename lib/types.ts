@@ -67,6 +67,8 @@ export interface FlatBpcGraphNode {
   boxId?: BoxId
   pinId?: BoxId
   color: string
+  x?: number
+  y?: number
 }
 
 export * from "./force-types"

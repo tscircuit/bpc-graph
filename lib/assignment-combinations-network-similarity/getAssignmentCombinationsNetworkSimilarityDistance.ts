@@ -37,6 +37,9 @@ export const getAssignmentCombinationsNetworkSimilarityDistance = (
   boxAssignment: Assignment<string, string>
   networkAssignment: Assignment<string, string>
 } => {
+  throw new Error(
+    "getAssignmentCombinationsNetworkSimilarityDistance is deprecated",
+  )
   const boxIds1 = g1.boxes.map((b) => b.boxId)
   const boxIds2 = g2.boxes.map((b) => b.boxId)
   const networkIds1 = getGraphNetworkIds(g1)

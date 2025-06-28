@@ -1,15 +1,43 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
-import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
+import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
 const costConfiguration: Partial<CostConfiguration> = {
   baseOperationCost: 1,
   colorChangeCostMap: {},
   costPerUnitDistanceMovingPin: 0.1,
+}
+
+type MatchScore = { name: string; graph: BpcGraph; distance: number }
+
+function computeMatchScores(
+  inputGraph: BpcGraph,
+  ignoreTop: boolean,
+): {
+  scores: MatchScore[]
+  bestTemplate: { name: string; graph: BpcGraph } | null
+} {
+  const corpusGraphs = corpus as Record<string, BpcGraph>
+
+  const scores: MatchScore[] = Object.entries(corpusGraphs).map(
+    ([name, g]) => ({
+      name,
+      graph: g,
+      distance: getBpcGraphWlDistance(inputGraph, g),
+    }),
+  )
+
+  scores.sort((a, b) => a.distance - b.distance)
+
+  let bestTemplate: { name: string; graph: BpcGraph } | null = null
+  if (!ignoreTop && scores.length > 0) bestTemplate = scores[0]
+  else if (ignoreTop && scores.length > 1) bestTemplate = scores[1]
+
+  return { scores, bestTemplate }
 }
 
 export default function CorpusMatchPage() {
@@ -56,6 +84,56 @@ export default function CorpusMatchPage() {
     }
   }
 
+  /* ------------------------- shared helper utilities ----------------------- */
+  const graphToSvgDataUrl = (graph: BpcGraph): string => {
+    const graphics = getGraphicsForBpcGraph(graph)
+    const svg = getSvgFromGraphicsObject(graphics, { backgroundColor: "white" })
+    return `data:image/svg+xml;base64,${btoa(svg)}`
+  }
+
+  const performMatch = (graph: BpcGraph, ignoreTop: boolean) => {
+    console.log("performing match")
+    const { scores, bestTemplate } = computeMatchScores(graph, ignoreTop)
+    setResults(scores)
+
+    if (bestTemplate) {
+      setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
+      setMatchedSvgDataUrl(graphToSvgDataUrl(bestTemplate.graph))
+
+      try {
+        const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
+        console.log("adaptedGraph", adaptedGraph)
+        setAdaptedMatchSvgDataUrl(graphToSvgDataUrl(adaptedGraph))
+      } catch (error) {
+        console.error("Error generating adapted match:", error)
+        setAdaptedMatchSvgDataUrl(
+          `data:image/svg+xml;base64,${btoa(
+            getSvgFromGraphicsObject(
+              {
+                texts: [
+                  {
+                    x: 0,
+                    y: 0,
+                    fontSize: 12,
+                    text: "Error generating adapted match: " + error.toString(),
+                    color: "red",
+                  },
+                ],
+              },
+              {
+                backgroundColor: "white",
+              },
+            ),
+          )}`,
+        )
+      }
+    } else {
+      setBestMatch(null)
+      setMatchedSvgDataUrl("")
+      setAdaptedMatchSvgDataUrl("")
+    }
+  }
+
   /*  Adapt the matched template so that it becomes functionally identical to
       the input graph.  A GraphNetworkTransformer is used to compute and apply
       the minimal-cost operation chain.  We accept any solution whose discrete
@@ -65,34 +143,30 @@ export default function CorpusMatchPage() {
     inputGraph: BpcGraph,
     templateGraph: BpcGraph,
   ): BpcGraph => {
-    try {
-      const transformer = new GraphNetworkTransformer({
-        initialGraph: templateGraph,
-        targetGraph: inputGraph,
-        costConfiguration,
-      })
+    const transformer = new GraphNetworkTransformer({
+      initialGraph: templateGraph,
+      targetGraph: inputGraph,
+      costConfiguration,
+    })
 
-      /* Give the solver more breathing room than the default. */
-      transformer.MAX_ITERATIONS = 5_000
+    /* Give the solver more breathing room than the default. */
+    transformer.MAX_ITERATIONS = 5_000
 
-      transformer.solve()
+    transformer.solve()
 
-      if (transformer.solved && transformer.stats.finalGraph) {
-        // Perfect adaptation achieved
-        return transformer.stats.finalGraph as BpcGraph
-      }
-
-      // Solver stopped early – use best candidate explored so far
-      if (transformer.lastProcessedCandidate?.graph) {
-        return transformer.lastProcessedCandidate.graph
-      }
-
-      // Fallback – return the template after initial ID remapping
-      return transformer.initialGraph
-    } catch (error) {
-      console.error("Error generating adapted match:", error)
-      return templateGraph
+    if (transformer.solved && transformer.stats.finalGraph) {
+      // Perfect adaptation achieved
+      return transformer.stats.finalGraph as BpcGraph
     }
+
+    throw new Error("Solver stopped early")
+    // Solver stopped early – use best candidate explored so far
+    // if (transformer.lastProcessedCandidate?.graph) {
+    //   return transformer.lastProcessedCandidate.graph
+    // }
+
+    // // Fallback – return the template after initial ID remapping
+    // return transformer.initialGraph
   }
 
   const handleMatch = () => {
@@ -106,48 +180,7 @@ export default function CorpusMatchPage() {
 
     updateInputSvg(input)
 
-    const corpusGraphs = corpus as Record<string, BpcGraph>
-    const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
-      name,
-      graph: g,
-      distance: getAssignmentCombinationsNetworkSimilarityDistance(
-        graph,
-        g,
-        costConfiguration as CostConfiguration,
-      ).distance,
-    }))
-    scores.sort((a, b) => a.distance - b.distance)
-    setResults(scores)
-
-    // Use the toggle to determine which match to use
-    let bestTemplate: { name: string; graph: BpcGraph } | undefined
-    if (!ignoreTopMatch && scores.length > 0) {
-      bestTemplate = scores[0]
-    } else if (ignoreTopMatch && scores.length > 1) {
-      bestTemplate = scores[1]
-    }
-
-    if (bestTemplate) {
-      setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
-
-      const matchedGraphics = getGraphicsForBpcGraph(bestTemplate.graph)
-      const matchedSvg = getSvgFromGraphicsObject(matchedGraphics, {
-        backgroundColor: "white",
-      })
-      setMatchedSvgDataUrl(`data:image/svg+xml;base64,${btoa(matchedSvg)}`)
-
-      const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
-      const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
-      const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
-        backgroundColor: "white",
-      })
-      const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
-      setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
-    } else {
-      setBestMatch(null)
-      setAdaptedMatchSvgDataUrl("")
-      setMatchedSvgDataUrl("")
-    }
+    performMatch(graph, ignoreTopMatch)
   }
 
   const downloadJson = (graph: BpcGraph, name: string) => {
@@ -174,48 +207,7 @@ export default function CorpusMatchPage() {
     setActiveTab("input")
 
     // Re-match with the new input
-    const corpusGraphs = corpus as Record<string, BpcGraph>
-    const scores = Object.entries(corpusGraphs).map(([name, g]) => ({
-      name,
-      graph: g,
-      distance: getAssignmentCombinationsNetworkSimilarityDistance(
-        graph,
-        g,
-        costConfiguration as CostConfiguration,
-      ).distance,
-    }))
-    scores.sort((a, b) => a.distance - b.distance)
-    setResults(scores)
-
-    // Use the toggle to determine which match to use
-    let bestTemplate: { name: string; graph: BpcGraph } | undefined
-
-    // We always ignore the top match
-    if (scores.length > 1) {
-      bestTemplate = scores[1]
-    }
-
-    if (bestTemplate) {
-      setBestMatch({ name: bestTemplate.name, graph: bestTemplate.graph })
-
-      const matchedGraphics = getGraphicsForBpcGraph(bestTemplate.graph)
-      const matchedSvg = getSvgFromGraphicsObject(matchedGraphics, {
-        backgroundColor: "white",
-      })
-      setMatchedSvgDataUrl(`data:image/svg+xml;base64,${btoa(matchedSvg)}`)
-
-      const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
-      const adaptedGraphics = getGraphicsForBpcGraph(adaptedGraph)
-      const adaptedSvg = getSvgFromGraphicsObject(adaptedGraphics, {
-        backgroundColor: "white",
-      })
-      const adaptedSvgDataUrl = `data:image/svg+xml;base64,${btoa(adaptedSvg)}`
-      setAdaptedMatchSvgDataUrl(adaptedSvgDataUrl)
-    } else {
-      setBestMatch(null)
-      setAdaptedMatchSvgDataUrl("")
-      setMatchedSvgDataUrl("")
-    }
+    performMatch(graph, true)
   }
 
   const handleMouseEnter = (graph: BpcGraph, event: React.MouseEvent) => {

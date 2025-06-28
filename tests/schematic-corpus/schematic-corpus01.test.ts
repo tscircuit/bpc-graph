@@ -1,9 +1,9 @@
 import { test, expect } from "bun:test"
-import { getAssignmentCombinationsNetworkSimilarityDistance } from "lib/assignment-combinations-network-similarity/getHeuristicSimilarityDistance"
 import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import type { BpcGraph, CostConfiguration } from "lib"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { getDefaultLibContext } from "lib/context"
+import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
 const costConfiguration: Partial<CostConfiguration> = {
   baseOperationCost: 1,
@@ -21,12 +21,7 @@ test("schematic-corpus01 – GraphNetworkTransformer should not hang (design006)
   const scores = Object.entries(corpus).map(([name, g]) => ({
     name,
     graph: g,
-    distance: getAssignmentCombinationsNetworkSimilarityDistance(
-      inputGraph as BpcGraph,
-      g as BpcGraph,
-      costConfiguration as CostConfiguration,
-      ctx,
-    ).distance,
+    distance: getBpcGraphWlDistance(inputGraph as BpcGraph, g as BpcGraph),
   }))
 
   // Sort ascending by distance (lower is better).
