@@ -13,6 +13,8 @@ export type EditOperation =
       type: "create_node"
       newRowAndColumnIndex: number
       nodeId: string
+      targetNodeId: string
+      isBox: boolean
     }
   // Added in step 3
   | {
@@ -46,13 +48,13 @@ export const getEditOperationsForMatrix = (params: {
   // Square Adjacency Matrix for Target Graph
   targetAdjMatrix: number[][]
 
-  // { [SourceBoxId]: SourceColumnIndex/SourceRowIndex in AdjMatrix }
+  // { [SourceNodeId]: SourceColumnIndex/SourceRowIndex in AdjMatrix }
   sourceMatrixMapping: Map<string, number>
 
-  // { [TargetBoxId]: TargetColumnIndex/TargetRowIndex in AdjMatrix }
+  // { [TargetNodeId]: TargetColumnIndex/TargetRowIndex in AdjMatrix }
   targetMatrixMapping: Map<string, number>
 
-  // { [SourceBoxId]: TargetBoxId }
+  // { [SourceNodeId]: TargetNodeId }
   nodeAssignment: Assignment<string, string>
 }): {
   operations: EditOperation[]
@@ -191,7 +193,7 @@ export const getEditOperationsForMatrix = (params: {
    *
    * operations:
    * [
-   *   { type: "create_node", newRowAndColumnIndex: 2, sourceBoxId: "newly-inserted-box-1" },
+   *   { type: "create_node", newRowAndColumnIndex: 2, sourceBoxId: "newly-inserted-node-1" },
    * ]
    *
    * newSourceAdjMatrix:
@@ -203,14 +205,14 @@ export const getEditOperationsForMatrix = (params: {
    * {
    *   "sourceBox1": 0,
    *   "sourceBox2": 1,
-   *   "newly-inserted-box-1": 2,
+   *   "newly-inserted-node-1": 2,
    * }
    *
    * newBoxAssignment:
    * {
    *   "sourceBox1": "targetBox1",
    *   "sourceBox2": "targetBox2",
-   *   "newly-inserted-box-1": "targetBox3",
+   *   "newly-inserted-node-1": "targetBox3",
    * }
    */
   /* ---------- STEP 2 – CREATE NODES FOR UNMAPPED TARGET BOXES ---------- */
@@ -226,11 +228,15 @@ export const getEditOperationsForMatrix = (params: {
         (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
       )
 
-      let newBoxCounter = 0
+      let newNodeCounter = 0
       // Only create as many nodes as needed to match the size difference
-      for (const targetBoxId of unmappedTargetBoxIds.slice(0, sizeDiff)) {
+      for (const targetNodeId of unmappedTargetBoxIds.slice(0, sizeDiff)) {
+        // HACK: TODO we don't currently pass as input which nodes are boxes
+        // but the ids are always constructed "${boxId}-${pinId}"
+        const isBox = targetNodeId.split("-").length === 1
+
         // Generate a unique synthetic source-box id
-        const newSourceBoxId = `newly-inserted-box-${++newBoxCounter}`
+        const newSourceNodeId = `newly-inserted-${isBox ? "box" : "pin"}-${++newNodeCounter}`
 
         // We will append the new node at the end of the current matrix
         const insertIndex = currentSourceAdjMatrix.length
@@ -246,14 +252,16 @@ export const getEditOperationsForMatrix = (params: {
         currentSourceAdjMatrix.push(newRow)
 
         // Update mappings and assignments
-        currentSourceMatrixMapping.set(newSourceBoxId, insertIndex)
-        currentNodeAssignment[newSourceBoxId] = targetBoxId
+        currentSourceMatrixMapping.set(newSourceNodeId, insertIndex)
+        currentNodeAssignment[newSourceNodeId] = targetNodeId
 
         // Record the create_node operation
         operations.push({
           type: "create_node",
           newRowAndColumnIndex: insertIndex,
-          nodeId: newSourceBoxId,
+          nodeId: newSourceNodeId,
+          targetNodeId,
+          isBox,
         })
       }
     }
@@ -469,6 +477,30 @@ export const getEditOperationsForMatrix = (params: {
       }
     }
   }
+
+  // Step 6: Generate the network assignment
+  // const reverseSourceMatrixMapping = new Map<number, string>()
+  // for (const [srcBoxId, idx] of currentSourceMatrixMapping) {
+  //   reverseSourceMatrixMapping.set(idx, srcBoxId)
+  // }
+  // const reverseTargetMatrixMapping = new Map<number, string>()
+  // for (const [tgtBoxId, idx] of targetMatrixMapping) {
+  //   reverseTargetMatrixMapping.set(idx, tgtBoxId)
+  // }
+
+  // const newNetAssignment: Assignment<string, string> = {}
+  // for (let i = 0; i < currentSourceAdjMatrix.length; i++) {
+  //   for (let j = i + 1; j < currentSourceAdjMatrix.length; j++) {
+  //     if (sourceAdjMatrix[i]![j] === 1 && i !== j) {
+  //       const sourceNodeId = reverseSourceMatrixMapping.get(i)!
+  //       const targetNodeId = reverseTargetMatrixMapping.get(j)!
+  //       const sourceIsPin = sourceNodeId.split("-").length === 2
+  //       if (sourceIsPin) {
+  //         const [sourceBoxId, sourcePinId] = sourceNodeId.split("-")
+  //       }
+  //     }
+  //   }
+  // }
 
   return {
     newSourceAdjMatrix: currentSourceAdjMatrix,

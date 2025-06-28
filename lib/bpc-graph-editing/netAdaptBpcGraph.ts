@@ -26,8 +26,6 @@ export const netAdaptBpcGraph = (
   targetBpcGraph: MixedBpcGraph,
 ): {
   adaptedBpcGraph: MixedBpcGraph
-  netAssignment: Assignment<string, string>
-  boxAssignment: Assignment<string, string>
 } => {
   const approxAssignmentsResult = getApproximateAssignments(
     sourceBpcGraph,
@@ -51,22 +49,68 @@ export const netAdaptBpcGraph = (
   })
 
   let adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
+  // TODO move everything into the target graph space w.r.t. box ids and network ids
+  for (const box of adaptedBpcGraph.boxes) {
+    box.boxId = editOpsResult.newNodeAssignment[box.boxId]!
+  }
+  for (const pin of adaptedBpcGraph.pins) {
+    const targetPinNodeId =
+      editOpsResult.newNodeAssignment[`${pin.boxId}-${pin.pinId}`]!
+    const [targetBoxId, targetPinId] = targetPinNodeId.split("-")
+    const targetPin = targetBpcGraph.pins.find(
+      (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
+    )!
+    pin.boxId = targetPin.boxId
+    pin.pinId = targetPin.pinId
+    pin.networkId = targetPin.networkId
+    pin.color = targetPin.color
+    pin.offset = targetPin.offset
+  }
+
   for (const op of editOpsResult.operations) {
     switch (op.type) {
       case "create_node": {
-        adaptedBpcGraph.boxes.push({
-          boxId: op.nodeId,
-          kind: "floating",
-        })
+        if (op.isBox) {
+          const targetBox = targetBpcGraph.boxes.find(
+            (b) => b.boxId === op.targetNodeId,
+          )
+          if (!targetBox) {
+            throw new Error(`Target box ${op.targetNodeId} not found`)
+          }
+          adaptedBpcGraph.boxes.push({
+            boxId: op.targetNodeId,
+            kind: "floating",
+          })
+        } else {
+          const [targetBoxId, targetPinId] = op.targetNodeId.split("-")
+          const targetPin = targetBpcGraph.pins.find(
+            (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
+          )
+          if (!targetPin) {
+            throw new Error(`Target pin ${op.targetNodeId} not found`)
+          }
+          // TODO find correct networkId, generating a new one if necessary
+          adaptedBpcGraph.pins.push({
+            boxId: targetPin.boxId,
+            pinId: targetPin.pinId,
+            networkId: targetPin.networkId,
+            color: targetPin.color,
+            offset: targetPin.offset,
+          })
+        }
         break
       }
       case "delete_node": {
-        adaptedBpcGraph.boxes = adaptedBpcGraph.boxes.filter(
-          (box) => box.boxId !== op.nodeId,
-        )
-        adaptedBpcGraph.pins = adaptedBpcGraph.pins.filter(
-          (pin) => pin.boxId !== op.nodeId,
-        )
+        if (op.nodeId.split("-").length === 1) {
+          adaptedBpcGraph.boxes = adaptedBpcGraph.boxes.filter(
+            (box) => box.boxId !== op.nodeId,
+          )
+        } else {
+          const [boxId, pinId] = op.nodeId.split("-")
+          adaptedBpcGraph.pins = adaptedBpcGraph.pins.filter(
+            (pin) => pin.boxId !== boxId && pin.pinId !== pinId,
+          )
+        }
         break
       }
       case "connect_nodes": {
