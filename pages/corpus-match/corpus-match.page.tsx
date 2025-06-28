@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { BpcGraph, CostConfiguration } from "lib"
-import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
+// import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
@@ -143,21 +143,21 @@ export default function CorpusMatchPage() {
     inputGraph: BpcGraph,
     templateGraph: BpcGraph,
   ): BpcGraph => {
-    const transformer = new GraphNetworkTransformer({
-      initialGraph: templateGraph,
-      targetGraph: inputGraph,
-      costConfiguration,
-    })
+    // const transformer = new GraphNetworkTransformer({
+    //   initialGraph: templateGraph,
+    //   targetGraph: inputGraph,
+    //   costConfiguration,
+    // })
 
-    /* Give the solver more breathing room than the default. */
-    transformer.MAX_ITERATIONS = 5_000
+    // /* Give the solver more breathing room than the default. */
+    // transformer.MAX_ITERATIONS = 5_000
 
-    transformer.solve()
+    // transformer.solve()
 
-    if (transformer.solved && transformer.stats.finalGraph) {
-      // Perfect adaptation achieved
-      return transformer.stats.finalGraph as BpcGraph
-    }
+    // if (transformer.solved && transformer.stats.finalGraph) {
+    //   // Perfect adaptation achieved
+    //   return transformer.stats.finalGraph as BpcGraph
+    // }
 
     throw new Error("Solver stopped early")
     // Solver stopped early – use best candidate explored so far

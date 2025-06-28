@@ -22,6 +22,7 @@ import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotPr
 import { getApproximateAssignments } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { assignFloatingBoxPositions } from "lib/bpc-graph-editing/assignFloatingBoxPositions"
+import { ForceDirectedLayoutSolver } from "lib/force-directed-layout/ForceDirectedLayoutSolver"
 
 test("netAdaptBpcGraph02", () => {
   const target = corpus.design002 as FixedBpcGraph
@@ -90,7 +91,27 @@ test("netAdaptBpcGraph02", () => {
     title: "Net Adapted (floating assigned)",
   })
 
-  // TODO Force layout
+  /* ---------- Force-directed layout on the adapted graph ---------- */
+  let forceLayoutGraph = netAdaptedBpcGraph as MixedBpcGraph
+  try {
+    const solver = new ForceDirectedLayoutSolver({
+      graph: structuredClone(netAdaptedBpcGraph),
+    })
+    for (
+      let i = 0;
+      i < solver.MAX_ITERATIONS && !solver.solved && !solver.failed;
+      i++
+    ) {
+      solver.step()
+    }
+    forceLayoutGraph = solver.graph as MixedBpcGraph
+  } catch (e) {
+    // keep last known graph if solver throws/flags failure
+  }
+
+  const forceLayoutGraphics = getGraphicsForBpcGraph(forceLayoutGraph, {
+    title: "Force Layout",
+  })
 
   expect(
     getSvgFromGraphicsObject(
@@ -98,10 +119,11 @@ test("netAdaptBpcGraph02", () => {
         targetGraphics,
         sourceGraphics,
         netAdaptedGraphics,
+        forceLayoutGraphics,
       ]),
       {
         backgroundColor: "white",
-        includeTextLabels: false, // ["rects"],
+        includeTextLabels: false,
       },
     ),
   ).toMatchSvgSnapshot(import.meta.path)
