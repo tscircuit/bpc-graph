@@ -62,13 +62,13 @@ N1" data-x="-2" data-y="2" cx="45" cy="195" r="3" fill="red" /><text x="50" y="1
     <polyline data-points="0.5,0 2.5,0" data-type="line" data-label="" points="295,395 495,395" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
-    <rect data-type="rect" data-label="U1" data-x="0" data-y="-0.25" x="190" y="390" width="110" height="60" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="195" y="385" font-family="sans-serif" font-size="12" fill="black">U1</text>
+    <rect data-type="rect" data-label="U1" data-x="0" data-y="-0.25" x="190" y="390" width="110" height="60" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="195" y="385" font-family="sans-serif" font-size="1.7" fill="black">U1</text>
   </g>
   <g>
-    <rect data-type="rect" data-label="U2" data-x="3" data-y="0" x="490" y="390" width="110" height="10" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="495" y="385" font-family="sans-serif" font-size="12" fill="black">U2</text>
+    <rect data-type="rect" data-label="U2" data-x="3" data-y="0" x="490" y="390" width="110" height="10" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="495" y="385" font-family="sans-serif" font-size="1.2" fill="black">U2</text>
   </g>
   <g>
-    <rect data-type="rect" data-label="NL1" data-x="-2" data-y="2" x="40.00000000000003" y="190.00000000000003" width="9.999999999999972" height="9.999999999999972" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="45.00000000000003" y="185.00000000000003" font-family="sans-serif" font-size="12" fill="black">NL1</text>
+    <rect data-type="rect" data-label="NL1" data-x="-2" data-y="2" x="40.00000000000003" y="190.00000000000003" width="9.999999999999972" height="9.999999999999972" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" /><text x="45.00000000000003" y="185.00000000000003" font-family="sans-serif" font-size="0.19999999999999943" fill="black">NL1</text>
   </g>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />
