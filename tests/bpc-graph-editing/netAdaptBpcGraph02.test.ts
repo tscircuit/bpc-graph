@@ -21,6 +21,7 @@ import { wlFeatureVec } from "lib/adjacency-matrix-network-similarity/wlFeatureV
 import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
 import { getApproximateAssignments } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
+import { assignFloatingBoxPositions } from "lib/bpc-graph-editing/assignFloatingBoxPositions"
 
 test("netAdaptBpcGraph02", () => {
   const target = corpus.design002 as FixedBpcGraph
@@ -83,11 +84,11 @@ test("netAdaptBpcGraph02", () => {
     target as MixedBpcGraph,
   )
 
-  const netAdaptedGraphics = getGraphicsForBpcGraph(netAdaptedBpcGraph, {
-    title: "Net Adapted",
-  })
+  const netAdaptedFixed = assignFloatingBoxPositions(netAdaptedBpcGraph)
 
-  // TODO floating assignment
+  const netAdaptedGraphics = getGraphicsForBpcGraph(netAdaptedFixed, {
+    title: "Net Adapted (floating assigned)",
+  })
 
   // TODO Force layout
 
