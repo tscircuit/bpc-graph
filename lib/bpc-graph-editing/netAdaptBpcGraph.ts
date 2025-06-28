@@ -56,6 +56,7 @@ export const netAdaptBpcGraph = (
   for (const pin of adaptedBpcGraph.pins) {
     const targetPinNodeId =
       editOpsResult.newNodeAssignment[`${pin.boxId}-${pin.pinId}`]!
+    if (!targetPinNodeId) continue // unmapped pin
     const [targetBoxId, targetPinId] = targetPinNodeId.split("-")
     const targetPin = targetBpcGraph.pins.find(
       (p) => p.boxId === targetBoxId && p.pinId === targetPinId,

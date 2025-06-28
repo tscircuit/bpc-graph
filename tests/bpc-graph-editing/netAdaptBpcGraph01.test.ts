@@ -76,16 +76,13 @@ test("netAdaptBpcGraph should adapt source to target with exact matches", () => 
     ],
   }
 
-  const { adaptedBpcGraph, netAssignment, boxAssignment } = netAdaptBpcGraph(
-    source,
-    target,
-  )
+  const { adaptedBpcGraph } = netAdaptBpcGraph(source, target)
 
   expect(adaptedBpcGraph).toMatchInlineSnapshot(`
     {
       "boxes": [
         {
-          "boxId": "boxA",
+          "boxId": "boxX",
           "center": {
             "x": 0,
             "y": 0,
@@ -93,7 +90,7 @@ test("netAdaptBpcGraph should adapt source to target with exact matches", () => 
           "kind": "fixed",
         },
         {
-          "boxId": "boxB",
+          "boxId": "boxY",
           "center": {
             "x": 10,
             "y": 0,
@@ -101,56 +98,50 @@ test("netAdaptBpcGraph should adapt source to target with exact matches", () => 
           "kind": "fixed",
         },
         {
-          "boxId": "newly-inserted-box-1",
-          "kind": "floating",
-        },
-        {
-          "boxId": "newly-inserted-pin-2",
-          "kind": "floating",
-        },
-        {
-          "boxId": "newly-inserted-pin-3",
-          "kind": "floating",
-        },
-        {
-          "boxId": "newly-inserted-pin-4",
-          "kind": "floating",
-        },
-        {
-          "boxId": "newly-inserted-pin-5",
+          "boxId": "boxZ_extra",
           "kind": "floating",
         },
       ],
       "pins": [
         {
-          "boxId": "boxA",
+          "boxId": "boxX",
           "color": "red",
-          "networkId": "net1",
-          "offset": {
-            "x": -0.5,
-            "y": 0,
-          },
-          "pinId": "p1",
-        },
-        {
-          "boxId": "boxA",
-          "color": "green",
-          "networkId": "net2",
-          "offset": {
-            "x": 0.5,
-            "y": 0,
-          },
-          "pinId": "p2",
-        },
-        {
-          "boxId": "boxB",
-          "color": "blue",
-          "networkId": "net1",
+          "networkId": "netX",
           "offset": {
             "x": 0,
             "y": 0,
           },
-          "pinId": "p1",
+          "pinId": "px1",
+        },
+        {
+          "boxId": "boxX",
+          "color": "green",
+          "networkId": "netY",
+          "offset": {
+            "x": 0,
+            "y": 0,
+          },
+          "pinId": "px2",
+        },
+        {
+          "boxId": "boxY",
+          "color": "blue",
+          "networkId": "netX",
+          "offset": {
+            "x": 0,
+            "y": 0,
+          },
+          "pinId": "py1",
+        },
+        {
+          "boxId": "boxZ_extra",
+          "color": "purple",
+          "networkId": "netZ",
+          "offset": {
+            "x": 0,
+            "y": 0,
+          },
+          "pinId": "pz1",
         },
       ],
     }
