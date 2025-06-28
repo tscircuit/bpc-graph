@@ -5,7 +5,16 @@ import type { BpcGraph } from "lib/types"
 
 /* ------------------------------------------------------------------ */
 type Histogram = Record<string, number>
-type Assignment<K extends string, V extends string> = Record<K, V>
+
+/**
+ * Example:
+ * {
+ *   "sourceBox1": "targetBoxA",
+ *   "sourceBox2": "targetBoxB",
+ *   "sourceBox3": "targetBoxC",
+ * }
+ */
+export type Assignment<K extends string, V extends string> = Record<K, V>
 
 /* ------------------------------------------------------------------ */
 /*  Histogram utilities                                               */
