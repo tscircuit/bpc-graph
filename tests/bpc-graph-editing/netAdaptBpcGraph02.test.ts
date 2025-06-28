@@ -78,21 +78,25 @@ test("netAdaptBpcGraph02", () => {
     }
   }
 
-  const { adaptedBpcGraph } = netAdaptBpcGraph(
+  const { adaptedBpcGraph: netAdaptedBpcGraph } = netAdaptBpcGraph(
     source as FixedBpcGraph,
     target as MixedBpcGraph,
   )
 
-  const adaptedGraphics = getGraphicsForBpcGraph(adaptedBpcGraph, {
-    title: "Adapted",
+  const netAdaptedGraphics = getGraphicsForBpcGraph(netAdaptedBpcGraph, {
+    title: "Net Adapted",
   })
+
+  // TODO floating assignment
+
+  // TODO Force layout
 
   expect(
     getSvgFromGraphicsObject(
       stackGraphicsHorizontally([
         targetGraphics,
         sourceGraphics,
-        adaptedGraphics,
+        netAdaptedGraphics,
       ]),
       {
         backgroundColor: "white",
