@@ -362,7 +362,79 @@ export const getEditOperationsForMatrix = (params: {
   }
 
   // Step 4: Disconnect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
-  // We explore the newSourceAdjMatrix and look for 1s/0s that don't match
+  /**
+   * Example:
+   * source:
+   * [ [ 1, 1 ],
+   *   [ 1, 1 ] ]
+   *
+   * target:
+   * [ [ 1, 0 ],
+   *   [ 0, 1 ] ]
+   *
+   * currentSourceMatrixMapping:
+   * {
+   *   "sourceBoxA": 0,
+   *   "sourceBoxB": 1,
+   * }
+   *
+   * targetMatrixMapping:
+   * {
+   *   "targetBoxA": 0,
+   *   "targetBoxB": 1,
+   * }
+   *
+   * boxAssignment:
+   * {
+   *   "sourceBoxA": "targetBoxA",
+   *   "sourceBoxB": "targetBoxB",
+   * }
+   *
+   * The off-diagonal 1’s in the source matrix (indices [0,1] and [1,0])
+   * have no corresponding 1’s in the target matrix, so they must be turned
+   * into 0’s.  That is captured with one disconnect_nodes operation:
+   *
+   * operations:
+   * [ { type: "disconnect_nodes",
+   *     rowAndColumnIndex1: 0,
+   *     rowAndColumnIndex2: 1,
+   *     sourceBoxId1: "sourceBoxA",
+   *     sourceBoxId2: "sourceBoxB" } ]
+   */
+  /* ---------- STEP 4 – DISCONNECT EDGES PRESENT IN SOURCE BUT NOT TARGET ---------- */
+  {
+    // Build reverse lookup: matrix-index -> sourceBoxId
+    const indexToSourceBoxId = new Map<number, string>()
+    for (const [srcBoxId, idx] of currentSourceMatrixMapping) {
+      indexToSourceBoxId.set(idx, srcBoxId)
+    }
+
+    const n = currentSourceAdjMatrix.length // after Steps 1-3 this must equal targetAdjMatrix.length
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const sourceVal = currentSourceAdjMatrix[i][j]
+        const targetVal = targetAdjMatrix[i][j]
+
+        // Edge exists in source but not in target → must be disconnected
+        if (sourceVal === 1 && targetVal === 0) {
+          const sourceBoxId1 = indexToSourceBoxId.get(i)!
+          const sourceBoxId2 = indexToSourceBoxId.get(j)!
+
+          operations.push({
+            type: "disconnect_nodes",
+            rowAndColumnIndex1: i,
+            rowAndColumnIndex2: j,
+            sourceBoxId1,
+            sourceBoxId2,
+          })
+
+          // Mutate the working matrix so later steps see the change
+          currentSourceAdjMatrix[i][j] = 0
+          currentSourceAdjMatrix[j][i] = 0
+        }
+      }
+    }
+  }
 
   // Step 5: Connect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   // We explore the newSourceAdjMatrix and look for 1s/0s that don't match
