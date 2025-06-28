@@ -18,7 +18,7 @@
     "@types/bun": "latest",
     "@vitejs/plugin-react": "^4.5.2",
     "bun-match-svg": "^0.0.11",
-    "graphics-debug": "^0.0.54",
+    "graphics-debug": "^0.0.57",
     "ml-matrix": "^6.12.1",
     "react-cosmos": "^7.0.0",
     "react-cosmos-plugin-vite": "^7.0.0",
@@ -30,6 +30,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@tscircuit/schematic-corpus": "^0.0.23"
+    "@tscircuit/schematic-corpus": "^0.0.23",
+    "circuit-json-to-bpc": "^0.0.6"
   }
 }
