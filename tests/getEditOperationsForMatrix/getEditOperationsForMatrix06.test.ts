@@ -35,7 +35,6 @@ test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap 
     sourceBox3: "targetBox1", // will need SWAP
     // sourceBox2 → unmapped → will be DELETED
   }
-  const netAssignment = {}
 
   /* ------------- ACT ------------- */
   const { operations } = getEditOperationsForMatrix({
@@ -44,7 +43,6 @@ test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap 
     sourceMatrixMapping,
     targetMatrixMapping,
     nodeAssignment: boxAssignment,
-    netAssignment,
   })
 
   /* ------------- ASSERT ------------- */
@@ -60,6 +58,8 @@ test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap 
       type: "create_node",
       newRowAndColumnIndex: 2,
       nodeId: expect.any(String), // synthetic id
+      targetNodeId: "targetBox3",
+      isBox: true,
     },
     /* Step 3 – reorder: swap sourceBox1 & sourceBox3 (indices 0↔1) */
     {
