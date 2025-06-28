@@ -113,7 +113,50 @@ export const getEditOperationsForMatrix = (params: {
    * operations:
    * [ { type: "disconnect_node", rowAndColumnIndexToRemove: 2, sourceBoxId: "sourceBox3" } ]
    */
-  // TODO
+  /* ---------- STEP 1 – DELETE NODES NOT ASSIGNED TO A TARGET BOX ---------- */
+  {
+    // Source boxes that have NO mapping to any target box
+    const unmappedSourceBoxIds = [...currentSourceMatrixMapping.keys()].filter(
+      (boxId) => !(boxId in currentBoxAssignment),
+    )
+
+    // Nothing to do
+    if (unmappedSourceBoxIds.length === 0) {
+      /* no-op */
+    } else {
+      // Build list of { boxId, index } and sort descending so index shifting is safe
+      const deletions = unmappedSourceBoxIds
+        .map((boxId) => ({
+          boxId,
+          index: currentSourceMatrixMapping.get(boxId)!,
+        }))
+        .sort((a, b) => b.index - a.index)
+
+      for (const { boxId, index } of deletions) {
+        // Record operation
+        operations.push({
+          type: "delete_node",
+          rowAndColumnIndexToRemove: index,
+          sourceBoxId: boxId,
+        })
+
+        // Remove the row
+        currentSourceAdjMatrix.splice(index, 1)
+        // Remove the column from each remaining row
+        for (const row of currentSourceAdjMatrix) {
+          row.splice(index, 1)
+        }
+
+        // Update source→matrix mapping
+        currentSourceMatrixMapping.delete(boxId)
+        for (const [otherBoxId, otherIdx] of currentSourceMatrixMapping) {
+          if (otherIdx > index) {
+            currentSourceMatrixMapping.set(otherBoxId, otherIdx - 1)
+          }
+        }
+      }
+    }
+  }
 
   // Step 2: Source Matrix Size < Target Matrix Size:
   // We need to modify currentSourceAdjMatrix to be the same size as the target adjacency matrix.
@@ -173,7 +216,44 @@ export const getEditOperationsForMatrix = (params: {
    *   "newly-inserted-box-1": "targetBox3",
    * }
    */
-  // TODO
+  /* ---------- STEP 2 – CREATE NODES FOR UNMAPPED TARGET BOXES ---------- */
+  {
+    // Identify target-side boxes that no source box is currently mapped to
+    const mappedTargetBoxIds = new Set(Object.values(currentBoxAssignment))
+    const unmappedTargetBoxIds = [...targetMatrixMapping.keys()].filter(
+      (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
+    )
+
+    let newBoxCounter = 0
+    for (const targetBoxId of unmappedTargetBoxIds) {
+      // Generate a unique synthetic source-box id
+      const newSourceBoxId = `newly-inserted-box-${++newBoxCounter}`
+
+      // We will append the new node at the end of the current matrix
+      const insertIndex = currentSourceAdjMatrix.length
+
+      // Extend every existing row with a 0 (new column)
+      for (const row of currentSourceAdjMatrix) {
+        row.push(0)
+      }
+
+      // Create a new row filled with 0s and add a self-loop (1 on the diagonal)
+      const newRow = new Array(insertIndex + 1).fill(0)
+      newRow[insertIndex] = 1
+      currentSourceAdjMatrix.push(newRow)
+
+      // Update mappings and assignments
+      currentSourceMatrixMapping.set(newSourceBoxId, insertIndex)
+      currentBoxAssignment[newSourceBoxId] = targetBoxId
+
+      // Record the create_node operation
+      operations.push({
+        type: "create_node",
+        newRowAndColumnIndex: insertIndex,
+        sourceBoxId: newSourceBoxId,
+      })
+    }
+  }
 
   // Step 3: Reorder the rows/columns of the source adjacency matrix to match
   // the target adjacency matrix based on assignments. After this reordering,
