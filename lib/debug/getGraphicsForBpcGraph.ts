@@ -5,13 +5,15 @@ import { getGraphBounds } from "../graph-utils/getGraphBounds"
 import { getGraphNetworkIds } from "../graph-utils/getGraphNetworkIds"
 import { getPinPosition } from "../graph-utils/getPinPosition"
 import type { BpcGraph } from "../types"
-import type { GraphicsObject } from "graphics-debug"
+import { getBounds, type GraphicsObject } from "graphics-debug"
 import { translateColor } from "./translateColor"
 
 export const getGraphicsForBpcGraph = (
   g: BpcGraph,
   opts?: {
     grayNetworks?: boolean
+    title?: string
+    caption?: string
   },
 ) => {
   const graphics: Required<GraphicsObject> = {
@@ -19,6 +21,7 @@ export const getGraphicsForBpcGraph = (
     lines: [],
     rects: [],
     circles: [],
+    texts: [],
     coordinateSystem: "cartesian",
     title: "BPC Graph Graphics",
   }
@@ -95,6 +98,28 @@ export const getGraphicsForBpcGraph = (
         }
       }
     }
+  }
+
+  const bounds = getBounds(graphics)
+
+  if (opts?.title) {
+    graphics.texts.push({
+      text: opts.title,
+      x: bounds.minX,
+      y: bounds.maxY,
+      fontSize: (bounds.maxY - bounds.minY) * 0.05,
+      anchorSide: "bottom_left",
+    })
+  }
+
+  if (opts?.caption) {
+    graphics.texts.push({
+      text: opts.caption,
+      x: bounds.minX,
+      y: bounds.minY,
+      fontSize: (bounds.maxY - bounds.minY) * 0.05,
+      anchorSide: "top_left",
+    })
   }
 
   return graphics
