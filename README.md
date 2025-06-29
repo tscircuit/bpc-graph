@@ -12,15 +12,29 @@ schematic like connection graph is produced.
 
 This repository provides utilities for manipulating and comparing BPC graphs.
 
+## Contents
+
+- [bpc-graph](#bpc-graph)
+  - [Contents](#contents)
+  - [Where BPC graphs are used](#where-bpc-graphs-are-used)
+  - [Installation](#installation)
+  - [Quick Example](#quick-example)
+  - [API](#api)
+    - [Graph Utilities](#graph-utilities)
+    - [Graph Editing](#graph-editing)
+    - [Conversion Utilities](#conversion-utilities)
+    - [Similarity \& Layout](#similarity--layout)
+
 ## Where BPC graphs are used
 
 When automatically laying out schematics the tools in this repo convert an initial
 "floating" design into a fixed layout. Networks can be split, boxes can be adapted to a
 template and the resulting graph can be rendered with a force directed solver.
 
-![Example Layout](https://github.com/user-attachments/assets/2efa5e6f-b0ba-478f-8cb8-361db267fab4)
-
-![Example Template](https://github.com/user-attachments/assets/2a5b543b-32e5-4d25-bcc5-f02845e60a9e)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2efa5e6f-b0ba-478f-8cb8-361db267fab4" alt="Example Layout" width="45%" style="display:inline-block; margin-right: 1em;"/>
+  <img src="https://github.com/user-attachments/assets/2a5b543b-32e5-4d25-bcc5-f02845e60a9e" alt="Example Template" width="45%" style="display:inline-block;"/>
+</p>
 
 ## Installation
 
@@ -40,15 +54,27 @@ const graph = {
     { kind: "fixed", boxId: "B", center: { x: 2, y: 0 } },
   ],
   pins: [
-    { boxId: "A", pinId: "P1", offset: { x: 0.5, y: 0 }, color: "red", networkId: "N1" },
-    { boxId: "B", pinId: "P1", offset: { x: -0.5, y: 0 }, color: "red", networkId: "N1" },
+    {
+      boxId: "A",
+      pinId: "P1",
+      offset: { x: 0.5, y: 0 },
+      color: "red",
+      networkId: "N1",
+    },
+    {
+      boxId: "B",
+      pinId: "P1",
+      offset: { x: -0.5, y: 0 },
+      color: "red",
+      networkId: "N1",
+    },
   ],
 }
 
-const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), { backgroundColor: "white" })
+const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), {
+  backgroundColor: "white",
+})
 ```
-
-The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
 
 ![Basic graph](tests/readme/__snapshots__/getGraphicsExample.snap.svg)
 
@@ -80,4 +106,3 @@ The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
 
 All type definitions can be imported from `bpc-graph` as well and are located in
 `lib/types.ts`.
-
