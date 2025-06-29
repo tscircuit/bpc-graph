@@ -32,12 +32,15 @@ test("assignFloatingBoxPositions01", () => {
   // Graphics for each
   const originalGraphics = getGraphicsForBpcGraph(original, {
     title: "Original",
+    caption: "baseline",
   })
   const withFloatingGraphics = getGraphicsForBpcGraph(withFloating, {
     title: "With Floating",
+    caption: "floating box",
   })
   const assignedGraphics = getGraphicsForBpcGraph(assigned, {
     title: "Floating Assigned",
+    caption: "positions inferred",
   })
 
   // Stack horizontally: original | with floating | assigned

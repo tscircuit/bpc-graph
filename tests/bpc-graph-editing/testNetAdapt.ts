@@ -49,9 +49,11 @@ export const testNetAdapt = (
   // Generate graphics for target and source
   const targetGraphics = getGraphicsForBpcGraph(target as MixedBpcGraph, {
     title: "Target",
+    caption: "unadapted",
   })
   const sourceGraphics = getGraphicsForBpcGraph(source as MixedBpcGraph, {
     title: "Source",
+    caption: "reference",
   })
 
   targetGraphics.texts ??= []
@@ -93,6 +95,7 @@ export const testNetAdapt = (
   // Generate graphics for the adapted graph
   const adaptedGraphics = getGraphicsForBpcGraph(adaptedFixed, {
     title: "Net Adapted (floating assigned)",
+    caption: "after adapt",
   })
 
   // Compose all graphics horizontally

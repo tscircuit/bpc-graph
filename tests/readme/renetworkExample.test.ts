@@ -56,8 +56,14 @@ test("renetworkExample", () => {
 
   const svg = getSvgFromGraphicsObject(
     stackGraphicsHorizontally([
-      getGraphicsForBpcGraph(g, { title: "Original" }),
-      getGraphicsForBpcGraph(renetworkedGraph, { title: "Renetworked" }),
+      getGraphicsForBpcGraph(g, {
+        title: "Original",
+        caption: "before",
+      }),
+      getGraphicsForBpcGraph(renetworkedGraph, {
+        title: "Renetworked",
+        caption: "after",
+      }),
     ]),
     { backgroundColor: "white" },
   )
