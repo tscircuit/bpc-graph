@@ -1,7 +1,12 @@
 import { getComparisonGraphicsSvg } from "tests/fixtures/getComparisonGraphicsSvg"
 import { test, expect } from "bun:test"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
-import { getGraphicsForBpcGraph, type MixedBpcGraph } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  netAdaptBpcGraph,
+  type FixedBpcGraph,
+  type MixedBpcGraph,
+} from "lib/index"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
@@ -121,9 +126,18 @@ test("adjacencyMatrixVisual01", () => {
         ],
       })
 
+      const { adaptedBpcGraph } = netAdaptBpcGraph(
+        bpcGraph2 as FixedBpcGraph,
+        bpcGraph1 as MixedBpcGraph,
+      )
+      const adaptedGraphics = getGraphicsForBpcGraph(adaptedBpcGraph, {
+        title: `Adapted (boxes: ${adaptedBpcGraph.boxes.length})`,
+      })
+
       const sideBySideGraphics = stackGraphicsHorizontally([
         graphics1,
         graphics2,
+        adaptedGraphics,
       ])
 
       const sbsBounds = getBounds(sideBySideGraphics)
