@@ -17,17 +17,10 @@ export const getBoxSideSubgraph = ({
   bpcGraph,
   boxId,
   side,
-  followCondition = (from: BpcPin, networkId: string, networkPins: BpcPin[]) =>
-    true,
 }: {
   bpcGraph: BpcGraph
   boxId: string
   side: Side
-  followCondition?: (
-    from: BpcPin,
-    networkId: string,
-    networkPins: BpcPin[],
-  ) => boolean
 }): MixedBpcGraph => {
   const dir = sideToDirection[side]
 
