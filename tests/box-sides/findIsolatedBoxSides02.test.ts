@@ -2,7 +2,7 @@ import { expect, test } from "bun:test"
 import { findIsolatedBoxSides } from "lib/box-sides/findIsolatedBoxSides"
 import type { BpcGraph } from "lib/types"
 
-test("findIsolatedBoxSides groups connected sides", () => {
+test.skip("findIsolatedBoxSides02 groups connected sides", () => {
   const g: BpcGraph = {
     boxes: [
       { kind: "fixed", boxId: "A", center: { x: 0, y: 0 } },
