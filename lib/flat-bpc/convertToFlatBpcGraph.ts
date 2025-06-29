@@ -39,6 +39,9 @@ export const convertToFlatBpcGraph = (mixed: MixedBpcGraph): FlatBpcGraph => {
       y: bCenter ? bCenter.y + pin.offset.y : undefined,
     })
 
+    pinsByNetwork[pin.boxId] ??= []
+    pinsByNetwork[pin.boxId]!.push(nodeId)
+
     pinsByNetwork[pin.networkId] ??= []
     pinsByNetwork[pin.networkId]!.push(nodeId)
   }

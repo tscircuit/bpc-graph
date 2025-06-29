@@ -16,6 +16,7 @@ import {
 import { mergeNetworks } from "lib/renetwork/mergeNetworks"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { matchGraph } from "lib/match-graph/matchGraph"
+import { reflectGraph } from "lib/graph-utils/reflectGraph"
 
 test("getBoxSideSubgraph returns the correct subgraph", async () => {
   const ogGraph = convertCircuitJsonToBpc(
@@ -123,6 +124,12 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     title: "Left Subgraph",
   })
 
+  const leftSubgraphReflected = reflectGraph({
+    graph: leftSubgraph,
+    axis: "x",
+    centerBoxId: "schematic_component_0",
+  })
+
   const rightSubgraph = getBoxSideSubgraph({
     bpcGraph: renetworkedGraph,
     boxId: "schematic_component_0",
@@ -134,13 +141,13 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
   })
 
   // Match and netAdapt both the left and right subgraphs
-  const leftMatchResult = matchGraph(leftSubgraph, corpus as any)
+  const leftMatchResult = matchGraph(leftSubgraphReflected, corpus as any)
 
   const rightMatchResult = matchGraph(rightSubgraph, corpus as any)
 
   const leftMatchGraphics = stackGraphicsHorizontally([
-    getGraphicsForBpcGraph(leftSubgraph, {
-      title: "Left Subgraph",
+    getGraphicsForBpcGraph(leftSubgraphReflected, {
+      title: "Left Subgraph (Reflected)",
     }),
     getGraphicsForBpcGraph(leftMatchResult.graph!, {
       title: "Left Match",
