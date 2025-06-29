@@ -11,3 +11,6 @@ export * from "./adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatB
 export * from "./adjacency-matrix-network-similarity/getApproximateAssignments"
 export * from "./adjacency-matrix-network-similarity/wlDotProduct"
 export * from "./adjacency-matrix-network-similarity/wlFeatureVec"
+export * from "./graph-utils/box-sides/getBoxSideSubgraph"
+export * from "./graph-utils/box-sides/mergeBoxSideSubgraphs"
+export * from "./graph-utils/box-sides/findIsolatedBoxSides"
