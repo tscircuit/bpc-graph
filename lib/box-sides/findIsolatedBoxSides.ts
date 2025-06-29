@@ -25,7 +25,7 @@ export const findIsolatedBoxSides = (g: BpcGraph, boxId: string): Side[][] => {
   const subgraphs = sideList.map((side) =>
     getBoxSideSubgraph({ bpcGraph: g, boxId, side }),
   )
-  const merged = mergeBoxSideSubgraphs(subgraphs, boxId)
+  const merged = mergeBoxSideSubgraphs(subgraphs)
 
   // Build adjacency between pins based on networks
   const adjacency = new Map<string, Set<string>>() // pinId -> connected pinIds
