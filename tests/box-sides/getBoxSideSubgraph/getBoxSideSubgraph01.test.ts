@@ -3,14 +3,14 @@ import { test, expect } from "bun:test"
 import { getBoxSideSubgraph } from "lib/box-sides/getBoxSideSubgraph"
 import type { BpcGraph } from "lib/types"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
+import { getGraphicsForBpcGraph, renetworkWithCondition } from "lib/index"
 import {
   getSvgFromGraphicsObject,
   stackGraphicsVertically,
 } from "graphics-debug"
 
 test("getBoxSideSubgraph returns the correct subgraph", async () => {
-  const bpcGraph = convertCircuitJsonToBpc(
+  const ogGraph = convertCircuitJsonToBpc(
     await runTscircuitCode(`
     import { sel } from "tscircuit"
     export default () => (<board width="10mm" height="10mm" routingDisabled>
@@ -78,12 +78,31 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
   `),
   )
 
-  const ogGraphics = getGraphicsForBpcGraph(bpcGraph, {
+  const ogGraphics = getGraphicsForBpcGraph(ogGraph, {
     title: "Original",
   })
 
+  const component0Center = ogGraph.boxes.find(
+    (b) => b.boxId === "schematic_component_0",
+  )!.center!
+  const renetworkedSubgraph = renetworkWithCondition(
+    ogGraph,
+    (from, to, networkId) => {
+      if (!from.box.center || !to.box.center) return true
+      const fromSide =
+        from.box.center.x + from.pin.offset.x < component0Center.x
+          ? "left"
+          : "right"
+      const toSide =
+        to.box.center.x + to.pin.offset.x < component0Center.x
+          ? "left"
+          : "right"
+      return fromSide === toSide
+    },
+  )
+
   const leftSubgraph = getBoxSideSubgraph({
-    bpcGraph,
+    bpcGraph: renetworkedSubgraph,
     boxId: "schematic_component_0",
     side: "left",
   })
