@@ -1,5 +1,5 @@
 import type { BpcGraph } from "lib/types"
-import { getPinDirection } from "lib/graph-utils/getPinDirection"
+import { getPinDirectionOrThrow } from "lib/graph-utils/getPinDirection"
 import { getBoxSideSubgraph, type Side } from "./getBoxSideSubgraph"
 import { mergeBoxSideSubgraphs } from "./mergeBoxSideSubgraphs"
 
@@ -7,7 +7,7 @@ export const findIsolatedBoxSides = (g: BpcGraph, boxId: string): Side[][] => {
   const pins = g.pins.filter((p) => p.boxId === boxId)
   const sides = new Set<Side>()
   for (const p of pins) {
-    const dir = getPinDirection(g, p.pinId)
+    const dir = getPinDirectionOrThrow(g, p.pinId)
     const side: Side =
       dir === "x-"
         ? "left"
@@ -25,7 +25,7 @@ export const findIsolatedBoxSides = (g: BpcGraph, boxId: string): Side[][] => {
   const subgraphs = sideList.map((side) =>
     getBoxSideSubgraph({ bpcGraph: g, boxId, side }),
   )
-  const merged = mergeBoxSideSubgraphs(subgraphs, boxId)
+  const merged = mergeBoxSideSubgraphs(subgraphs)
 
   // Build adjacency between pins based on networks
   const adjacency = new Map<string, Set<string>>() // pinId -> connected pinIds

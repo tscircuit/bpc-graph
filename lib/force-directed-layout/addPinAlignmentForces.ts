@@ -1,7 +1,7 @@
 import type { BoxId, BpcGraph, ForceVec2, Vec2, Direction } from "lib/types"
 import type { ForceDirectedLayoutSolverHyperParameters } from "./ForceDirectedLayoutSolver"
 import { getPinPosition } from "lib/graph-utils/getPinPosition"
-import { getPinDirection } from "lib/graph-utils/getPinDirection"
+import { getPinDirectionOrThrow } from "lib/graph-utils/getPinDirection"
 import { getGraphNetworkIds } from "lib/graph-utils/getGraphNetworkIds"
 
 export const addPinAlignmentForces = (
@@ -17,7 +17,7 @@ export const addPinAlignmentForces = (
 
     for (const pinEmitter of pinsInNetwork) {
       const emitterPos = getPinPosition(g, pinEmitter.pinId)
-      const emitterDir = getPinDirection(g, pinEmitter.pinId)
+      const emitterDir = getPinDirectionOrThrow(g, pinEmitter.pinId)
 
       for (const pinTarget of pinsInNetwork) {
         if (pinEmitter.pinId === pinTarget.pinId) continue

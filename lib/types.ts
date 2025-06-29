@@ -32,6 +32,8 @@ export interface BpcFloatingBox {
   boxId: string
 }
 
+export type BpcBox = BpcFixedBox | BpcFloatingBox
+
 export interface BpcPin {
   boxId: string
   pinId: string
