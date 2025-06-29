@@ -76,6 +76,7 @@ export const renetworkWithCondition = (
     do {
       candidate = `${base}_${netIdCounter++}`
     } while (usedNetIds.has(candidate))
+    renetworkedNetworkIdMap[candidate] = renetworkedNetworkIdMap[base] ?? base
     usedNetIds.add(candidate)
     return candidate
   }

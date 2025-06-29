@@ -9,4 +9,12 @@ import type { BpcGraph } from "lib/types"
 export const mergeNetworks = (
   graph: BpcGraph,
   renetworkedNetworkIdMap: Record<string, string>,
-): BpcGraph => {}
+): BpcGraph => {
+  const newGraph = structuredClone(graph)
+
+  for (const p of newGraph.pins) {
+    p.networkId = renetworkedNetworkIdMap[p.networkId] ?? p.networkId
+  }
+
+  return newGraph
+}

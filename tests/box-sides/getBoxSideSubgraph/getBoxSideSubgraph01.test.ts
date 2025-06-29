@@ -12,6 +12,7 @@ import {
   getSvgFromGraphicsObject,
   stackGraphicsVertically,
 } from "graphics-debug"
+import { mergeNetworks } from "lib/renetwork/mergeNetworks"
 
 test("getBoxSideSubgraph returns the correct subgraph", async () => {
   const ogGraph = convertCircuitJsonToBpc(
@@ -129,12 +130,21 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     title: "Right Subgraph",
   })
 
-  const mergedGraph = mergeBoxSideSubgraphs([leftSubgraph, rightSubgraph], {
-    renetworkedNetworkIdMap,
+  const mergedSidesGraph = mergeBoxSideSubgraphs(
+    [leftSubgraph, rightSubgraph],
+    {
+      renetworkedNetworkIdMap,
+    },
+  )
+
+  const mergedSidesGraphics = getGraphicsForBpcGraph(mergedSidesGraph, {
+    title: "Merged Sides",
   })
 
+  const mergedGraph = mergeNetworks(mergedSidesGraph, renetworkedNetworkIdMap)
+
   const mergedGraphics = getGraphicsForBpcGraph(mergedGraph, {
-    title: "Merged",
+    title: "Merged Networks",
   })
 
   const allGraphics = stackGraphicsVertically([
@@ -142,6 +152,7 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     renetworkedGraphics,
     leftSubgraphGraphics,
     rightSubgraphGraphics,
+    mergedSidesGraphics,
     mergedGraphics,
   ])
 
