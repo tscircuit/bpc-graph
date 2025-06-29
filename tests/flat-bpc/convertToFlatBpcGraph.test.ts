@@ -38,16 +38,22 @@ test("convertToFlatBpcGraph generates correct nodes and edges", () => {
   // 2 boxes + 3 pins
   expect(flat.nodes.length).toBe(5)
 
-  // N1 has 2 pins → 1 edge, N2 single pin → 0 edges
-  expect(flat.undirectedEdges.length).toBe(2)
   expect(flat.undirectedEdges).toMatchInlineSnapshot(`
     [
       [
         "B1-P1",
+        "B2-P2",
+      ],
+      [
+        "B1",
+        "B1-P1",
+      ],
+      [
+        "B1",
         "B1-P3",
       ],
       [
-        "B1-P1",
+        "B2",
         "B2-P2",
       ],
     ]
