@@ -101,21 +101,35 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     },
   )
 
+  const renetworkedGraphics = getGraphicsForBpcGraph(renetworkedSubgraph, {
+    title: "Renetworked",
+  })
+
   const leftSubgraph = getBoxSideSubgraph({
     bpcGraph: renetworkedSubgraph,
     boxId: "schematic_component_0",
     side: "left",
   })
 
-  console.log(leftSubgraph)
-
   const leftSubgraphGraphics = getGraphicsForBpcGraph(leftSubgraph, {
     title: "Left Subgraph",
   })
 
+  const rightSubgraph = getBoxSideSubgraph({
+    bpcGraph: renetworkedSubgraph,
+    boxId: "schematic_component_0",
+    side: "right",
+  })
+
+  const rightSubgraphGraphics = getGraphicsForBpcGraph(rightSubgraph, {
+    title: "Right Subgraph",
+  })
+
   const allGraphics = stackGraphicsVertically([
     ogGraphics,
+    renetworkedGraphics,
     leftSubgraphGraphics,
+    rightSubgraphGraphics,
   ])
 
   expect(

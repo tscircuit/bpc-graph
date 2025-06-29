@@ -36,8 +36,8 @@ export const getBoxSideSubgraph = ({
   for (const p of bpcGraph.pins) {
     if (p.boxId === boxId) {
       const pDir = getPinDirection(bpcGraph, p.pinId)
-      if (pDir === dir || dir === null) {
-        subgraph.pins.push({ ...structuredClone(p), boxId })
+      if (pDir === dir || pDir === null) {
+        subgraph.pins.push(structuredClone(p))
       }
     }
   }
@@ -51,12 +51,12 @@ export const getBoxSideSubgraph = ({
   // ------------------------------------------------------------------
   //  Helper to add pins / boxes only once
   // ------------------------------------------------------------------
-  const addedPinIds = new Set<string>(subgraph.pins.map(p => p.pinId))
-  const addedBoxIds = new Set<string>(subgraph.boxes.map(b => b.boxId))
+  const addedPinIds = new Set<string>(subgraph.pins.map((p) => p.pinId))
+  const addedBoxIds = new Set<string>(subgraph.boxes.map((b) => b.boxId))
 
   const addBoxIfNeeded = (boxId: string) => {
     if (addedBoxIds.has(boxId)) return
-    const b = bpcGraph.boxes.find(bb => bb.boxId === boxId)
+    const b = bpcGraph.boxes.find((bb) => bb.boxId === boxId)
     if (b) {
       subgraph.boxes.push(structuredClone(b))
       addedBoxIds.add(boxId)
@@ -87,12 +87,13 @@ export const getBoxSideSubgraph = ({
    *  (Root box keeps side-filtered pins only.)
    * ------------------------------------------------------------------ */
   for (const b of subgraph.boxes) {
-    if (b.boxId === boxId) continue            // root box: leave as-is
-    const allPinsOfBox = bpcGraph.pins.filter( // every pin in original graph
+    if (b.boxId === boxId) continue // root box: leave as-is
+    const allPinsOfBox = bpcGraph.pins.filter(
+      // every pin in original graph
       (pin) => pin.boxId === b.boxId,
     )
     for (const pin of allPinsOfBox) {
-      addPinIfNeeded(pin)                      // uses existing helper
+      addPinIfNeeded(pin) // uses existing helper
     }
   }
 
