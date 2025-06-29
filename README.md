@@ -1,46 +1,83 @@
 # box-pin-color-graph
 
-A box pin color graph is a type of graph where:
+A box pin color (BPC) graph is a specialized graph structure where:
 
-- There are boxes
-- There are pins connected to the boxes
-- There are colors associated with each pin
-- Each pin is part of a network. All pins in a network are mutually connected with edges
+- Boxes contain pins
+- Pins belong to a network
+- Pins are coloured to describe signal type
 
-There are two types of boxes, `FixedBox` and `FloatingBox`. A
-floating box does not have a position.
+Boxes can be **fixed** (they know their position) or **floating** (no position yet). Each
+pin stores an offset relative to its box. When all pins on a network are visualised, a
+schematic like connection graph is produced.
 
-All pins have positions relative to the box.
-
-This library has BPC utilities that allow you to...
-
-1. Compare the similarity of two BPC graphs
-2. Performing operations on a BPC graph (often to transform a FloatingBox BPC graph into a FixedBox BPC graph)
-3. Converting a Floating Box BPC graph into a more legible Fixed Box BPC graph with force-directed auto layout
-
-Here are some properties of a BPC graph:
-
-- Boxes do not have a size, their pins represent their bounds
-- FixedBoxes have an X/Y position representing the center of their bounds
-- FloatingBoxes do not have a position
-- Pins have a position relative to a box
-- Pins have a color
+This repository provides utilities for manipulating and comparing BPC graphs.
 
 ## Where BPC graphs are used
 
-### Schematic Layout
+When automatically laying out schematics the tools in this repo convert an initial
+"floating" design into a fixed layout. Networks can be split, boxes can be adapted to a
+template and the resulting graph can be rendered with a force directed solver.
 
-- When automatically laying out schematics, we convert our "un-laid-out" schematic into
-  a Floating Box BPC graph, then we can pick the best template Fixed Box BPC graph. We
-  can then adapt the template BPC graph to become equivalent to the Floating Box BPC graph,
-  but with Fixed Boxes
-- Pin colors are used to represent an important attribute of the pin- e.g. "red" is power and "yellow" is
-  ground in the example below
+![Example Layout](https://github.com/user-attachments/assets/2efa5e6f-b0ba-478f-8cb8-361db267fab4)
 
-Example Schematic Layout:
+![Example Template](https://github.com/user-attachments/assets/2a5b543b-32e5-4d25-bcc5-f02845e60a9e)
 
-![image](https://github.com/user-attachments/assets/2efa5e6f-b0ba-478f-8cb8-361db267fab4)
+## Installation
 
-Example Fixed Box BPC Graph template for the layout above:
+```bash
+bun add bpc-graph
+```
 
-![image](https://github.com/user-attachments/assets/2a5b543b-32e5-4d25-bcc5-f02845e60a9e)
+## Quick Example
+
+```ts
+import { getGraphicsForBpcGraph } from "bpc-graph"
+import { getSvgFromGraphicsObject } from "graphics-debug"
+
+const graph = {
+  boxes: [
+    { kind: "fixed", boxId: "A", center: { x: 0, y: 0 } },
+    { kind: "fixed", boxId: "B", center: { x: 2, y: 0 } },
+  ],
+  pins: [
+    { boxId: "A", pinId: "P1", offset: { x: 0.5, y: 0 }, color: "red", networkId: "N1" },
+    { boxId: "B", pinId: "P1", offset: { x: -0.5, y: 0 }, color: "red", networkId: "N1" },
+  ],
+}
+
+const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), { backgroundColor: "white" })
+```
+
+The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
+
+![Basic graph](tests/readme/__snapshots__/getGraphicsExample.snap.svg)
+
+## API
+
+### Graph Utilities
+
+- **getGraphBounds(graph)** → `{ minX, minY, maxX, maxY }`
+- **getPinPosition(graph, pinId)** → absolute coordinates of a pin
+- **getPinDirection(graph, pinId)** → `"x-" | "x+" | "y-" | "y+" | null`
+
+### Graph Editing
+
+- **assignFloatingBoxPositions(graph)** – infers positions for floating boxes
+- **netAdaptBpcGraph(source, target)** – adapt a fixed graph to match the networks of a target graph
+- **renetworkWithCondition(graph, predicate)** – split networks based on a predicate. The example in `tests/readme/renetworkExample.test.ts` produces:
+
+![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
+
+### Conversion Utilities
+
+- **convertToFlatBpcGraph(mixed)** – flatten a BPC graph into nodes and undirected edges
+- **convertFromFlatBpcGraph(flat)** – rebuild a mixed graph from the flat representation
+
+### Similarity & Layout
+
+- **getBpcGraphWlDistance(a, b)** – compute Weisfeiler-Leman distance between graphs
+- **ForceDirectedLayoutSolver** – physics based solver for positioning boxes
+
+All type definitions can be imported from `bpc-graph` as well and are located in
+`lib/types.ts`.
+
