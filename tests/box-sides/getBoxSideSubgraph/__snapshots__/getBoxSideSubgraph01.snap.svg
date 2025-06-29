@@ -186,14 +186,29 @@ gnd
 unnamedsubcircuit37_connectivity_net1" data-x="-2.999726650000001" data-y="-2.201742725000001" cx="45.24161466752406" cy="523.924743735426" r="3" fill="purple" />
   </g>
   <g>
+    <circle data-type="point" data-label="schematic_component_1_center
+component_center
+center_schematic_component_1" data-x="-3" data-y="-1.6505334250000008" cx="45.21326869500035" cy="466.76519124721716" r="3" fill="gray" />
+  </g>
+  <g>
     <circle data-type="point" data-label="schematic_net_label_0_pin
 vcc
 unnamedsubcircuit37_connectivity_net0" data-x="-1.4" data-y="-1.2255334250000007" cx="211.13079581425262" cy="422.6933481061658" r="3" fill="orange" />
   </g>
   <g>
+    <circle data-type="point" data-label="schematic_net_label_0_center
+netlabel_center
+schematic_net_label_0_center" data-x="-1.7599999999999998" data-y="-1.2255334250000007" cx="173.79935221242087" cy="422.6933481061658" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
     <circle data-type="point" data-label="schematic_net_label_1_pin
 gnd
 unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-2.0755334250000006" cx="211.13079581425262" cy="510.83703438826853" r="3" fill="purple" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_1_center
+netlabel_center
+schematic_net_label_1_center" data-x="-1.67" data-y="-2.0755334250000006" cx="183.13221311287882" cy="510.83703438826853" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
   </g>
   <g>
     <polyline data-points="-1.4,0.42500000000000004 -1.4,0.42500000000000004" data-type="line" data-label="" points="211.13079581425262,251.5355829163721 211.13079581425262,251.5355829163721" fill="none" stroke="hsl(20, 100%, 50%, 0.2)" stroke-width="1" />
@@ -268,13 +283,13 @@ unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-2.0755334250000006
     <polyline data-points="-3.0002733499999996,-1.0993241250000005 -1.4,-1.2255334250000007" data-type="line" data-label="" points="45.18492272247664,409.60563875900834 211.13079581425262,422.6933481061658" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.0755334250000006 -1.4,-2.0755334250000006" data-type="line" data-label="" points="211.13079581425262,510.83703438826853 211.13079581425262,510.83703438826853" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="-1.4,-2.0755334250000006 -1.4,-2.0755334250000006" data-type="line" data-label="" points="211.13079581425262,510.83703438826853 211.13079581425262,510.83703438826853" fill="none" stroke="hsl(72, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.0755334250000006 -2.999726650000001,-2.201742725000001" data-type="line" data-label="" points="211.13079581425262,510.83703438826853 45.24161466752406,523.924743735426" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="-1.4,-2.0755334250000006 -2.999726650000001,-2.201742725000001" data-type="line" data-label="" points="211.13079581425262,510.83703438826853 45.24161466752406,523.924743735426" fill="none" stroke="hsl(72, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-2.999726650000001,-2.201742725000001 -1.4,-2.0755334250000006" data-type="line" data-label="" points="45.24161466752406,523.924743735426 211.13079581425262,510.83703438826853" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="-2.999726650000001,-2.201742725000001 -1.4,-2.0755334250000006" data-type="line" data-label="" points="45.24161466752406,523.924743735426 211.13079581425262,510.83703438826853" fill="none" stroke="hsl(72, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_component_0" data-x="0" data-y="0" x="205.94587309177598" y="238.57327611018053" width="300.7255179036447" height="114.0682998944859" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
@@ -319,10 +334,10 @@ unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-2.0755334250000006
     <rect data-type="rect" data-label="schematic_component_1" data-x="-3" data-y="-1.6505334250000008" x="40" y="404.42071603653176" width="10.42653739000076" height="124.68895042137092" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_0" data-x="-1.4" data-y="-1.2255334250000007" x="205.94587309177598" y="417.50842538368914" width="10.369845444953285" height="10.369845444953285" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
+    <rect data-type="rect" data-label="schematic_net_label_0" data-x="-1.5799999999999998" data-y="-1.2255334250000007" x="168.61442948994426" y="417.50842538368914" width="47.70128904678501" height="10.369845444953285" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_1" data-x="-1.4" data-y="-2.0755334250000006" x="205.94587309177598" y="505.65211166579195" width="10.369845444953285" height="10.369845444953171" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
+    <rect data-type="rect" data-label="schematic_net_label_1" data-x="-1.535" data-y="-2.0755334250000006" x="177.94729039040217" y="505.65211166579195" width="38.36842814632709" height="10.369845444953171" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.009643345267857142" />
   </g><text data-type="text" data-label="Original" data-x="-3.0502733499999994" data-y="1.7812907000000002" x="40" y="110.89033354209732" fill="black" font-size="12.353078386300579" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Original</text><text data-type="text" data-label="Left Subgraph" data-x="-3.0502733499999994" data-y="-1.0493241250000005" x="40" y="404.42071603653176" fill="black" font-size="6.234447521068544" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Left Subgraph</text>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />

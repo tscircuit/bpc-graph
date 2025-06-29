@@ -81,5 +81,20 @@ export const getBoxSideSubgraph = ({
     }
   }
 
+  /* ------------------------------------------------------------------
+   *  Ensure that every NON-root box already present in the subgraph
+   *  contributes *all* of its pins.
+   *  (Root box keeps side-filtered pins only.)
+   * ------------------------------------------------------------------ */
+  for (const b of subgraph.boxes) {
+    if (b.boxId === boxId) continue            // root box: leave as-is
+    const allPinsOfBox = bpcGraph.pins.filter( // every pin in original graph
+      (pin) => pin.boxId === b.boxId,
+    )
+    for (const pin of allPinsOfBox) {
+      addPinIfNeeded(pin)                      // uses existing helper
+    }
+  }
+
   return subgraph
 }
