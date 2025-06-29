@@ -39,9 +39,6 @@ export const convertToFlatBpcGraph = (mixed: MixedBpcGraph): FlatBpcGraph => {
       y: bCenter ? bCenter.y + pin.offset.y : undefined,
     })
 
-    pinsByNetwork[pin.boxId] ??= []
-    pinsByNetwork[pin.boxId]!.push(nodeId)
-
     pinsByNetwork[pin.networkId] ??= []
     pinsByNetwork[pin.networkId]!.push(nodeId)
   }
@@ -53,6 +50,14 @@ export const convertToFlatBpcGraph = (mixed: MixedBpcGraph): FlatBpcGraph => {
     for (let i = 0; i < nodeIds.length; i++) {
       for (let j = i + 1; j < nodeIds.length; j++) {
         undirectedEdges.push([nodeIds[i]!, nodeIds[j]!])
+      }
+    }
+  }
+
+  for (const box of mixed.boxes) {
+    for (const pin of mixed.pins) {
+      if (pin.boxId === box.boxId) {
+        undirectedEdges.push([box.boxId, `${box.boxId}-${pin.pinId}`])
       }
     }
   }

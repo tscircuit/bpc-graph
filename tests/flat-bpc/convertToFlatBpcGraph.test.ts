@@ -40,7 +40,18 @@ test("convertToFlatBpcGraph generates correct nodes and edges", () => {
 
   // N1 has 2 pins → 1 edge, N2 single pin → 0 edges
   expect(flat.undirectedEdges.length).toBe(2)
-  expect(flat.undirectedEdges[0]).toEqual(["B1-P1", "B2-P2"])
+  expect(flat.undirectedEdges).toMatchInlineSnapshot(`
+    [
+      [
+        "B1-P1",
+        "B1-P3",
+      ],
+      [
+        "B1-P1",
+        "B2-P2",
+      ],
+    ]
+  `)
 
   const boxNode = flat.nodes.find((n) => n.id === "B1")!
   expect(boxNode.color).toBe("box")

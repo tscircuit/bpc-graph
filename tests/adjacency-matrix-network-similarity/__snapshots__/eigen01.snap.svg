@@ -408,7 +408,7 @@ schematic_net_label_5_center" data-x="6.264673559888756" data-y="-2.18" cx="539.
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_net_label_5" data-x="6.264673559888756" data-y="-2.09" x="535.1689764833161" y="453.0697264664188" width="8.062388758946895" height="22.574688525051386" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.012403271907352397" />
-  </g><text data-type="text" data-label="Eigen distance: 1.9285654978488107" data-x="0.07295810448080192" data-y="-2.329" x="39.99999999999999" y="483.6261798628276" fill="black" font-size="15.96352974271489" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">Eigen distance: 1.9285654978488107</text>
+  </g><text data-type="text" data-label="Eigen distance: 1.5194347923495033" data-x="0.07295810448080192" data-y="-2.329" x="39.99999999999999" y="483.6261798628276" fill="black" font-size="15.96352974271489" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">Eigen distance: 1.5194347923495033</text>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />
     <line id="crosshair-v" x1="0" x2="640" stroke="#666" stroke-width="0.5" /><text id="coordinates" font-family="monospace" font-size="12" fill="#666"></text>
