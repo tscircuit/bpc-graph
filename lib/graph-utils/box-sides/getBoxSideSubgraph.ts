@@ -1,4 +1,4 @@
-import type { BpcGraph, Direction } from "lib/types"
+import type { BpcGraph, MixedBpcGraph, Direction } from "lib/types"
 import { getPinDirection } from "lib/graph-utils/getPinDirection"
 
 export type Side = "left" | "right" | "top" | "bottom"
@@ -18,11 +18,11 @@ export const getBoxSideSubgraph = ({
   bpcGraph: BpcGraph
   boxId: string
   side: Side
-}): BpcGraph => {
+}): MixedBpcGraph => {
   const dir = sideToDirection[side]
   const sideBoxId = `${boxId}-${side}`
 
-  const result: BpcGraph = { boxes: [], pins: [] }
+  const result: MixedBpcGraph = { boxes: [], pins: [] }
 
   const box = bpcGraph.boxes.find((b) => b.boxId === boxId)
   if (!box) throw new Error(`Box \"${boxId}\" not found`)
