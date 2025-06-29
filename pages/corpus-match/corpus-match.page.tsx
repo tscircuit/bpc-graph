@@ -1,12 +1,12 @@
 import { useState } from "react"
-import type { BpcGraph, CostConfiguration } from "lib"
-import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
+import type { BpcGraph } from "lib"
+// import { GraphNetworkTransformer } from "lib/graph-network-transformer/GraphNetworkTransformer"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
-const costConfiguration: Partial<CostConfiguration> = {
+const costConfiguration = {
   baseOperationCost: 1,
   colorChangeCostMap: {},
   costPerUnitDistanceMovingPin: 0.1,
@@ -34,8 +34,8 @@ function computeMatchScores(
   scores.sort((a, b) => a.distance - b.distance)
 
   let bestTemplate: { name: string; graph: BpcGraph } | null = null
-  if (!ignoreTop && scores.length > 0) bestTemplate = scores[0]
-  else if (ignoreTop && scores.length > 1) bestTemplate = scores[1]
+  if (!ignoreTop && scores.length > 0) bestTemplate = scores[0]!
+  else if (ignoreTop && scores.length > 1) bestTemplate = scores[1]!
 
   return { scores, bestTemplate }
 }
@@ -104,7 +104,7 @@ export default function CorpusMatchPage() {
         const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
         console.log("adaptedGraph", adaptedGraph)
         setAdaptedMatchSvgDataUrl(graphToSvgDataUrl(adaptedGraph))
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error generating adapted match:", error)
         setAdaptedMatchSvgDataUrl(
           `data:image/svg+xml;base64,${btoa(
@@ -143,21 +143,21 @@ export default function CorpusMatchPage() {
     inputGraph: BpcGraph,
     templateGraph: BpcGraph,
   ): BpcGraph => {
-    const transformer = new GraphNetworkTransformer({
-      initialGraph: templateGraph,
-      targetGraph: inputGraph,
-      costConfiguration,
-    })
+    // const transformer = new GraphNetworkTransformer({
+    //   initialGraph: templateGraph,
+    //   targetGraph: inputGraph,
+    //   costConfiguration,
+    // })
 
-    /* Give the solver more breathing room than the default. */
-    transformer.MAX_ITERATIONS = 5_000
+    // /* Give the solver more breathing room than the default. */
+    // transformer.MAX_ITERATIONS = 5_000
 
-    transformer.solve()
+    // transformer.solve()
 
-    if (transformer.solved && transformer.stats.finalGraph) {
-      // Perfect adaptation achieved
-      return transformer.stats.finalGraph as BpcGraph
-    }
+    // if (transformer.solved && transformer.stats.finalGraph) {
+    //   // Perfect adaptation achieved
+    //   return transformer.stats.finalGraph as BpcGraph
+    // }
 
     throw new Error("Solver stopped early")
     // Solver stopped early – use best candidate explored so far

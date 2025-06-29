@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { convertFromFlatBpcGraph } from "lib/flat-bpc/convertFromFlatBpcGraph"
+import type { FlatBpcGraph } from "lib/types"
 
 const flat = {
   nodes: [
@@ -15,10 +16,10 @@ const flat = {
 }
 
 test("convertFromFlatBpcGraph reconstructs boxes and pins", () => {
-  const mixed = convertFromFlatBpcGraph(flat)
+  const mixed = convertFromFlatBpcGraph(flat as FlatBpcGraph)
 
   expect(mixed.boxes.length).toBe(1)
-  const box = mixed.boxes[0]
+  const box = mixed.boxes[0]!
   expect(box.kind).toBe("fixed")
   // @ts-ignore – box.center only exists on fixed boxes
   expect(box.center).toEqual({ x: 0, y: 0 })

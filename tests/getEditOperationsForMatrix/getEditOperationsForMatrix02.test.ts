@@ -27,7 +27,6 @@ test("getEditOperationsForMatrix02", () => {
     sourceBox2: "targetBox2",
     // sourceBox3 is not assigned, so should be deleted
   }
-  const netAssignment = {}
 
   const result = getEditOperationsForMatrix({
     sourceAdjMatrix,
@@ -35,7 +34,6 @@ test("getEditOperationsForMatrix02", () => {
     sourceMatrixMapping,
     targetMatrixMapping,
     nodeAssignment: boxAssignment,
-    netAssignment,
   })
 
   // The expected operation is to delete the node at index 2

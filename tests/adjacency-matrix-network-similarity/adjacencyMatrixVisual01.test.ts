@@ -1,7 +1,12 @@
 import { getComparisonGraphicsSvg } from "tests/fixtures/getComparisonGraphicsSvg"
 import { test, expect } from "bun:test"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
-import { getGraphicsForBpcGraph, type MixedBpcGraph } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  netAdaptBpcGraph,
+  type FixedBpcGraph,
+  type MixedBpcGraph,
+} from "lib/index"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
@@ -13,6 +18,7 @@ import {
   stackGraphicsVertically,
   createGraphicsGrid,
   type GraphicsObject,
+  type Circle,
 } from "graphics-debug"
 import { wlFeatureVec } from "lib/adjacency-matrix-network-similarity/wlFeatureVec"
 import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
@@ -36,12 +42,16 @@ test("adjacencyMatrixVisual01", () => {
       const bpcGraph1 = corpus[designs[i]!]
       const bpcGraph2 = corpus[designs[j]!]
 
-      const graphics1 = getGraphicsForBpcGraph(bpcGraph1 as MixedBpcGraph)
-      const graphics2 = getGraphicsForBpcGraph(bpcGraph2 as MixedBpcGraph)
+      const graphics1 = getGraphicsForBpcGraph(bpcGraph1 as MixedBpcGraph, {
+        title: `Target: ${designs[i]!}`,
+      })
+      const graphics2 = getGraphicsForBpcGraph(bpcGraph2 as MixedBpcGraph, {
+        title: `Source: ${designs[j]!}`,
+      })
 
       const { boxAssignment } = getApproximateAssignments(
-        bpcGraph1 as MixedBpcGraph,
         bpcGraph2 as MixedBpcGraph,
+        bpcGraph1 as MixedBpcGraph,
       )
 
       const assignedBoxIds1 = Object.keys(boxAssignment)
@@ -121,9 +131,18 @@ test("adjacencyMatrixVisual01", () => {
         ],
       })
 
+      const { adaptedBpcGraph } = netAdaptBpcGraph(
+        bpcGraph2 as FixedBpcGraph,
+        bpcGraph1 as MixedBpcGraph,
+      )
+      const adaptedGraphics = getGraphicsForBpcGraph(adaptedBpcGraph, {
+        title: "Adapted",
+      })
+
       const sideBySideGraphics = stackGraphicsHorizontally([
         graphics1,
         graphics2,
+        adaptedGraphics,
       ])
 
       const sbsBounds = getBounds(sideBySideGraphics)
@@ -191,10 +210,29 @@ test("adjacencyMatrixVisual01", () => {
   const giantGraphics = createGraphicsGrid(graphicsGridCells, {
     gapAsCellWidthFraction: 0.2,
   })
+  const giantGraphicsBounds = getBounds(giantGraphics)
+
+  const pointSize =
+    (giantGraphicsBounds.maxX - giantGraphicsBounds.minX) * 0.001
 
   expect(
     getSvgFromGraphicsObject(
-      { ...giantGraphics, points: [] },
+      {
+        ...giantGraphics,
+        points: [],
+        circles: [
+          ...(giantGraphics.circles ?? []),
+          ...(giantGraphics.points ?? []).map(
+            (p) =>
+              ({
+                center: { x: p.x, y: p.y },
+                radius: pointSize,
+                fill: p.color,
+                label: p.label,
+              }) as Circle,
+          ),
+        ],
+      }, //, points: [] },
       {
         backgroundColor: "white",
         includeTextLabels: false, // ["rects"],

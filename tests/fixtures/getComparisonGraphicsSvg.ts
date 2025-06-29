@@ -1,6 +1,6 @@
 import {
   getSvgFromGraphicsObject,
-  GraphicsObject,
+  type GraphicsObject,
   getBounds,
 } from "graphics-debug"
 

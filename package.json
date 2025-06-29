@@ -30,7 +30,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@tscircuit/schematic-corpus": "^0.0.23",
+    "@tscircuit/schematic-corpus": "^0.0.29",
     "circuit-json-to-bpc": "^0.0.6"
   }
 }

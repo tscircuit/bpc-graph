@@ -48,24 +48,33 @@ export const netAdaptBpcGraph = (
     targetMatrixMapping: targetAdjMatrixResult.mapping,
   })
 
-  let adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
-  // TODO move everything into the target graph space w.r.t. box ids and network ids
-  for (const box of adaptedBpcGraph.boxes) {
-    box.boxId = editOpsResult.newNodeAssignment[box.boxId]!
-  }
+  const adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
+
+  /* ---------- rename pins first (still using original source ids) ---------- */
   for (const pin of adaptedBpcGraph.pins) {
-    const targetPinNodeId =
-      editOpsResult.newNodeAssignment[`${pin.boxId}-${pin.pinId}`]!
-    if (!targetPinNodeId) continue // unmapped pin
-    const [targetBoxId, targetPinId] = targetPinNodeId.split("-")
-    const targetPin = targetBpcGraph.pins.find(
-      (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
-    )!
-    pin.boxId = targetPin.boxId
-    pin.pinId = targetPin.pinId
-    pin.networkId = targetPin.networkId
-    pin.color = targetPin.color
-    pin.offset = targetPin.offset
+    const sourcePinNodeId = `${pin.boxId}-${pin.pinId}`
+    const targetPinNodeId = editOpsResult.newNodeAssignment[sourcePinNodeId]
+    if (!targetPinNodeId) continue // unmapped → will be handled later
+
+    const [tBoxId, tPinId] = targetPinNodeId.split("-")
+    const tgtPin = targetBpcGraph.pins.find(
+      (p) => p.boxId === tBoxId && p.pinId === tPinId,
+    )
+    if (!tgtPin) continue // safety guard
+
+    pin.boxId = tgtPin.boxId
+    pin.pinId = tgtPin.pinId
+    pin.networkId = tgtPin.networkId
+    pin.color = tgtPin.color
+    pin.offset = tgtPin.offset
+  }
+
+  /* ---------- now rename boxes (only when a mapping exists) ---------- */
+  for (const box of adaptedBpcGraph.boxes) {
+    const mappedId = editOpsResult.newNodeAssignment[box.boxId]
+    if (mappedId !== undefined) {
+      box.boxId = mappedId
+    }
   }
 
   for (const op of editOpsResult.operations) {
@@ -83,14 +92,36 @@ export const netAdaptBpcGraph = (
             kind: "floating",
           })
         } else {
-          const [targetBoxId, targetPinId] = op.targetNodeId.split("-")
+          const splitResult = op.targetNodeId.split("-")
+          if (splitResult.length !== 2) {
+            throw new Error(`Invalid pin node ID format: ${op.targetNodeId}`)
+          }
+          const targetBoxId = splitResult[0]!
+          const targetPinId = splitResult[1]!
           const targetPin = targetBpcGraph.pins.find(
             (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
           )
           if (!targetPin) {
             throw new Error(`Target pin ${op.targetNodeId} not found`)
           }
-          // TODO find correct networkId, generating a new one if necessary
+
+          // Check if the box exists in the adapted graph, if not create it
+          const boxExists = adaptedBpcGraph.boxes.some(
+            (box) => box.boxId === targetBoxId,
+          )
+          if (!boxExists) {
+            const targetBox = targetBpcGraph.boxes.find(
+              (b) => b.boxId === targetBoxId,
+            )
+            if (!targetBox) {
+              throw new Error(`Target box ${targetBoxId} not found`)
+            }
+            adaptedBpcGraph.boxes.push({
+              boxId: targetBoxId,
+              kind: "floating",
+            })
+          }
+
           adaptedBpcGraph.pins.push({
             boxId: targetPin.boxId,
             pinId: targetPin.pinId,
@@ -106,10 +137,14 @@ export const netAdaptBpcGraph = (
           adaptedBpcGraph.boxes = adaptedBpcGraph.boxes.filter(
             (box) => box.boxId !== op.nodeId,
           )
+          // also drop every pin that belonged to the deleted box
+          adaptedBpcGraph.pins = adaptedBpcGraph.pins.filter(
+            (p) => p.boxId !== op.nodeId,
+          )
         } else {
           const [boxId, pinId] = op.nodeId.split("-")
           adaptedBpcGraph.pins = adaptedBpcGraph.pins.filter(
-            (pin) => pin.boxId !== boxId && pin.pinId !== pinId,
+            (pin) => !(pin.boxId === boxId && pin.pinId === pinId),
           )
         }
         break

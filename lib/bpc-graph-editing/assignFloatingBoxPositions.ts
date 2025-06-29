@@ -54,6 +54,7 @@ export const assignFloatingBoxPositions = (
       inferred.y /= candidateCenters.length
     }
 
+    // @ts-ignore
     box.kind = "fixed"
     box.center = inferred
   }
