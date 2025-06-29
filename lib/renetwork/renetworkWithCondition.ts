@@ -49,12 +49,17 @@ export const renetworkWithCondition = (
     to: { box: BpcBox; pin: BpcPin },
     networkId: string,
   ) => boolean,
-): BpcGraph => {
+): {
+  renetworkedGraph: BpcGraph
+  renetworkedNetworkIdMap: Record<string, string>
+} => {
   // Clone the graph deeply
   const out: BpcGraph = {
     boxes: g.boxes.map((b) => structuredClone(b)),
     pins: g.pins.map((p) => structuredClone(p)),
   }
+
+  const renetworkedNetworkIdMap: Record<string, string> = {}
 
   // Build a lookup for boxes by boxId
   const boxById = new Map<string, BpcBox>()
@@ -125,7 +130,7 @@ export const renetworkWithCondition = (
     // Group pins by component
     const pinsByComponent: Record<number, BpcPin[]> = {}
     for (const pin of pins) {
-      const c = pinIdToComponent[pin.pinId]
+      const c = pinIdToComponent[pin.pinId]!
       pinsByComponent[c] ??= []
       pinsByComponent[c]!.push(pin)
     }
@@ -146,5 +151,8 @@ export const renetworkWithCondition = (
     }
   }
 
-  return out
+  return {
+    renetworkedGraph: out,
+    renetworkedNetworkIdMap,
+  }
 }

@@ -38,7 +38,10 @@ test("renetworkWithCondition: no split (all connected)", () => {
   // Always connect all pins
   const conditionStillConnected = () => true
 
-  const out = renetworkWithCondition(g, conditionStillConnected)
+  const out = renetworkWithCondition(
+    g,
+    conditionStillConnected,
+  ).renetworkedGraph
 
   // All pins should share the same networkId, and it should be the original
   const netIds = new Set(out.pins.map((p) => p.networkId))

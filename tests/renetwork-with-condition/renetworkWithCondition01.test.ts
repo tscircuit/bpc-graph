@@ -87,7 +87,7 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     (b) => b.boxId === "schematic_component_0",
   )!.center!
 
-  const renetworkedSubgraph = renetworkWithCondition(
+  const { renetworkedGraph } = renetworkWithCondition(
     bpcGraph,
     (from, to, networkId) => {
       if (!from.box.center || !to.box.center) return true
@@ -103,7 +103,7 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     },
   )
 
-  const leftSubgraphGraphics = getGraphicsForBpcGraph(renetworkedSubgraph, {
+  const leftSubgraphGraphics = getGraphicsForBpcGraph(renetworkedGraph, {
     title: "Renetworked",
   })
 

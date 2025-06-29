@@ -46,7 +46,10 @@ test("renetworkWithCondition splits left/right as expected", () => {
     return (x1 < 0 && x2 < 0) || (x1 >= 0 && x2 >= 0)
   }
 
-  const out = renetworkWithCondition(g, conditionStillConnected)
+  const out = renetworkWithCondition(
+    g,
+    conditionStillConnected,
+  ).renetworkedGraph
 
   // Collect networkIds
   const netIds = new Set(out.pins.map((p) => p.networkId))
@@ -54,16 +57,17 @@ test("renetworkWithCondition splits left/right as expected", () => {
 
   // The two left-side pins should share a networkId
   const leftPins = out.pins.filter(
-    (p) => g.boxes.find((b) => b.boxId === p.boxId)!.center.x + p.offset.x < 0,
+    (p) => g.boxes.find((b) => b.boxId === p.boxId)!.center!.x + p.offset.x < 0,
   )
   expect(new Set(leftPins.map((p) => p.networkId)).size).toBe(1)
 
   // The right-side pin should have its own networkId
   const rightPins = out.pins.filter(
-    (p) => g.boxes.find((b) => b.boxId === p.boxId)!.center.x + p.offset.x >= 0,
+    (p) =>
+      g.boxes.find((b) => b.boxId === p.boxId)!.center!.x + p.offset.x >= 0,
   )
   expect(new Set(rightPins.map((p) => p.networkId)).size).toBe(1)
 
   // The left and right networkIds should be different
-  expect(leftPins[0].networkId).not.toBe(rightPins[0].networkId)
+  expect(leftPins[0]!.networkId).not.toBe(rightPins[0]!.networkId)
 })

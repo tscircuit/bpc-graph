@@ -85,7 +85,7 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
   const component0Center = ogGraph.boxes.find(
     (b) => b.boxId === "schematic_component_0",
   )!.center!
-  const renetworkedSubgraph = renetworkWithCondition(
+  const { renetworkedGraph, renetworkedNetworkIdMap } = renetworkWithCondition(
     ogGraph,
     (from, to, networkId) => {
       if (!from.box.center || !to.box.center) return true
@@ -101,12 +101,12 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     },
   )
 
-  const renetworkedGraphics = getGraphicsForBpcGraph(renetworkedSubgraph, {
+  const renetworkedGraphics = getGraphicsForBpcGraph(renetworkedGraph, {
     title: "Renetworked",
   })
 
   const leftSubgraph = getBoxSideSubgraph({
-    bpcGraph: renetworkedSubgraph,
+    bpcGraph: renetworkedGraph,
     boxId: "schematic_component_0",
     side: "left",
   })
@@ -116,7 +116,7 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
   })
 
   const rightSubgraph = getBoxSideSubgraph({
-    bpcGraph: renetworkedSubgraph,
+    bpcGraph: renetworkedGraph,
     boxId: "schematic_component_0",
     side: "right",
   })

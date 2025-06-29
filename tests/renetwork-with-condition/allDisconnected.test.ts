@@ -38,7 +38,10 @@ test("renetworkWithCondition: all pins disconnected", () => {
   // Never connect any pins
   const conditionStillConnected = () => false
 
-  const out = renetworkWithCondition(g, conditionStillConnected)
+  const out = renetworkWithCondition(
+    g,
+    conditionStillConnected,
+  ).renetworkedGraph
 
   // Each pin should have its own unique networkId
   const netIds = out.pins.map((p) => p.networkId)
