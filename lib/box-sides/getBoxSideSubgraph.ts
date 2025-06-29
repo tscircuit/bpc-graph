@@ -36,9 +36,47 @@ export const getBoxSideSubgraph = ({
   for (const p of bpcGraph.pins) {
     if (p.boxId === boxId) {
       const pDir = getPinDirection(bpcGraph, p.pinId)
-      console.log("p", p.pinId, pDir, dir)
       if (pDir === dir || dir === null) {
         subgraph.pins.push({ ...structuredClone(p), boxId })
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------
+  //  Collect the networks of the just-added root-side pins
+  // ------------------------------------------------------------------
+  const visitedNetIds = new Set<string>()
+  for (const p of subgraph.pins) visitedNetIds.add(p.networkId)
+
+  // ------------------------------------------------------------------
+  //  Helper to add pins / boxes only once
+  // ------------------------------------------------------------------
+  const addedPinIds = new Set<string>(subgraph.pins.map(p => p.pinId))
+  const addedBoxIds = new Set<string>(subgraph.boxes.map(b => b.boxId))
+
+  const addBoxIfNeeded = (boxId: string) => {
+    if (addedBoxIds.has(boxId)) return
+    const b = bpcGraph.boxes.find(bb => bb.boxId === boxId)
+    if (b) {
+      subgraph.boxes.push(structuredClone(b))
+      addedBoxIds.add(boxId)
+    }
+  }
+
+  const addPinIfNeeded = (pin: BpcPin) => {
+    if (addedPinIds.has(pin.pinId)) return
+    subgraph.pins.push(structuredClone(pin))
+    addedPinIds.add(pin.pinId)
+    addBoxIfNeeded(pin.boxId)
+  }
+
+  // ------------------------------------------------------------------
+  //  Bring in every pin (and its box) that shares any of those networks
+  // ------------------------------------------------------------------
+  for (const netId of visitedNetIds) {
+    for (const pin of bpcGraph.pins) {
+      if (pin.networkId === netId) {
+        addPinIfNeeded(pin)
       }
     }
   }
