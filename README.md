@@ -1,4 +1,4 @@
-# box-pin-color-graph
+# bpc-graph
 
 A box pin color (BPC) graph is a specialized graph structure where:
 
