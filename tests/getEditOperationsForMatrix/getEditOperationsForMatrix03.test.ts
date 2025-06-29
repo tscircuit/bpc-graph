@@ -30,7 +30,6 @@ test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
     sourceBoxB: "targetBoxB",
     sourceBoxC: "sourceBoxC",
   }
-  const netAssignment = {}
 
   const { operations } = getEditOperationsForMatrix({
     sourceAdjMatrix,
@@ -38,7 +37,6 @@ test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
     sourceMatrixMapping,
     targetMatrixMapping,
     nodeAssignment: boxAssignment,
-    netAssignment,
   })
 
   // Expect a single swap_indices operation exchanging rows/columns 1 and 2

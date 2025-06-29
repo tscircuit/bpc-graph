@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
+import type { MixedBpcGraph } from "lib/types"
 
 const mixed = {
   boxes: [
@@ -32,7 +33,7 @@ const mixed = {
 }
 
 test("convertToFlatBpcGraph generates correct nodes and edges", () => {
-  const flat = convertToFlatBpcGraph(mixed)
+  const flat = convertToFlatBpcGraph(mixed as MixedBpcGraph)
 
   // 2 boxes + 3 pins
   expect(flat.nodes.length).toBe(5)

@@ -25,7 +25,6 @@ test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
     sourceBoxA: "targetBoxA",
     sourceBoxB: "targetBoxB",
   }
-  const netAssignment = {}
 
   const { operations } = getEditOperationsForMatrix({
     sourceAdjMatrix,
@@ -33,7 +32,6 @@ test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
     sourceMatrixMapping,
     targetMatrixMapping,
     nodeAssignment: boxAssignment,
-    netAssignment,
   })
 
   expect(operations).toEqual([
