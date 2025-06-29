@@ -1,6 +1,6 @@
-import type { BpcGraph, MixedBpcGraph } from "lib"
+import type { BpcGraph, MixedBpcGraph } from "../types"
 import { getAdjacencyMatrixFromFlatBpcGraph } from "./getAdjacencyMatrixFromFlatBpcGraph"
-import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
+import { convertToFlatBpcGraph } from "../flat-bpc/convertToFlatBpcGraph"
 import { wlFeatureVec } from "./wlFeatureVec"
 import { getWlDotProduct } from "./wlDotProduct"
 
