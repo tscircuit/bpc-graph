@@ -48,7 +48,7 @@ export const netAdaptBpcGraph = (
     targetMatrixMapping: targetAdjMatrixResult.mapping,
   })
 
-  let adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
+  const adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
 
   /* ---------- rename pins first (still using original source ids) ---------- */
   for (const pin of adaptedBpcGraph.pins) {
@@ -92,14 +92,36 @@ export const netAdaptBpcGraph = (
             kind: "floating",
           })
         } else {
-          const [targetBoxId, targetPinId] = op.targetNodeId.split("-")
+          const splitResult = op.targetNodeId.split("-")
+          if (splitResult.length !== 2) {
+            throw new Error(`Invalid pin node ID format: ${op.targetNodeId}`)
+          }
+          const targetBoxId = splitResult[0]!
+          const targetPinId = splitResult[1]!
           const targetPin = targetBpcGraph.pins.find(
             (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
           )
           if (!targetPin) {
             throw new Error(`Target pin ${op.targetNodeId} not found`)
           }
-          // TODO find correct networkId, generating a new one if necessary
+
+          // Check if the box exists in the adapted graph, if not create it
+          const boxExists = adaptedBpcGraph.boxes.some(
+            (box) => box.boxId === targetBoxId,
+          )
+          if (!boxExists) {
+            const targetBox = targetBpcGraph.boxes.find(
+              (b) => b.boxId === targetBoxId,
+            )
+            if (!targetBox) {
+              throw new Error(`Target box ${targetBoxId} not found`)
+            }
+            adaptedBpcGraph.boxes.push({
+              boxId: targetBoxId,
+              kind: "floating",
+            })
+          }
+
           adaptedBpcGraph.pins.push({
             boxId: targetPin.boxId,
             pinId: targetPin.pinId,
