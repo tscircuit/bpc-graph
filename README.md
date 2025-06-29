@@ -12,6 +12,12 @@ schematic like connection graph is produced.
 
 This repository provides utilities for manipulating and comparing BPC graphs.
 
+## Function Links
+
+- [assignFloatingBoxPositions](#assignfloatingboxpositions)
+- [netAdaptBpcGraph](#netadaptbpcgraph)
+- [renetworkWithCondition](#renetworkwithcondition)
+
 ## Where BPC graphs are used
 
 When automatically laying out schematics the tools in this repo convert an initial
@@ -62,11 +68,17 @@ The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
 
 ### Graph Editing
 
-- **assignFloatingBoxPositions(graph)** – infers positions for floating boxes
-- **netAdaptBpcGraph(source, target)** – adapt a fixed graph to match the networks of a target graph
-- **renetworkWithCondition(graph, predicate)** – split networks based on a predicate. The example in `tests/readme/renetworkExample.test.ts` produces:
+#### assignFloatingBoxPositions
 
-![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
+![assignFloatingBoxPositions](tests/bpc-graph-editing/__snapshots__/assignFloatingBoxPositions.snap.svg)
+
+#### netAdaptBpcGraph
+
+![netAdaptBpcGraph](tests/bpc-graph-editing/__snapshots__/netAdaptBpcGraph02.snap.svg)
+
+#### renetworkWithCondition
+
+![renetworkWithCondition](tests/readme/__snapshots__/renetworkExample.snap.svg)
 
 ### Conversion Utilities
 

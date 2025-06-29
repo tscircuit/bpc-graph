@@ -3,58 +3,42 @@
   <g>
     <circle data-type="point" data-label="p
 red
-net" data-x="-0.5" data-y="0" cx="51.313131313131336" cy="320" r="3" fill="red" /><text x="56.313131313131336" y="315" font-family="sans-serif" font-size="12">p
-      red
-      net</text>
+net" data-x="-0.5" data-y="0" cx="51.313131313131336" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p1
 red
-net" data-x="-0.5" data-y="0" cx="51.313131313131336" cy="320" r="3" fill="red" /><text x="56.313131313131336" y="315" font-family="sans-serif" font-size="12">p1
-      red
-      net</text>
+net" data-x="-0.5" data-y="0" cx="51.313131313131336" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p2
 red
-net" data-x="0.5" data-y="0" cx="277.57575757575756" cy="320" r="3" fill="red" /><text x="282.57575757575756" y="315" font-family="sans-serif" font-size="12">p2
-      red
-      net</text>
+net" data-x="0.5" data-y="0" cx="277.57575757575756" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p
 red
-net" data-x="0.5" data-y="0" cx="277.57575757575756" cy="320" r="3" fill="red" /><text x="282.57575757575756" y="315" font-family="sans-serif" font-size="12">p
-      red
-      net</text>
+net" data-x="0.5" data-y="0" cx="277.57575757575756" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p
 red
-net" data-x="0.875" data-y="0" cx="362.4242424242424" cy="320" r="3" fill="red" /><text x="367.4242424242424" y="315" font-family="sans-serif" font-size="12">p
-      red
-      net</text>
+net" data-x="0.875" data-y="0" cx="362.4242424242424" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p1
 red
-net" data-x="0.875" data-y="0" cx="362.4242424242424" cy="320" r="3" fill="red" /><text x="367.4242424242424" y="315" font-family="sans-serif" font-size="12">p1
-      red
-      net</text>
+net" data-x="0.875" data-y="0" cx="362.4242424242424" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p2
 red
-net" data-x="1.875" data-y="0" cx="588.6868686868686" cy="320" r="3" fill="red" /><text x="593.6868686868686" y="315" font-family="sans-serif" font-size="12">p2
-      red
-      net</text>
+net" data-x="1.875" data-y="0" cx="588.6868686868686" cy="320" r="3" fill="red" />
   </g>
   <g>
     <circle data-type="point" data-label="p
 red
-net" data-x="1.875" data-y="0" cx="588.6868686868686" cy="320" r="3" fill="red" /><text x="593.6868686868686" y="315" font-family="sans-serif" font-size="12">p
-      red
-      net</text>
+net" data-x="1.875" data-y="0" cx="588.6868686868686" cy="320" r="3" fill="red" />
   </g>
   <g>
     <polyline data-points="-0.5,0 -0.5,0" data-type="line" data-label="" points="51.313131313131336,320 51.313131313131336,320" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
@@ -93,23 +77,23 @@ net" data-x="1.875" data-y="0" cx="588.6868686868686" cy="320" r="3" fill="red" 
     <polyline data-points="1.875,0 0.875,0" data-type="line" data-label="" points="588.6868686868686,320 362.4242424242424,320" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
   </g>
   <g>
-    <rect data-type="rect" data-label="L" data-x="-0.5" data-y="0" x="40.000000000000014" y="308.6868686868687" width="22.62626262626263" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="45.000000000000014" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.3575757575757565" fill="black">L</text>
+    <rect data-type="rect" data-label="L" data-x="-0.5" data-y="0" x="40.000000000000014" y="308.6868686868687" width="22.62626262626263" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
   </g>
   <g>
-    <rect data-type="rect" data-label="M" data-x="0" data-y="0" x="40.000000000000014" y="308.6868686868687" width="248.8888888888889" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="45.000000000000014" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="8.145454545454545" fill="black">M</text>
+    <rect data-type="rect" data-label="M" data-x="0" data-y="0" x="40.000000000000014" y="308.6868686868687" width="248.8888888888889" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
   </g>
   <g>
-    <rect data-type="rect" data-label="R" data-x="0.5" data-y="0" x="266.26262626262627" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="271.26262626262627" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.357575757575757" fill="black">R</text>
+    <rect data-type="rect" data-label="R" data-x="0.5" data-y="0" x="266.26262626262627" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
   </g>
   <g>
-    <rect data-type="rect" data-label="L" data-x="0.875" data-y="0" x="351.1111111111111" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="356.1111111111111" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.357575757575757" fill="black">L</text>
+    <rect data-type="rect" data-label="L" data-x="0.875" data-y="0" x="351.1111111111111" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
   </g>
   <g>
-    <rect data-type="rect" data-label="M" data-x="1.375" data-y="0" x="351.1111111111111" y="308.6868686868687" width="248.8888888888889" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="356.1111111111111" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="8.145454545454545" fill="black">M</text>
+    <rect data-type="rect" data-label="M" data-x="1.375" data-y="0" x="351.1111111111111" y="308.6868686868687" width="248.8888888888889" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
   </g>
   <g>
-    <rect data-type="rect" data-label="R" data-x="1.875" data-y="0" x="577.3737373737374" y="308.6868686868687" width="22.626262626262587" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" /><text x="582.3737373737374" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.3575757575757552" fill="black">R</text>
-  </g><text data-type="text" data-label="Original" data-x="-0.55" data-y="0.05" x="40.000000000000014" y="308.6868686868687" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Original</text><text data-type="text" data-label="Renetworked" data-x="0.825" data-y="0.05" x="351.1111111111111" y="308.6868686868687" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Renetworked</text>
+    <rect data-type="rect" data-label="R" data-x="1.875" data-y="0" x="577.3737373737374" y="308.6868686868687" width="22.626262626262587" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142857" />
+  </g><text data-type="text" data-label="Original" data-x="-0.55" data-y="0.05" x="40.000000000000014" y="308.6868686868687" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Original</text><text data-type="text" data-label="before" data-x="-0.55" data-y="-0.05" x="40.000000000000014" y="331.3131313131313" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">before</text><text data-type="text" data-label="Renetworked" data-x="0.825" data-y="0.05" x="351.1111111111111" y="308.6868686868687" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Renetworked</text><text data-type="text" data-label="after" data-x="0.825" data-y="-0.05" x="351.1111111111111" y="331.3131313131313" fill="black" font-size="1.1313131313131315" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">after</text>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />
     <line id="crosshair-v" x1="0" x2="640" stroke="#666" stroke-width="0.5" /><text id="coordinates" font-family="monospace" font-size="12" fill="#666"></text>
