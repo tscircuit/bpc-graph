@@ -27,8 +27,14 @@ const g: BpcGraph = {
 }
 
 test("getGraphicsExample", () => {
-  const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(g), {
-    backgroundColor: "white",
-  })
+  const svg = getSvgFromGraphicsObject(
+    getGraphicsForBpcGraph(g, {
+      title: "Example",
+      caption: "getGraphicsForBpcGraph",
+    }),
+    {
+      backgroundColor: "white",
+    },
+  )
   expect(svg).toMatchSvgSnapshot(import.meta.path)
 })

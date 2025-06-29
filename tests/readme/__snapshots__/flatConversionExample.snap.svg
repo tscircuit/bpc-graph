@@ -1,0 +1,108 @@
+<svg width="640" height="640" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="white" />
+  <g>
+    <circle data-type="point" data-label="P1
+red
+N1" data-x="0.5" data-y="0" cx="51.313131313131336" cy="320" r="3" fill="red" /><text x="56.313131313131336" y="315" font-family="sans-serif" font-size="12">P1
+      red
+      N1</text>
+  </g>
+  <g>
+    <circle data-type="point" data-label="P1
+red
+N1" data-x="1.5" data-y="0" cx="277.5757575757576" cy="320" r="3" fill="red" /><text x="282.5757575757576" y="315" font-family="sans-serif" font-size="12">P1
+      red
+      N1</text>
+  </g>
+  <g>
+    <circle data-type="point" data-label="P1
+red
+net0" data-x="1.8750000000000002" data-y="0" cx="362.42424242424255" cy="320" r="3" fill="red" /><text x="367.42424242424255" y="315" font-family="sans-serif" font-size="12">P1
+      red
+      net0</text>
+  </g>
+  <g>
+    <circle data-type="point" data-label="P1
+red
+net0" data-x="2.875" data-y="0" cx="588.6868686868688" cy="320" r="3" fill="red" /><text x="593.6868686868688" y="315" font-family="sans-serif" font-size="12">P1
+      red
+      net0</text>
+  </g>
+  <g>
+    <polyline data-points="0.5,0 0.5,0" data-type="line" data-label="" points="51.313131313131336,320 51.313131313131336,320" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="1.8750000000000002,0 1.8750000000000002,0" data-type="line" data-label="" points="362.42424242424255,320 362.42424242424255,320" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="B1" data-x="0.5" data-y="0" x="40.00000000000003" y="308.6868686868687" width="22.62626262626263" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142856" /><text x="45.00000000000003" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.3575757575757565" fill="black">B1</text>
+  </g>
+  <g>
+    <rect data-type="rect" data-label="B2" data-x="1.5" data-y="0" x="266.2626262626263" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142856" /><text x="271.2626262626263" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.357575757575757" fill="black">B2</text>
+  </g>
+  <g>
+    <rect data-type="rect" data-label="B1" data-x="1.8750000000000002" data-y="0" x="351.1111111111112" y="308.6868686868687" width="22.626262626262644" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142856" /><text x="356.1111111111112" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.357575757575757" fill="black">B1</text>
+  </g>
+  <g>
+    <rect data-type="rect" data-label="B2" data-x="2.875" data-y="0" x="577.3737373737374" y="308.6868686868687" width="22.626262626262587" height="22.626262626262587" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004419642857142856" /><text x="582.3737373737374" y="308.6868686868687" font-family="sans-serif" dominant-baseline="text-before-edge" font-size="1.3575757575757552" fill="black">B2</text>
+  </g><text data-type="text" data-label="Original" data-x="0.45" data-y="0.05" x="40.00000000000003" y="308.6868686868687" fill="black" font-size="1.1313131313131317" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Original</text><text data-type="text" data-label="mixed" data-x="0.45" data-y="-0.05" x="40.00000000000003" y="331.3131313131313" fill="black" font-size="1.1313131313131317" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">mixed</text><text data-type="text" data-label="Round Trip" data-x="1.8250000000000002" data-y="0.05" x="351.1111111111112" y="308.6868686868687" fill="black" font-size="1.1313131313131317" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Round Trip</text><text data-type="text" data-label="flat -&gt; mixed" data-x="1.8250000000000002" data-y="-0.05" x="351.1111111111112" y="331.3131313131313" fill="black" font-size="1.1313131313131317" font-family="sans-serif" text-anchor="start" dominant-baseline="text-before-edge">
+    <![CDATA[flat -> mixed]]>
+  </text>
+  <g id="crosshair" style="display: none">
+    <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />
+    <line id="crosshair-v" x1="0" x2="640" stroke="#666" stroke-width="0.5" /><text id="coordinates" font-family="monospace" font-size="12" fill="#666"></text>
+  </g>
+  <script>
+    <![CDATA[
+    document.currentScript.parentElement.addEventListener('mousemove', (e) => {
+      const svg = e.currentTarget;
+      const rect = svg.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const crosshair = svg.getElementById('crosshair');
+      const h = svg.getElementById('crosshair-h');
+      const v = svg.getElementById('crosshair-v');
+      const coords = svg.getElementById('coordinates');
+
+      crosshair.style.display = 'block';
+      h.setAttribute('x1', '0');
+      h.setAttribute('x2', '640');
+      h.setAttribute('y1', y);
+      h.setAttribute('y2', y);
+      v.setAttribute('x1', x);
+      v.setAttribute('x2', x);
+      v.setAttribute('y1', '0');
+      v.setAttribute('y2', '640');
+
+      // Calculate real coordinates using inverse transformation
+      const matrix = {
+        "a": 226.2626262626263,
+        "c": 0,
+        "e": -61.81818181818181,
+        "b": 0,
+        "d": -226.2626262626263,
+        "f": 320
+      };
+      // Manually invert and apply the affine transform
+      // Since we only use translate and scale, we can directly compute:
+      // x' = (x - tx) / sx
+      // y' = (y - ty) / sy
+      const sx = matrix.a;
+      const sy = matrix.d;
+      const tx = matrix.e;
+      const ty = matrix.f;
+      const realPoint = {
+        x: (x - tx) / sx,
+        y: (y - ty) / sy // Flip y back since we used negative scale
+      }
+
+      coords.textContent = `(${realPoint.x.toFixed(2)}, ${realPoint.y.toFixed(2)})`;
+      coords.setAttribute('x', (x + 5).toString());
+      coords.setAttribute('y', (y - 5).toString());
+    });
+    document.currentScript.parentElement.addEventListener('mouseleave', () => {
+      document.currentScript.parentElement.getElementById('crosshair').style.display = 'none';
+    });
+    ]]>
+  </script>
+</svg>

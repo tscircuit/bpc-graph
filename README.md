@@ -12,6 +12,15 @@ schematic like connection graph is produced.
 
 This repository provides utilities for manipulating and comparing BPC graphs.
 
+## Jump to examples
+
+- [assignFloatingBoxPositions](#assignfloatingboxpositions)
+- [netAdaptBpcGraph](#netadaptbpcgraph)
+- [renetworkWithCondition](#renetworkwithcondition)
+- [convertToFlatBpcGraph](#converttoflatbpcgraph)
+- [convertFromFlatBpcGraph](#convertfromflatbpcgraph)
+- [ForceDirectedLayoutSolver](#forcedirectedlayoutsolver)
+
 ## Where BPC graphs are used
 
 When automatically laying out schematics the tools in this repo convert an initial
@@ -45,7 +54,13 @@ const graph = {
   ],
 }
 
-const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), { backgroundColor: "white" })
+const svg = getSvgFromGraphicsObject(
+  getGraphicsForBpcGraph(graph, {
+    title: "Example",
+    caption: "quick",
+  }),
+  { backgroundColor: "white" },
+)
 ```
 
 The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
@@ -63,20 +78,30 @@ The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
 ### Graph Editing
 
 - **assignFloatingBoxPositions(graph)** – infers positions for floating boxes
-- **netAdaptBpcGraph(source, target)** – adapt a fixed graph to match the networks of a target graph
-- **renetworkWithCondition(graph, predicate)** – split networks based on a predicate. The example in `tests/readme/renetworkExample.test.ts` produces:
 
-![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
+  ![assignFloatingBoxPositions](tests/bpc-graph-editing/__snapshots__/assignFloatingBoxPositions.snap.svg)
+
+- **netAdaptBpcGraph(source, target)** – adapt a fixed graph to match the networks of a target graph
+
+  ![netAdaptBpcGraph](tests/bpc-graph-editing/__snapshots__/netAdaptBpcGraph02.snap.svg)
+
+- **renetworkWithCondition(graph, predicate)** – split networks based on a predicate
+
+  ![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
 
 ### Conversion Utilities
 
 - **convertToFlatBpcGraph(mixed)** – flatten a BPC graph into nodes and undirected edges
 - **convertFromFlatBpcGraph(flat)** – rebuild a mixed graph from the flat representation
 
+  ![Flat conversion](tests/readme/__snapshots__/flatConversionExample.snap.svg)
+
 ### Similarity & Layout
 
 - **getBpcGraphWlDistance(a, b)** – compute Weisfeiler-Leman distance between graphs
 - **ForceDirectedLayoutSolver** – physics based solver for positioning boxes
+
+  ![Force layout](tests/readme/__snapshots__/forceDirectedExample.snap.svg)
 
 All type definitions can be imported from `bpc-graph` as well and are located in
 `lib/types.ts`.
