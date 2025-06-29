@@ -2,8 +2,14 @@ import type { BpcGraph } from "lib/types"
 
 export const mergeBoxSideSubgraphs = (
   graphs: BpcGraph[],
-  _boxId: string,
+  {
+    renetworkedNetworkIdMap,
+  }: {
+    renetworkedNetworkIdMap?: Record<string, string>
+  } = {},
 ): BpcGraph => {
+  renetworkedNetworkIdMap ??= {}
+
   const merged: BpcGraph = { boxes: [], pins: [] }
   const boxMap = new Map<string, BpcGraph["boxes"][0]>()
   const pinMap = new Map<string, BpcGraph["pins"][0]>()

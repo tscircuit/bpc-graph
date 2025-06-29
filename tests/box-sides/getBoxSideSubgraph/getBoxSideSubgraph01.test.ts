@@ -3,7 +3,11 @@ import { test, expect } from "bun:test"
 import { getBoxSideSubgraph } from "lib/box-sides/getBoxSideSubgraph"
 import type { BpcGraph } from "lib/types"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph, renetworkWithCondition } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  mergeBoxSideSubgraphs,
+  renetworkWithCondition,
+} from "lib/index"
 import {
   getSvgFromGraphicsObject,
   stackGraphicsVertically,
@@ -125,11 +129,20 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     title: "Right Subgraph",
   })
 
+  const mergedGraph = mergeBoxSideSubgraphs([leftSubgraph, rightSubgraph], {
+    renetworkedNetworkIdMap,
+  })
+
+  const mergedGraphics = getGraphicsForBpcGraph(mergedGraph, {
+    title: "Merged",
+  })
+
   const allGraphics = stackGraphicsVertically([
     ogGraphics,
     renetworkedGraphics,
     leftSubgraphGraphics,
     rightSubgraphGraphics,
+    mergedGraphics,
   ])
 
   expect(
