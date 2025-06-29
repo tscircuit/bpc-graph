@@ -12,6 +12,23 @@ schematic like connection graph is produced.
 
 This repository provides utilities for manipulating and comparing BPC graphs.
 
+## Contents
+
+- [Where BPC graphs are used](#where-bpc-graphs-are-used)
+- [Installation](#installation)
+- [Quick Example](#quick-example)
+- [API](#api)
+  - [getGraphBounds](#getgraphboundsgraph)
+  - [getPinPosition](#getpinpositiongraph-pinid)
+  - [getPinDirection](#getpindirectiongraph-pinid)
+  - [assignFloatingBoxPositions](#assignfloatingboxpositionsgraph)
+  - [netAdaptBpcGraph](#netadaptbpcgraphsource-target)
+  - [renetworkWithCondition](#renetworkwithconditiongraph-predicate)
+  - [convertToFlatBpcGraph](#convertoflatbpcgraphmixed)
+  - [convertFromFlatBpcGraph](#convertfromflatbpcgraphflat)
+  - [getBpcGraphWlDistance](#getbpcgraphwldistancea-b)
+  - [ForceDirectedLayoutSolver](#forcedirectedlayoutsolver)
+
 ## Where BPC graphs are used
 
 When automatically laying out schematics the tools in this repo convert an initial
@@ -54,29 +71,45 @@ The snapshot generated in `tests/readme/getGraphicsExample.test.ts` renders as:
 
 ## API
 
-### Graph Utilities
+### getGraphBounds(graph)
 
-- **getGraphBounds(graph)** → `{ minX, minY, maxX, maxY }`
-- **getPinPosition(graph, pinId)** → absolute coordinates of a pin
-- **getPinDirection(graph, pinId)** → `"x-" | "x+" | "y-" | "y+" | null`
+![Graph utils example](tests/readme/__snapshots__/graphUtilsExample.snap.svg)
 
-### Graph Editing
+### getPinPosition(graph, pinId)
 
-- **assignFloatingBoxPositions(graph)** – infers positions for floating boxes
-- **netAdaptBpcGraph(source, target)** – adapt a fixed graph to match the networks of a target graph
-- **renetworkWithCondition(graph, predicate)** – split networks based on a predicate. The example in `tests/readme/renetworkExample.test.ts` produces:
+_See graph utils example above_
+
+### getPinDirection(graph, pinId)
+
+_See graph utils example above_
+
+### assignFloatingBoxPositions(graph)
+
+![Assign floating](tests/bpc-graph-editing/__snapshots__/assignFloatingBoxPositions.snap.svg)
+
+### netAdaptBpcGraph(source, target)
+
+![Net adapt](tests/bpc-graph-editing/__snapshots__/netAdaptBpcGraph03.snap.svg)
+
+### renetworkWithCondition(graph, predicate)
 
 ![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
 
-### Conversion Utilities
+### convertToFlatBpcGraph(mixed)
 
-- **convertToFlatBpcGraph(mixed)** – flatten a BPC graph into nodes and undirected edges
-- **convertFromFlatBpcGraph(flat)** – rebuild a mixed graph from the flat representation
+![Convert flat](tests/readme/__snapshots__/convertFlatExample.snap.svg)
 
-### Similarity & Layout
+### convertFromFlatBpcGraph(flat)
 
-- **getBpcGraphWlDistance(a, b)** – compute Weisfeiler-Leman distance between graphs
-- **ForceDirectedLayoutSolver** – physics based solver for positioning boxes
+_Result identical to original, see convert flat example above_
+
+### getBpcGraphWlDistance(a, b)
+
+![WL distance](tests/adjacency-matrix-network-similarity/__snapshots__/eigen01.snap.svg)
+
+### ForceDirectedLayoutSolver
+
+![Force solver](tests/schematic-partition-layout-with-corpus/__snapshots__/partition01.snap.svg)
 
 All type definitions can be imported from `bpc-graph` as well and are located in
 `lib/types.ts`.
