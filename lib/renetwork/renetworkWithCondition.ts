@@ -49,4 +49,102 @@ export const renetworkWithCondition = (
     to: { box: BpcBox; pin: BpcPin },
     networkId: string,
   ) => boolean,
-) => {}
+): BpcGraph => {
+  // Clone the graph deeply
+  const out: BpcGraph = {
+    boxes: g.boxes.map((b) => structuredClone(b)),
+    pins: g.pins.map((p) => structuredClone(p)),
+  }
+
+  // Build a lookup for boxes by boxId
+  const boxById = new Map<string, BpcBox>()
+  for (const box of out.boxes) {
+    boxById.set(box.boxId, box)
+  }
+
+  // For generating unique network ids
+  let netIdCounter = 1
+  const usedNetIds = new Set<string>(out.pins.map((p) => p.networkId))
+
+  function getFreshNetId(base: string) {
+    let candidate: string
+    do {
+      candidate = `${base}_${netIdCounter++}`
+    } while (usedNetIds.has(candidate))
+    usedNetIds.add(candidate)
+    return candidate
+  }
+
+  // For each original network, build connectivity and split into components
+  const pinsByNetwork: Record<string, BpcPin[]> = {}
+  for (const pin of out.pins) {
+    pinsByNetwork[pin.networkId] ??= []
+    pinsByNetwork[pin.networkId]!.push(pin)
+  }
+
+  for (const [networkId, pins] of Object.entries(pinsByNetwork)) {
+    // Build adjacency: pinId -> Set<pinId>
+    const adj = new Map<string, Set<string>>()
+    for (const pin of pins) adj.set(pin.pinId, new Set())
+    for (let i = 0; i < pins.length; i++) {
+      for (let j = i + 1; j < pins.length; j++) {
+        const pinA = pins[i]!
+        const pinB = pins[j]!
+        const boxA = boxById.get(pinA.boxId)!
+        const boxB = boxById.get(pinB.boxId)!
+        if (
+          conditionStillConnected(
+            { box: boxA, pin: pinA },
+            { box: boxB, pin: pinB },
+            networkId,
+          )
+        ) {
+          adj.get(pinA.pinId)!.add(pinB.pinId)
+          adj.get(pinB.pinId)!.add(pinA.pinId)
+        }
+      }
+    }
+
+    // Find connected components (DFS)
+    const pinIdToComponent: Record<string, number> = {}
+    let compIdx = 0
+    for (const pin of pins) {
+      if (pinIdToComponent[pin.pinId] !== undefined) continue
+      const stack = [pin.pinId]
+      while (stack.length) {
+        const pid = stack.pop()!
+        if (pinIdToComponent[pid] !== undefined) continue
+        pinIdToComponent[pid] = compIdx
+        for (const nb of adj.get(pid) ?? []) {
+          if (pinIdToComponent[nb] === undefined) stack.push(nb)
+        }
+      }
+      compIdx++
+    }
+
+    // Group pins by component
+    const pinsByComponent: Record<number, BpcPin[]> = {}
+    for (const pin of pins) {
+      const c = pinIdToComponent[pin.pinId]
+      pinsByComponent[c] ??= []
+      pinsByComponent[c]!.push(pin)
+    }
+
+    // Assign networkIds: first component keeps original, others get fresh
+    let first = true
+    for (const [c, pinsInComp] of Object.entries(pinsByComponent)) {
+      let newNetId: string
+      if (first) {
+        newNetId = networkId
+        first = false
+      } else {
+        newNetId = getFreshNetId(networkId)
+      }
+      for (const pin of pinsInComp) {
+        pin.networkId = newNetId
+      }
+    }
+  }
+
+  return out
+}
