@@ -18,6 +18,7 @@ import {
   stackGraphicsVertically,
   createGraphicsGrid,
   type GraphicsObject,
+  type Circle,
 } from "graphics-debug"
 import { wlFeatureVec } from "lib/adjacency-matrix-network-similarity/wlFeatureVec"
 import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
@@ -41,12 +42,16 @@ test("adjacencyMatrixVisual01", () => {
       const bpcGraph1 = corpus[designs[i]!]
       const bpcGraph2 = corpus[designs[j]!]
 
-      const graphics1 = getGraphicsForBpcGraph(bpcGraph1 as MixedBpcGraph)
-      const graphics2 = getGraphicsForBpcGraph(bpcGraph2 as MixedBpcGraph)
+      const graphics1 = getGraphicsForBpcGraph(bpcGraph1 as MixedBpcGraph, {
+        title: `Target: ${designs[i]!}`,
+      })
+      const graphics2 = getGraphicsForBpcGraph(bpcGraph2 as MixedBpcGraph, {
+        title: `Source: ${designs[j]!}`,
+      })
 
       const { boxAssignment } = getApproximateAssignments(
-        bpcGraph1 as MixedBpcGraph,
         bpcGraph2 as MixedBpcGraph,
+        bpcGraph1 as MixedBpcGraph,
       )
 
       const assignedBoxIds1 = Object.keys(boxAssignment)
@@ -131,7 +136,7 @@ test("adjacencyMatrixVisual01", () => {
         bpcGraph1 as MixedBpcGraph,
       )
       const adaptedGraphics = getGraphicsForBpcGraph(adaptedBpcGraph, {
-        title: `Adapted (boxes: ${adaptedBpcGraph.boxes.length})`,
+        title: "Adapted",
       })
 
       const sideBySideGraphics = stackGraphicsHorizontally([
@@ -205,10 +210,29 @@ test("adjacencyMatrixVisual01", () => {
   const giantGraphics = createGraphicsGrid(graphicsGridCells, {
     gapAsCellWidthFraction: 0.2,
   })
+  const giantGraphicsBounds = getBounds(giantGraphics)
+
+  const pointSize =
+    (giantGraphicsBounds.maxX - giantGraphicsBounds.minX) * 0.001
 
   expect(
     getSvgFromGraphicsObject(
-      { ...giantGraphics, points: [] },
+      {
+        ...giantGraphics,
+        points: [],
+        circles: [
+          ...(giantGraphics.circles ?? []),
+          ...(giantGraphics.points ?? []).map(
+            (p) =>
+              ({
+                center: { x: p.x, y: p.y },
+                radius: pointSize,
+                fill: p.color,
+                label: p.label,
+              }) as Circle,
+          ),
+        ],
+      }, //, points: [] },
       {
         backgroundColor: "white",
         includeTextLabels: false, // ["rects"],
