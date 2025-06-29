@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test"
-import { findIsolatedBoxSides } from "lib/graph-utils/box-sides/findIsolatedBoxSides"
+import { findIsolatedBoxSides } from "lib/box-sides/findIsolatedBoxSides"
 import type { BpcGraph } from "lib/types"
 
 test("findIsolatedBoxSides isolates disconnected sides", () => {

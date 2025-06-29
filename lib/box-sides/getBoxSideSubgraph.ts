@@ -1,5 +1,8 @@
-import type { BpcGraph, MixedBpcGraph, Direction } from "lib/types"
-import { getPinDirection } from "lib/graph-utils/getPinDirection"
+import type { BpcGraph, MixedBpcGraph, Direction, BpcPin } from "lib/types"
+import {
+  getPinDirection,
+  getPinDirectionOrThrow,
+} from "lib/graph-utils/getPinDirection"
 
 export type Side = "left" | "right" | "top" | "bottom"
 
@@ -14,39 +17,33 @@ export const getBoxSideSubgraph = ({
   bpcGraph,
   boxId,
   side,
+  followCondition = (from: BpcPin, to: BpcPin) => true,
 }: {
   bpcGraph: BpcGraph
   boxId: string
   side: Side
+  followCondition?: (from: BpcPin, to: BpcPin) => boolean
 }): MixedBpcGraph => {
   const dir = sideToDirection[side]
-  const sideBoxId = `${boxId}-${side}`
 
-  const result: MixedBpcGraph = { boxes: [], pins: [] }
+  const subgraph: MixedBpcGraph = { boxes: [], pins: [] }
 
   const box = bpcGraph.boxes.find((b) => b.boxId === boxId)
   if (!box) throw new Error(`Box \"${boxId}\" not found`)
 
-  // Add all other boxes
-  for (const b of bpcGraph.boxes) {
-    if (b.boxId === boxId) continue
-    result.boxes.push(structuredClone(b))
-  }
-
   // Add side-specific box
-  result.boxes.push({ ...structuredClone(box), boxId: sideBoxId })
+  subgraph.boxes.push({ ...structuredClone(box), boxId })
 
   // Add pins
   for (const p of bpcGraph.pins) {
     if (p.boxId === boxId) {
       const pDir = getPinDirection(bpcGraph, p.pinId)
-      if (pDir === dir) {
-        result.pins.push({ ...structuredClone(p), boxId: sideBoxId })
+      console.log("p", p.pinId, pDir, dir)
+      if (pDir === dir || dir === null) {
+        subgraph.pins.push({ ...structuredClone(p), boxId })
       }
-    } else {
-      result.pins.push(structuredClone(p))
     }
   }
 
-  return result
+  return subgraph
 }

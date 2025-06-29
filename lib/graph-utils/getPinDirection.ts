@@ -2,7 +2,10 @@ import type { BpcGraph, Direction } from "lib/types"
 import { getBoundsOfBpcBox } from "./getBoundsOfBpcBox"
 import { getPinPosition } from "./getPinPosition"
 
-export const getPinDirection = (g: BpcGraph, pinId: string): Direction => {
+export const getPinDirectionOrThrow = (
+  g: BpcGraph,
+  pinId: string,
+): Direction => {
   const pin = g.pins.find((p) => p.pinId === pinId)
   if (!pin) {
     throw new Error(`Pin not found "${pinId}"`)
@@ -84,4 +87,15 @@ export const getPinDirection = (g: BpcGraph, pinId: string): Direction => {
   throw new Error(
     `Pin "${pinId}" not on the edge of the box "${pin.boxId}" so we couldn't determine the direction`,
   )
+}
+
+export const getPinDirection = (
+  g: BpcGraph,
+  pinId: string,
+): Direction | null => {
+  try {
+    return getPinDirectionOrThrow(g, pinId)
+  } catch (e: any) {
+    return null
+  }
 }
