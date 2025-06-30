@@ -35,7 +35,7 @@ export const getBoxSideSubgraph = ({
   // Add pins
   for (const p of bpcGraph.pins) {
     if (p.boxId === boxId) {
-      const pDir = getPinDirection(bpcGraph, p.pinId)
+      const pDir = getPinDirection(bpcGraph, boxId, p.pinId)
       if (pDir === dir || pDir === null) {
         subgraph.pins.push(structuredClone(p))
       }

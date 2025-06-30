@@ -19,8 +19,8 @@ export const addNetworkedPinPullingForces = (
         const pin1 = pinsInNetwork[i]!
         const pin2 = pinsInNetwork[j]!
 
-        const dir1 = getPinDirectionOrThrow(g, pin1.pinId)
-        const dir2 = getPinDirectionOrThrow(g, pin2.pinId)
+        const dir1 = getPinDirectionOrThrow(g, pin1.boxId, pin1.pinId)
+        const dir2 = getPinDirectionOrThrow(g, pin2.boxId, pin2.pinId)
 
         if (dir1 === dir2) {
           continue // Pins facing the same direction do not pull each other

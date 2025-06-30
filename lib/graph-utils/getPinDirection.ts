@@ -4,9 +4,10 @@ import { getPinPosition } from "./getPinPosition"
 
 export const getPinDirectionOrThrow = (
   g: BpcGraph,
+  boxId: string,
   pinId: string,
 ): Direction => {
-  const pin = g.pins.find((p) => p.pinId === pinId)
+  const pin = g.pins.find((p) => p.pinId === pinId && p.boxId === boxId)
   if (!pin) {
     throw new Error(`Pin not found "${pinId}"`)
   }
@@ -91,10 +92,11 @@ export const getPinDirectionOrThrow = (
 
 export const getPinDirection = (
   g: BpcGraph,
+  boxId: string,
   pinId: string,
 ): Direction | null => {
   try {
-    return getPinDirectionOrThrow(g, pinId)
+    return getPinDirectionOrThrow(g, boxId, pinId)
   } catch (e: any) {
     return null
   }

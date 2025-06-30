@@ -7,7 +7,7 @@ export const findIsolatedBoxSides = (g: BpcGraph, boxId: string): Side[][] => {
   const pins = g.pins.filter((p) => p.boxId === boxId)
   const sides = new Set<Side>()
   for (const p of pins) {
-    const dir = getPinDirectionOrThrow(g, p.pinId)
+    const dir = getPinDirectionOrThrow(g, p.boxId, p.pinId)
     const side: Side =
       dir === "x-"
         ? "left"
