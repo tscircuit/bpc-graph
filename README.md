@@ -19,16 +19,18 @@ This repository provides utilities for manipulating and comparing BPC graphs.
   - [Where BPC graphs are used](#where-bpc-graphs-are-used)
   - [Installation](#installation)
   - [Quick Example](#quick-example)
-  - [Graph Utilities](#graph-utilities)
+  - [Library](#library)
+    - [getGraphBounds(graph)](#getgraphboundsgraph)
+    - [getPinDirection(graph, boxId, pinId)](#getpindirectiongraph-boxid-pinid)
     - [assignFloatingBoxPositions(graph)](#assignfloatingboxpositionsgraph)
     - [netAdaptBpcGraph(source, target)](#netadaptbpcgraphsource-target)
     - [renetworkWithCondition(graph, predicate)](#renetworkwithconditiongraph-predicate)
-    - [Conversion Utilities](#conversion-utilities)
     - [getBpcGraphWlDistance(a, b)](#getbpcgraphwldistancea-b)
     - [ForceDirectedLayoutSolver](#forcedirectedlayoutsolver)
-  - [Partitioning](#partitioning)
     - [getBoxSideSubgraph({ bpcGraph, boxId, side })](#getboxsidesubgraph-bpcgraph-boxid-side-)
     - [mergeBoxSideSubgraphs(graphs)](#mergeboxsidesubgraphsgraphs)
+    - [convertToFlatBpcGraph(graph)](#converttoflatbpcgraphgraph)
+    - [convertFromFlatBpcGraph(flatBpcGraph)](#convertfromflatbpcgraphflatbpcgraph)
 
 ## Where BPC graphs are used
 
@@ -98,10 +100,24 @@ const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), {
 
 ![Basic graph](tests/readme/__snapshots__/getGraphicsExample.snap.svg)
 
-## Graph Utilities
+## Library
 
-- **getGraphBounds(graph)** → `{ minX, minY, maxX, maxY }`
-- **getPinDirection(graph, boxId, pinId)** → `"x-" | "x+" | "y-" | "y+" | null`
+### getGraphBounds(graph)
+
+```ts
+getGraphBounds(g)
+// { minX, minY, maxX, maxY }
+```
+
+### getPinDirection(graph, boxId, pinId)
+
+Determines which direction a pin is facing (and which side of the box it is on)
+by examining its offset relative to the bounds of the box.
+
+```ts
+getPinDirection(g, "A", "P1")
+// x-" | "x+" | "y-" | "y+" | null
+```
 
 ### assignFloatingBoxPositions(graph)
 
@@ -164,11 +180,6 @@ const { renetworkedGraph } = renetworkWithCondition(
 
 ![Renetwork result](tests/readme/__snapshots__/renetworkExample.snap.svg)
 
-### Conversion Utilities
-
-- **convertToFlatBpcGraph(mixed)** – flatten a BPC graph into nodes and undirected edges
-- **convertFromFlatBpcGraph(flat)** – rebuild a mixed graph from the flat representation
-
 ### getBpcGraphWlDistance(a, b)
 
 Compute graph distance based on the "bag of colors" from a Weisfeiler-Leman algorithm. This
@@ -183,8 +194,6 @@ Physics based solver for positioning boxes
 
 All type definitions can be imported from `bpc-graph` as well and are located in
 `lib/types.ts`.
-
-## Partitioning
 
 ### getBoxSideSubgraph({ bpcGraph, boxId, side })
 
@@ -203,3 +212,13 @@ const mergedGraph = mergeBoxSideSubgraphs([leftSubgraph, rightSubgraph])
 ```
 
 ![Merging example](tests/box-sides/getBoxSideSubgraph/__snapshots__/merging-example.snap.svg)
+
+### convertToFlatBpcGraph(graph)
+
+Flatten a BPC graph into nodes and undirected edges. This is performed prior
+to constructing adjacency matrices. This changes the representation of the graph
+from a 2 layer hierarchy to a flat list of nodes and edges.
+
+### convertFromFlatBpcGraph(flatBpcGraph)
+
+Rebuild a BPC graph from the flat representation
