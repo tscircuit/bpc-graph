@@ -2,6 +2,7 @@ import type { FixedBpcGraph, MixedBpcGraph, Vec2 } from "lib/types"
 import { getPinPosition } from "lib/graph-utils/getPinPosition"
 import { getPinDirectionOrThrow } from "lib/graph-utils/getPinDirection"
 import { getDirectionVec2 } from "lib/graph-utils/getDirectionVec2"
+import { addVec2 } from "lib/graph-utils/addVec2"
 
 const PIN_TO_CENTER_DISTANCE = 0.2
 
@@ -27,7 +28,7 @@ export const assignFloatingBoxPositions = (
         const npBox = og.boxes.find((b) => b.boxId === np.boxId)
         if (!npBox?.center) continue // skip if unknown position
 
-        const pos = getPinPosition(og, np.pinId) // absolute position
+        const pos = addVec2(npBox.center, np.offset)
         try {
           const dir = getDirectionVec2(getPinDirectionOrThrow(og, np.pinId))
           candidateCenters.push({

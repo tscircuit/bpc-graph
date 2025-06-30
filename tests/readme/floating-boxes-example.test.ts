@@ -55,6 +55,27 @@ test("floating boxes example", () => {
   // Convert floating boxes to fixed positions
   const fixedGraph = assignFloatingBoxPositions(floatingGraph)
 
+  expect(fixedGraph.boxes).toMatchInlineSnapshot(`
+    [
+      {
+        "boxId": "A",
+        "center": {
+          "x": 0,
+          "y": 0,
+        },
+        "kind": "fixed",
+      },
+      {
+        "boxId": "B",
+        "center": {
+          "x": 0,
+          "y": 0,
+        },
+        "kind": "fixed",
+      },
+    ]
+  `)
+
   const svg = getSvgFromGraphicsObject(
     stackGraphicsHorizontally([
       getGraphicsForBpcGraph(floatingGraph, { title: "Floating Boxes" }),
