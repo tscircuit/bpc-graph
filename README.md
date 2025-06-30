@@ -219,6 +219,8 @@ Flatten a BPC graph into nodes and undirected edges. This is performed prior
 to constructing adjacency matrices. This changes the representation of the graph
 from a 2 layer hierarchy to a flat list of nodes and edges.
 
+![Flattening example](tests/readme/__snapshots__/convertToFlatBpcGraph-example.snap.svg)
+
 ### convertFromFlatBpcGraph(flatBpcGraph)
 
 Rebuild a BPC graph from the flat representation
