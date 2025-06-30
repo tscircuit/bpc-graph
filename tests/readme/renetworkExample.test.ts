@@ -106,7 +106,7 @@ test("renetworkExample", async () => {
         title: "Renetworked with condition to separate left and right sides",
       }),
     ]),
-    { backgroundColor: "white" },
+    { backgroundColor: "white", svgHeight: 320, svgWidth: 800 },
   )
 
   expect(svg).toMatchSvgSnapshot(import.meta.path)

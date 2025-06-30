@@ -10,6 +10,7 @@ import {
 } from "lib/index"
 import {
   getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
   stackGraphicsVertically,
 } from "graphics-debug"
 import { mergeNetworks } from "lib/renetwork/mergeNetworks"
@@ -129,6 +130,22 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
   const rightSubgraphGraphics = getGraphicsForBpcGraph(rightSubgraph, {
     title: "Right Subgraph",
   })
+
+  expect(
+    getSvgFromGraphicsObject(
+      stackGraphicsHorizontally([
+        renetworkedGraphics,
+        leftSubgraphGraphics,
+        rightSubgraphGraphics,
+      ]),
+      {
+        backgroundColor: "white",
+        includeTextLabels: false,
+        svgHeight: 320,
+        svgWidth: 800,
+      },
+    ),
+  ).toMatchSvgSnapshot(import.meta.path, "readme-example")
 
   const mergedSidesGraph = mergeBoxSideSubgraphs(
     [leftSubgraph, rightSubgraph],

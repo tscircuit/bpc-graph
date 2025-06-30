@@ -3,7 +3,6 @@ import { getBoundsOfBpcBox } from "../graph-utils/getBoundsOfBpcBox"
 import { getColorByIndex } from "../graph-utils/getColorByIndex"
 import { getGraphBounds } from "../graph-utils/getGraphBounds"
 import { getGraphNetworkIds } from "../graph-utils/getGraphNetworkIds"
-import { getPinPosition } from "../graph-utils/getPinPosition"
 import type { BpcGraph } from "../types"
 import { getBounds, type GraphicsObject } from "graphics-debug"
 import { translateColor } from "./translateColor"
@@ -26,6 +25,11 @@ export const getGraphicsForBpcGraph = (
     title: "BPC Graph Graphics",
   }
 
+  const pinPositions = new Map<
+    `${string}.${string}`,
+    { x: number; y: number }
+  >()
+
   for (const box of g.boxes) {
     const bounds = getBoundsOfBpcBox(g, box.boxId)
     const boundsCenter = center(bounds)
@@ -42,9 +46,13 @@ export const getGraphicsForBpcGraph = (
     const boxCenter = box.center ?? boundsCenter
 
     for (const pin of boxPins) {
-      graphics.points.push({
+      const pinPosition = {
         x: pin.offset.x + boxCenter.x,
         y: pin.offset.y + boxCenter.y,
+      }
+      pinPositions.set(`${box.boxId}.${pin.pinId}`, pinPosition)
+      graphics.points.push({
+        ...pinPosition,
         label: [pin.pinId, pin.color, pin.networkId].join("\n"),
         color: translateColor(pin.color),
       })
@@ -58,44 +66,26 @@ export const getGraphicsForBpcGraph = (
 
   for (let ni = 0; ni < networks.length; ni++) {
     const networkId = networks[ni]
-    const networkColor = getColorByIndex(ni, networks.length, 0.2)
+    const networkColor = getColorByIndex(ni, networks.length, 0.5)
     const pins = g.pins.filter((p) => p.networkId === networkId)
 
     // Precompute pin positions for efficiency
     const pinsInNetworkWithPosition = pins.map((pin) => ({
       pin,
-      position: getPinPosition(g, pin.pinId),
+      position: pinPositions.get(`${pin.boxId}.${pin.pinId}`)!,
     }))
 
     for (let i = 0; i < pinsInNetworkWithPosition.length; i++) {
       const { pin: pin1, position: pos1 } = pinsInNetworkWithPosition[i]!
-
-      // Compute distances to all other pins in the network
-      const distances: { index: number; dist: number }[] = []
-      for (let j = 0; j < pinsInNetworkWithPosition.length; j++) {
-        if (i === j) continue
-        const { position: pos2 } = pinsInNetworkWithPosition[j]!
-        const dx = pos1.x - pos2.x
-        const dy = pos1.y - pos2.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        distances.push({ index: j, dist })
-      }
-
-      // Sort by distance and take up to 3 nearest
-      distances.sort((a, b) => a.dist - b.dist)
-      const nearest = distances.slice(0, 3)
-
-      for (const { index: j } of nearest) {
-        // To avoid duplicate lines, only draw if i < j
-        if (i < j) {
-          const { position: pos2 } = pinsInNetworkWithPosition[j]!
-          graphics.lines.push({
-            points: [pos1, pos2],
-            strokeColor: opts?.grayNetworks
-              ? "rgba(0, 0, 0, 0.05)"
-              : networkColor,
-          })
-        }
+      for (let j = i + 1; j < pinsInNetworkWithPosition.length; j++) {
+        const { position: pos2, pin: pin2 } = pinsInNetworkWithPosition[j]!
+        graphics.lines.push({
+          points: [pos1, pos2],
+          strokeWidth: 1,
+          strokeColor: opts?.grayNetworks
+            ? "rgba(0, 0, 0, 0.05)"
+            : networkColor,
+        })
       }
     }
   }

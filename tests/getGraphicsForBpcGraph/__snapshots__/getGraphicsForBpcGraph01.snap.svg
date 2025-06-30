@@ -36,16 +36,16 @@ red
 N1" data-x="-2" data-y="2" cx="45" cy="195" r="3" fill="red" />
   </g>
   <g>
-    <polyline data-points="-2,2 -0.5,0" data-type="line" data-label="" points="45,195 195,395" fill="none" stroke="hsl(0, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="-2,2 -0.5,0" data-type="line" data-label="" points="45,195 195,395" fill="none" stroke="hsl(0, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="0.5,-0.5 0.5,0" data-type="line" data-label="" points="295,445 295,395" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="0.5,-0.5 0.5,0" data-type="line" data-label="" points="295,445 295,395" fill="none" stroke="hsl(180, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="0.5,-0.5 2.5,0" data-type="line" data-label="" points="295,445 495,395" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="0.5,-0.5 2.5,0" data-type="line" data-label="" points="295,445 495,395" fill="none" stroke="hsl(180, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="0.5,0 2.5,0" data-type="line" data-label="" points="295,395 495,395" fill="none" stroke="hsl(180, 100%, 50%, 0.2)" stroke-width="1" />
+    <polyline data-points="0.5,0 2.5,0" data-type="line" data-label="" points="295,395 495,395" fill="none" stroke="hsl(180, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
     <rect data-type="rect" data-label="U1" data-x="0" data-y="-0.25" x="190" y="390" width="110" height="60" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.01" />
