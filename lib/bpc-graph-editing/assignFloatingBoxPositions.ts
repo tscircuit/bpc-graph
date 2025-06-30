@@ -32,11 +32,9 @@ export const assignFloatingBoxPositions = (
   /* ------------------------------------------------------------------ */
   /*  Initial placed-box set = every box that already has a position     */
   /* ------------------------------------------------------------------ */
-  const remainingBoxes = [...floatingBoxes]          // all needing positions
+  const remainingBoxes = [...floatingBoxes] // all needing positions
   const placedBoxIds = new Set<string>(
-    g.boxes
-      .filter((b) => b.center !== undefined)
-      .map((b) => b.boxId),
+    g.boxes.filter((b) => b.center !== undefined).map((b) => b.boxId),
   )
 
   while (remainingBoxes.length > 0) {
