@@ -164,6 +164,22 @@ test("getBoxSideSubgraph returns the correct subgraph", async () => {
     title: "Merged Networks",
   })
 
+  expect(
+    getSvgFromGraphicsObject(
+      stackGraphicsHorizontally([
+        leftSubgraphGraphics,
+        rightSubgraphGraphics,
+        mergedGraphics,
+      ]),
+      {
+        backgroundColor: "white",
+        includeTextLabels: false,
+        svgHeight: 320,
+        svgWidth: 800,
+      },
+    ),
+  ).toMatchSvgSnapshot(import.meta.path, "merging-example")
+
   const allGraphics = stackGraphicsVertically([
     ogGraphics,
     renetworkedGraphics,

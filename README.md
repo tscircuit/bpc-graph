@@ -187,3 +187,11 @@ Get the subgraph of one side of a box with all connections
 ### mergeBoxSideSubgraphs(graphs)
 
 Merge two subgraphs into a single graph
+
+```ts
+import { mergeBoxSideSubgraphs } from "bpc-graph"
+
+const mergedGraph = mergeBoxSideSubgraphs([leftSubgraph, rightSubgraph])
+```
+
+![Merging example](tests/box-sides/getBoxSideSubgraph/__snapshots__/merging-example.snap.svg)
