@@ -5,6 +5,16 @@ export const assignFloatingBoxPositions = (
   og: MixedBpcGraph,
 ): FixedBpcGraph => {
   const g = structuredClone(og)
+  /* ------------------------------------------------------------------ */
+  /*  Treat every box that already has a center as “fixed / placed”      */
+  /* ------------------------------------------------------------------ */
+  for (const box of g.boxes) {
+    if (box.center !== undefined) {
+      // keep its position but make sure its discriminated union says “fixed”
+      // @ts-ignore – we are intentionally coercing the kind
+      box.kind = "fixed"
+    }
+  }
 
   // Find all floating boxes that need positions
   const floatingBoxes = g.boxes
@@ -19,15 +29,15 @@ export const assignFloatingBoxPositions = (
     return g as FixedBpcGraph
   }
 
-  // Place the first floating box at origin
-  const firstBox = floatingBoxes[0]!
-  // @ts-ignore
-  firstBox.kind = "fixed"
-  firstBox.center = { x: 0, y: 0 }
-
-  // Iteratively place remaining boxes using network connections
-  const remainingBoxes = floatingBoxes.slice(1)
-  const placedBoxIds = new Set([firstBox.boxId])
+  /* ------------------------------------------------------------------ */
+  /*  Initial placed-box set = every box that already has a position     */
+  /* ------------------------------------------------------------------ */
+  const remainingBoxes = [...floatingBoxes]          // all needing positions
+  const placedBoxIds = new Set<string>(
+    g.boxes
+      .filter((b) => b.center !== undefined)
+      .map((b) => b.boxId),
+  )
 
   while (remainingBoxes.length > 0) {
     let placedAny = false
