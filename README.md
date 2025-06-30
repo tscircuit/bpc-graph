@@ -173,6 +173,8 @@ const { renetworkedGraph } = renetworkWithCondition(
 
 Compute Weisfeiler-Leman distance between graphs
 
+![Weisfeiler-Leman distance example](tests/readme/__snapshots__/getBpcGraphWlDistance-example.snap.svg)
+
 ### ForceDirectedLayoutSolver
 
 Physics based solver for positioning boxes
