@@ -68,8 +68,8 @@ test("floating boxes example", () => {
       {
         "boxId": "B",
         "center": {
-          "x": 0,
-          "y": 0,
+          "x": 1,
+          "y": 0.25,
         },
         "kind": "fixed",
       },
