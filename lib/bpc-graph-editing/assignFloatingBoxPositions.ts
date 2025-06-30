@@ -77,15 +77,12 @@ export const assignFloatingBoxPositions = (
       }
     }
 
-    // If we couldn't place any boxes in this iteration, place remaining ones randomly
+    // If we couldn't place any boxes in this iteration, place remaining ones at origin
     if (!placedAny && remainingBoxes.length > 0) {
       const box = remainingBoxes.pop()!
       // @ts-ignore
       box.kind = "fixed"
-      box.center = {
-        x: Math.random() * 2 - 1,
-        y: Math.random() * 2 - 1,
-      }
+      box.center = { x: 0, y: 0 }
       placedBoxIds.add(box.boxId)
     }
   }
