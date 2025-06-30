@@ -117,7 +117,7 @@ source and target.
 After net adapt, the graph will have floating boxes- we use `assignFloatingBoxPositions`
 to infer positions for these boxes below.
 
-![Net adapt example](tests/readme/__snapshots__/netAdaptBpcGraph05.snap.svg)
+![Net adapt example](tests/bpc-graph-editing/__snapshots__/netAdaptBpcGraph05.snap.svg)
 
 ### renetworkWithCondition(graph, predicate)
 
