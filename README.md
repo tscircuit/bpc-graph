@@ -24,7 +24,8 @@ This repository provides utilities for manipulating and comparing BPC graphs.
     - [netAdaptBpcGraph(source, target)](#netadaptbpcgraphsource-target)
     - [renetworkWithCondition(graph, predicate)](#renetworkwithconditiongraph-predicate)
     - [Conversion Utilities](#conversion-utilities)
-    - [Similarity \& Layout](#similarity--layout)
+    - [getBpcGraphWlDistance(a, b)](#getbpcgraphwldistancea-b)
+    - [ForceDirectedLayoutSolver](#forcedirectedlayoutsolver)
   - [Partitioning](#partitioning)
     - [getBoxSideSubgraph({ bpcGraph, boxId, side })](#getboxsidesubgraph-bpcgraph-boxid-side-)
     - [mergeBoxSideSubgraphs(graphs)](#mergeboxsidesubgraphsgraphs)
@@ -168,10 +169,13 @@ const { renetworkedGraph } = renetworkWithCondition(
 - **convertToFlatBpcGraph(mixed)** – flatten a BPC graph into nodes and undirected edges
 - **convertFromFlatBpcGraph(flat)** – rebuild a mixed graph from the flat representation
 
-### Similarity & Layout
+### getBpcGraphWlDistance(a, b)
 
-- **getBpcGraphWlDistance(a, b)** – compute Weisfeiler-Leman distance between graphs
-- **ForceDirectedLayoutSolver** – physics based solver for positioning boxes
+Compute Weisfeiler-Leman distance between graphs
+
+### ForceDirectedLayoutSolver
+
+Physics based solver for positioning boxes
 
 All type definitions can be imported from `bpc-graph` as well and are located in
 `lib/types.ts`.
