@@ -97,6 +97,58 @@ const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), {
 
 ![Basic graph](tests/readme/__snapshots__/getGraphicsExample.snap.svg)
 
+### Floating Boxes Example
+
+Starting with floating boxes (no fixed positions), the layout solver can automatically assign positions:
+
+```ts
+import { assignFloatingBoxPositions } from "bpc-graph"
+
+const floatingGraph = {
+  boxes: [
+    { boxId: "A", kind: "floating" },
+    { boxId: "B", kind: "floating" },
+  ],
+  pins: [
+    {
+      boxId: "A",
+      pinId: "P1",
+      offset: { x: 0.5, y: 0 },
+      color: "red",
+      networkId: "N1",
+    },
+    {
+      boxId: "A",
+      pinId: "P2",
+      offset: { x: 0.5, y: -0.5 },
+      color: "blue",
+      networkId: "N1",
+    },
+    {
+      boxId: "B",
+      pinId: "P1",
+      offset: { x: -0.5, y: 0 },
+      color: "red",
+      networkId: "N1",
+    },
+    {
+      boxId: "B",
+      pinId: "CENTER",
+      offset: { x: 0, y: 0 },
+      color: "gray",
+      networkId: "N2",
+    },
+  ],
+}
+
+// Convert floating boxes to fixed positions
+const fixedGraph = assignFloatingBoxPositions(floatingGraph)
+```
+
+The image shows floating boxes (left) being automatically positioned into a fixed layout (right):
+
+![Floating boxes to fixed layout](tests/readme/__snapshots__/floating-boxes-example.snap.svg)
+
 ## Graph Utilities
 
 - **getGraphBounds(graph)** → `{ minX, minY, maxX, maxY }`

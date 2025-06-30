@@ -43,7 +43,7 @@ export const getGraphicsForBpcGraph = (
     })
 
     const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
-    const boxCenter = box.center ?? boundsCenter
+    const boxCenter = box.center ?? { x: 0, y: 0 }
 
     for (const pin of boxPins) {
       const pinPosition = {
