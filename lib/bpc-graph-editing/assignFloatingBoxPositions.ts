@@ -7,9 +7,13 @@ export const assignFloatingBoxPositions = (
   const g = structuredClone(og)
 
   // Find all floating boxes that need positions
-  const floatingBoxes = g.boxes.filter(
-    (box) => box.kind === "floating" && !box.center,
-  )
+  const floatingBoxes = g.boxes
+    .filter((box) => box.kind === "floating" && !box.center)
+    .sort(
+      (a, b) =>
+        og.pins.filter((p) => p.boxId === b.boxId).length -
+        og.pins.filter((p) => p.boxId === a.boxId).length,
+    ) // place boxes with more pins first
 
   if (floatingBoxes.length === 0) {
     return g as FixedBpcGraph
