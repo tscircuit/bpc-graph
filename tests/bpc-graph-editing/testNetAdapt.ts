@@ -105,6 +105,8 @@ export const testNetAdapt = (
   const allGraphicsSvg = getSvgFromGraphicsObject(allGraphics, {
     backgroundColor: "white",
     includeTextLabels: false,
+    svgHeight: 320,
+    svgWidth: 800,
   })
 
   return {

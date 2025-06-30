@@ -17,11 +17,25 @@ const g: BpcGraph = {
       networkId: "N1",
     },
     {
+      boxId: "A",
+      pinId: "P2",
+      offset: { x: 0.5, y: -0.5 },
+      color: "blue",
+      networkId: "N1",
+    },
+    {
       boxId: "B",
       pinId: "P1",
       offset: { x: -0.5, y: 0 },
       color: "red",
       networkId: "N1",
+    },
+    {
+      boxId: "B",
+      pinId: "CENTER",
+      offset: { x: 0, y: 0 },
+      color: "gray",
+      networkId: "N2",
     },
   ],
 }
@@ -29,6 +43,7 @@ const g: BpcGraph = {
 test("getGraphicsExample", () => {
   const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(g), {
     backgroundColor: "white",
+    includeTextLabels: true,
   })
   expect(svg).toMatchSvgSnapshot(import.meta.path)
 })
