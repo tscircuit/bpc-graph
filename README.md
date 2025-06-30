@@ -100,12 +100,34 @@ const svg = getSvgFromGraphicsObject(getGraphicsForBpcGraph(graph), {
 ## Graph Utilities
 
 - **getGraphBounds(graph)** → `{ minX, minY, maxX, maxY }`
-- **getPinPosition(graph, pinId)** → absolute coordinates of a pin
-- **getPinDirection(graph, pinId)** → `"x-" | "x+" | "y-" | "y+" | null`
+- **getPinDirection(graph, boxId, pinId)** → `"x-" | "x+" | "y-" | "y+" | null`
 
 ### assignFloatingBoxPositions(graph)
 
 Infers positions for floating boxes based on the positions of any connected pins
+
+Starting with floating boxes (no fixed positions), the layout solver can automatically assign positions:
+
+```ts
+import { assignFloatingBoxPositions } from "bpc-graph"
+
+const floatingGraph = {
+  boxes: [
+    { boxId: "A", kind: "floating" },
+    { boxId: "B", kind: "floating" },
+  ],
+  pins: [
+    /* ... */
+  ],
+}
+
+// Convert floating boxes to fixed positions
+const fixedGraph = assignFloatingBoxPositions(floatingGraph)
+```
+
+The image shows floating boxes (left) being automatically positioned into a fixed layout (right):
+
+![Floating boxes to fixed layout](tests/readme/__snapshots__/floating-boxes-example.snap.svg)
 
 ### netAdaptBpcGraph(source, target)
 

@@ -21,6 +21,8 @@ export const testNetAdapt = (
   targetGraphics: GraphicsObject
   adaptedBpcGraph: FixedBpcGraph
   adaptedGraphics: GraphicsObject
+  adaptedFloating: MixedBpcGraph
+  adaptedFixed: FixedBpcGraph
   allGraphics: GraphicsObject
   allGraphicsSvg: string
 } => {
@@ -82,13 +84,13 @@ export const testNetAdapt = (
   }
 
   // Adapt the source to the target using netAdaptBpcGraph
-  const { adaptedBpcGraph } = netAdaptBpcGraph(
+  const { adaptedBpcGraph: adaptedFloating } = netAdaptBpcGraph(
     source as FixedBpcGraph,
     target as MixedBpcGraph,
   )
 
   // Assign floating box positions to the adapted graph
-  const adaptedFixed = assignFloatingBoxPositions(adaptedBpcGraph)
+  const adaptedFixed = assignFloatingBoxPositions(adaptedFloating)
 
   // Generate graphics for the adapted graph
   const adaptedGraphics = getGraphicsForBpcGraph(adaptedFixed, {
@@ -112,6 +114,8 @@ export const testNetAdapt = (
   return {
     sourceGraphics,
     targetGraphics,
+    adaptedFloating,
+    adaptedFixed,
     adaptedBpcGraph: adaptedFixed,
     adaptedGraphics,
     allGraphics,

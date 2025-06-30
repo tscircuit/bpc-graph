@@ -1,62 +1,102 @@
 import type { FixedBpcGraph, MixedBpcGraph, Vec2 } from "lib/types"
-import { getPinPosition } from "lib/graph-utils/getPinPosition"
-import { getPinDirectionOrThrow } from "lib/graph-utils/getPinDirection"
-import { getDirectionVec2 } from "lib/graph-utils/getDirectionVec2"
-
-const PIN_TO_CENTER_DISTANCE = 0.2
+import { addVec2 } from "lib/graph-utils/addVec2"
 
 export const assignFloatingBoxPositions = (
   og: MixedBpcGraph,
 ): FixedBpcGraph => {
   const g = structuredClone(og)
-
+  /* ------------------------------------------------------------------ */
+  /*  Treat every box that already has a center as “fixed / placed”      */
+  /* ------------------------------------------------------------------ */
   for (const box of g.boxes) {
-    // skip boxes that already have an absolute position
-    if (box.center || box.kind === "fixed") continue
+    if (box.center !== undefined) {
+      // keep its position but make sure its discriminated union says “fixed”
+      // @ts-ignore – we are intentionally coercing the kind
+      box.kind = "fixed"
+    }
+  }
 
-    const candidateCenters: Vec2[] = []
-    const boxPins = og.pins.filter((p) => p.boxId === box.boxId)
+  // Find all floating boxes that need positions
+  const floatingBoxes = g.boxes
+    .filter((box) => box.kind === "floating" && !box.center)
+    .sort(
+      (a, b) =>
+        og.pins.filter((p) => p.boxId === b.boxId).length -
+        og.pins.filter((p) => p.boxId === a.boxId).length,
+    ) // place boxes with more pins first
 
-    for (const pin of boxPins) {
-      // other pins connected through the same network that DO have positions
-      const networkPins = og.pins.filter(
-        (p) => p.networkId === pin.networkId && p.boxId !== box.boxId,
-      )
+  if (floatingBoxes.length === 0) {
+    return g as FixedBpcGraph
+  }
 
-      for (const np of networkPins) {
-        const npBox = og.boxes.find((b) => b.boxId === np.boxId)
-        if (!npBox?.center) continue // skip if unknown position
+  /* ------------------------------------------------------------------ */
+  /*  Initial placed-box set = every box that already has a position     */
+  /* ------------------------------------------------------------------ */
+  const remainingBoxes = [...floatingBoxes] // all needing positions
+  const placedBoxIds = new Set<string>(
+    g.boxes.filter((b) => b.center !== undefined).map((b) => b.boxId),
+  )
 
-        const pos = getPinPosition(og, np.pinId) // absolute position
-        try {
-          const dir = getDirectionVec2(getPinDirectionOrThrow(og, np.pinId))
-          candidateCenters.push({
-            x: pos.x + dir.x * PIN_TO_CENTER_DISTANCE,
-            y: pos.y + dir.y * PIN_TO_CENTER_DISTANCE,
-          })
-        } catch {
-          // fallback: just use the pin position itself
-          candidateCenters.push(pos)
+  while (remainingBoxes.length > 0) {
+    let placedAny = false
+
+    for (let i = remainingBoxes.length - 1; i >= 0; i--) {
+      const box = remainingBoxes[i]!
+      const candidateCenters: Vec2[] = []
+      const boxPins = og.pins.filter((p) => p.boxId === box.boxId)
+
+      for (const pin of boxPins) {
+        // Find pins in the same network that belong to already-placed boxes
+        const networkPins = og.pins.filter(
+          (p) =>
+            p.networkId === pin.networkId &&
+            p.boxId !== box.boxId &&
+            placedBoxIds.has(p.boxId),
+        )
+
+        for (const np of networkPins) {
+          const npBox = g.boxes.find((b) => b.boxId === np.boxId)
+          if (!npBox?.center) continue
+
+          // Calculate where this box should be positioned based on the network connection
+          // The pins should be at the same world position, so:
+          // npBox.center + np.offset = box.center + pin.offset
+          // Therefore: box.center = npBox.center + np.offset - pin.offset
+          const networkPinWorldPos = addVec2(npBox.center, np.offset)
+          const inferredBoxCenter = {
+            x: networkPinWorldPos.x - pin.offset.x,
+            y: networkPinWorldPos.y - pin.offset.y,
+          }
+          candidateCenters.push(inferredBoxCenter)
         }
+      }
+
+      if (candidateCenters.length > 0) {
+        // Average all candidate centers
+        const center = candidateCenters.reduce(
+          (acc, v) => ({ x: acc.x + v.x, y: acc.y + v.y }),
+          { x: 0, y: 0 },
+        )
+        center.x /= candidateCenters.length
+        center.y /= candidateCenters.length
+
+        // @ts-ignore
+        box.kind = "fixed"
+        box.center = center
+        placedBoxIds.add(box.boxId)
+        remainingBoxes.splice(i, 1)
+        placedAny = true
       }
     }
 
-    // average all candidate centres (fallback 0,0 if none)
-    const inferred: Vec2 =
-      candidateCenters.length === 0
-        ? { x: 0, y: 0 }
-        : candidateCenters.reduce(
-            (acc, v) => ({ x: acc.x + v.x, y: acc.y + v.y }),
-            { x: 0, y: 0 },
-          )
-    if (candidateCenters.length) {
-      inferred.x /= candidateCenters.length
-      inferred.y /= candidateCenters.length
+    // If we couldn't place any boxes in this iteration, place remaining ones at origin
+    if (!placedAny && remainingBoxes.length > 0) {
+      const box = remainingBoxes.pop()!
+      // @ts-ignore
+      box.kind = "fixed"
+      box.center = { x: 0, y: 0 }
+      placedBoxIds.add(box.boxId)
     }
-
-    // @ts-ignore
-    box.kind = "fixed"
-    box.center = inferred
   }
 
   return g as FixedBpcGraph

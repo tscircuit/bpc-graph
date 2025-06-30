@@ -17,7 +17,11 @@ export const addPinAlignmentForces = (
 
     for (const pinEmitter of pinsInNetwork) {
       const emitterPos = getPinPosition(g, pinEmitter.pinId)
-      const emitterDir = getPinDirectionOrThrow(g, pinEmitter.pinId)
+      const emitterDir = getPinDirectionOrThrow(
+        g,
+        pinEmitter.boxId,
+        pinEmitter.pinId,
+      )
 
       for (const pinTarget of pinsInNetwork) {
         if (pinEmitter.pinId === pinTarget.pinId) continue

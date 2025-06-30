@@ -16,7 +16,10 @@ test("netAdaptBpcGraph05", async () => {
     (p) => !p.boxId.includes("net_label"),
   )
 
-  const { allGraphicsSvg } = testNetAdapt(design001MissingBoxes, design001)
+  const { allGraphicsSvg, adaptedFloating, adaptedFixed } = testNetAdapt(
+    design001MissingBoxes,
+    design001,
+  )
 
   expect(allGraphicsSvg).toMatchSvgSnapshot(import.meta.path)
 })
