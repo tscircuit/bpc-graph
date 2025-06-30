@@ -171,7 +171,9 @@ const { renetworkedGraph } = renetworkWithCondition(
 
 ### getBpcGraphWlDistance(a, b)
 
-Compute Weisfeiler-Leman distance between graphs
+Compute graph distance based on the "bag of colors" from a Weisfeiler-Leman algorithm. This
+algorithm runs several iterations of "color hashes" to create a "bag of colors" for each graph,
+a Jaccard index is then computed between the bags of colors.
 
 ![Weisfeiler-Leman distance example](tests/readme/__snapshots__/getBpcGraphWlDistance-example.snap.svg)
 
