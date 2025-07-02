@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/useFilenamingConvention: <explanation> */
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
@@ -292,14 +293,44 @@ test("tscircuitsch01", async () => {
 
     iteration = 0
 
+    wipPartitions: Array<Array<{ boxId: string; pinId: string }>>
+
+    unexploredPins: Array<{ boxId: string; pinId: string }> = []
+
     constructor(public initialGraph: MixedBpcGraph) {
       this.lastGraph = initialGraph
+
+      this.wipPartitions = this.initializeWipPartitions()
+      this.unexploredPins = this.wipPartitions.flat()
 
       this.frames.push(
         getGraphicsForBpcGraph(initialGraph, {
           title: "Initial Graph",
         }),
       )
+    }
+
+    initializeWipPartitions(): Array<Array<{ boxId: string; pinId: string }>> {
+      const wipPartitions: Array<Array<{ boxId: string; pinId: string }>> = []
+
+      for (const box of this.initialGraph.boxes) {
+        const pins = this.initialGraph.pins.filter((p) => p.boxId === box.boxId)
+
+        const uniqueDirections = new Set(
+          pins.map((p) => getPinDirection(this.initialGraph, box, p)),
+        )
+
+        for (const direction of uniqueDirections) {
+          const partition: Array<{ boxId: string; pinId: string }> = []
+
+          for (const pin of pins) {
+            if (getPinDirection(this.initialGraph, box, pin) === direction) {
+              partition.push({ boxId: box.boxId, pinId: pin.pinId })
+            }
+          }
+        }
+      }
+      return wipPartitions
     }
 
     step() {
