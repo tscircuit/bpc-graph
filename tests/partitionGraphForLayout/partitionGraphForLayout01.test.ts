@@ -296,6 +296,8 @@ test("tscircuitsch01", async () => {
 
     lastGraph: BpcGraph
 
+    lastExploredPin?: { boxId: string; pinId: string }
+
     solved = false
 
     iteration = 0
@@ -337,7 +339,9 @@ test("tscircuitsch01", async () => {
 
       let partitionId = 0
       for (const box of this.initialGraph.boxes) {
-        const pins = this.initialGraph.pins.filter((p) => p.boxId === box.boxId)
+        const pins = this.initialGraph.pins
+          .filter((p) => p.boxId === box.boxId)
+          .filter((p) => getPinDirection(this.initialGraph, box, p))
 
         if (pins.length <= 2) {
           continue
@@ -359,34 +363,110 @@ test("tscircuitsch01", async () => {
               partition.pins.push({ boxId: box.boxId, pinId: pin.pinId })
             }
           }
+
+          wipPartitions.push(partition)
         }
       }
+      console.log(wipPartitions)
       return wipPartitions
     }
 
     step() {
       if (this.solved) return
       this.iteration++
-      const g = structuredClone(this.lastGraph)
-      this.lastGraph = g
 
-      const unexploredPin = this.unexploredPins.shift()
+      /* ――― no more work to do? ――― */
+      if (this.unexploredPins.length === 0) {
+        this.solved = true
+        return
+      }
 
-      // Explore all pins in the unexplored pin's network
-      // If we come across a box with exactly two pins, we add the other
-      // pin of the box to the unexplored pins list
+      /* ――― pick next pin to explore ――― */
+      const current = this.unexploredPins.shift()!
+      this.lastExploredPin = { boxId: current.boxId, pinId: current.pinId }
+      const pinKey = `${current.boxId}:${current.pinId}`
+      if (this.exploredPins.has(pinKey)) return // already done
 
-      // When we come upon a new box, if it it contains a pin that is a singleton
-      // color, we check if this partition already contains a singleton of that
-      // color. If so, we can't add this box to this partition, don't queue it
-      // for exploration. If we do add the box, set the singleton slot to true.
+      const pinObj = this.initialGraph.pins.find(
+        (p) => p.boxId === current.boxId && p.pinId === current.pinId,
+      )
+      if (!pinObj) return
 
-      // TODO
+      const part = this.wipPartitions.find(
+        (p) => p.partitionId === current.partitionId,
+      )
+      if (!part) return
+
+      /* ――― singleton-color gatekeeping ――― */
+      const isSingleton = this.singletonColors.includes(pinObj.color)
+      if (isSingleton && part.singletonSlots[pinObj.color]) {
+        // another of this color already in partition → discard
+        this.exploredPins.add(pinKey)
+        return
+      }
+
+      /* ――― accept pin into partition ――― */
+      if (isSingleton) part.singletonSlots[pinObj.color] = true
+      part.pins.push({ boxId: current.boxId, pinId: current.pinId })
+      this.exploredPins.add(pinKey as `${string}:${string}`)
+
+      /* ――― queue other pins on the same network ――― */
+      for (const other of this.initialGraph.pins) {
+        if (other.networkId !== pinObj.networkId) continue
+        const otherKey = `${other.boxId}:${other.pinId}`
+        if (this.exploredPins.has(otherKey)) continue
+        this.unexploredPins.push({
+          boxId: other.boxId,
+          pinId: other.pinId,
+          partitionId: current.partitionId,
+        })
+      }
+
+      /* ――― if the current box only has two pins, queue the mate pin ――― */
+      const boxPins = this.initialGraph.pins.filter(
+        (p) => p.boxId === current.boxId,
+      )
+      if (boxPins.length === 2) {
+        const mate = boxPins.find((p) => p.pinId !== current.pinId)!
+        const mateKey = `${mate.boxId}:${mate.pinId}`
+        if (!this.exploredPins.has(mateKey)) {
+          this.unexploredPins.push({
+            boxId: mate.boxId,
+            pinId: mate.pinId,
+            partitionId: current.partitionId,
+          })
+        }
+      }
+
+      /* ――― done? ――― */
+      if (this.unexploredPins.length === 0) this.solved = true
     }
 
-    getPartitions() {
+    getPartitions(): MixedBpcGraph[] {
       if (!this.solved) throw new Error("Graph not solved")
-      // TODO
+
+      const partitions: MixedBpcGraph[] = []
+
+      for (const part of this.wipPartitions) {
+        if (part.pins.length === 0) continue
+
+        // ---- gather pins for this partition ---------------------------------
+        const pinKeySet = new Set(part.pins.map((p) => `${p.boxId}:${p.pinId}`))
+        const pins = this.initialGraph.pins
+          .filter((p) => pinKeySet.has(`${p.boxId}:${p.pinId}`))
+          // make shallow clones so the partition graphs are independent
+          .map((p) => ({ ...p }))
+
+        // ---- gather boxes that own those pins --------------------------------
+        const boxIdSet = new Set(pins.map((p) => p.boxId))
+        const boxes = this.initialGraph.boxes
+          .filter((b) => boxIdSet.has(b.boxId))
+          .map((b) => ({ ...b }))
+
+        partitions.push({ boxes, pins })
+      }
+
+      return partitions
     }
 
     getGraphicsForLastGraph(): GraphicsObject {
@@ -418,9 +498,22 @@ test("tscircuitsch01", async () => {
           center: { x: (minX + maxX) / 2, y: (minY + maxY) / 2 },
           width: maxX - minX + margin * 2,
           height: maxY - minY + margin * 2,
-          fill: getColorByIndex(idx, total, 0.05), // translucent fill
+          fill: getColorByIndex(idx, total, 0.5), // translucent fill
         })
       })
+
+      // --- highlight last explored pin ---
+      if (this.lastExploredPin) {
+        const { boxId, pinId } = this.lastExploredPin
+        const pos = getPinPosition(this.lastGraph, boxId, pinId)
+        const size = 0.25
+        graphics.rects.push({
+          center: { x: pos.x, y: pos.y },
+          width: size,
+          height: size,
+          fill: "red",
+        })
+      }
 
       // c) keep a copy for later inspection
       this.frames.push(graphics)
@@ -451,6 +544,8 @@ test("tscircuitsch01", async () => {
       stackGraphicsVertically([originalGraphics, ...stepGraphics]),
       {
         backgroundColor: "white",
+        svgWidth: 320,
+        svgHeight: 4000,
       },
     ),
   ).toMatchSvgSnapshot(import.meta.path)

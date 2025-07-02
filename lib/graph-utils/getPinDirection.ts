@@ -70,6 +70,8 @@ export const getPinDirectionOrThrow = (
 
   // If pin is on a corner, decide based on which direction has larger offset magnitude
   if ((onLeftEdge || onRightEdge) && (onBottomEdge || onTopEdge)) {
+    // HACK: temporary X bias
+    return pin.offset.x > 0 ? "x+" : "x-"
     if (Math.abs(pin.offset.x) > Math.abs(pin.offset.y)) {
       return pin.offset.x > 0 ? "x+" : "x-"
     } else {
