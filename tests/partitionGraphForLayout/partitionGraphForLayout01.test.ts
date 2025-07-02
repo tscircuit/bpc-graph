@@ -272,6 +272,10 @@ test("tscircuitsch01", async () => {
     ],
   }
 
+  type WipPartition = {
+    partitionId: string
+    pins: Array<{ boxId: string; pinId: string }>
+  }
   /**
    * DFS Partition Solver
    *
@@ -295,15 +299,30 @@ test("tscircuitsch01", async () => {
 
     iteration = 0
 
-    wipPartitions: Array<Array<{ boxId: string; pinId: string }>>
+    wipPartitions: Array<{
+      partitionId: string
+      singletonSlots: Record<string, boolean>
+      pins: Array<{ boxId: string; pinId: string }>
+    }>
 
-    unexploredPins: Array<{ boxId: string; pinId: string }> = []
+    unexploredPins: Array<{
+      boxId: string
+      pinId: string
+      partitionId: string
+    }> = []
+
+    singletonColors = ["vcc", "gnd"]
+
+    /** All explored pins in format "boxId:pinId" */
+    exploredPins: Set<`${string}:${string}`> = new Set()
 
     constructor(public initialGraph: MixedBpcGraph) {
       this.lastGraph = initialGraph
 
       this.wipPartitions = this.initializeWipPartitions()
-      this.unexploredPins = this.wipPartitions.flat()
+      this.unexploredPins = this.wipPartitions.flatMap((part) =>
+        part.pins.map((p) => ({ ...p, partitionId: part.partitionId })),
+      )
 
       this.frames.push(
         getGraphicsForBpcGraph(initialGraph, {
@@ -312,9 +331,10 @@ test("tscircuitsch01", async () => {
       )
     }
 
-    initializeWipPartitions(): Array<Array<{ boxId: string; pinId: string }>> {
-      const wipPartitions: Array<Array<{ boxId: string; pinId: string }>> = []
+    initializeWipPartitions(): WipPartition[] {
+      const wipPartitions: WipPartition[] = []
 
+      let partitionId = 0
       for (const box of this.initialGraph.boxes) {
         const pins = this.initialGraph.pins.filter((p) => p.boxId === box.boxId)
 
@@ -327,11 +347,14 @@ test("tscircuitsch01", async () => {
         )
 
         for (const direction of uniqueDirections) {
-          const partition: Array<{ boxId: string; pinId: string }> = []
+          const partition: WipPartition = {
+            partitionId: `partition${partitionId++}`,
+            pins: [],
+          }
 
           for (const pin of pins) {
             if (getPinDirection(this.initialGraph, box, pin) === direction) {
-              partition.push({ boxId: box.boxId, pinId: pin.pinId })
+              partition.pins.push({ boxId: box.boxId, pinId: pin.pinId })
             }
           }
         }
@@ -345,7 +368,18 @@ test("tscircuitsch01", async () => {
       const g = structuredClone(this.lastGraph)
       this.lastGraph = g
 
-      // TODO Single traversal
+      const unexploredPin = this.unexploredPins.shift()
+
+      // Explore all pins in the unexplored pin's network
+      // If we come across a box with exactly two pins, we add the other
+      // pin of the box to the unexplored pins list
+
+      // When we come upon a new box, if it it contains a pin that is a singleton
+      // color, we check if this partition already contains a singleton of that
+      // color. If so, we can't add this box to this partition, don't queue it
+      // for exploration. If we do add the box, set the singleton slot to true.
+
+      // TODO
     }
 
     getPartitions() {
