@@ -1,6 +1,10 @@
 declare module "graphics-debug" {
-  const anyExport: any
-  export = anyExport
+  export interface GraphicsObject {
+    [k: string]: any
+  }
+  export function getSvgFromGraphicsObject(...args: any[]): string
+  export function stackGraphicsHorizontally(...args: any[]): GraphicsObject
+  export function stackGraphicsVertically(...args: any[]): GraphicsObject
 }
 
 declare module "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json" {
@@ -26,11 +30,9 @@ declare module "tscircuit" {
 }
 
 declare module "circuit-json-to-bpc" {
-  const fn: any
-  export = fn
+  export function convertCircuitJsonToBpc(...args: any[]): any
 }
 
 declare module "circuit-to-svg" {
-  const fn: any
-  export = fn
+  export function convertCircuitJsonToSchematicSvg(...args: any[]): any
 }
