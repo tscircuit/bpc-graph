@@ -1,8 +1,9 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
+import { getGraphicsForBpcGraph, partitionBoxSides } from "lib/index"
 import { getSvgFromGraphicsObject } from "graphics-debug"
+import { stackGraphicsVertically } from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 
 test("tscircuitsch01", async () => {
@@ -114,4 +115,17 @@ test("tscircuitsch01", async () => {
       backgroundColor: "white",
     }),
   ).toMatchSvgSnapshot(import.meta.path)
+
+  const { subgraphs } = partitionBoxSides(ogBpcGraph, "schematic_component_2")
+  const graphics = [getGraphicsForBpcGraph(ogBpcGraph, { title: "Original" })]
+  for (let i = 0; i < subgraphs.length; i++) {
+    graphics.push(
+      getGraphicsForBpcGraph(subgraphs[i]!, { title: `Subgraph ${i}` }),
+    )
+  }
+  expect(
+    getSvgFromGraphicsObject(stackGraphicsVertically(graphics), {
+      backgroundColor: "white",
+    }),
+  ).toMatchSvgSnapshot(import.meta.path, "tscircuitsch01-partition")
 })
