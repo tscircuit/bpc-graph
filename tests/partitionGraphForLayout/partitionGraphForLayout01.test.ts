@@ -627,9 +627,7 @@ test("tscircuitsch01", async () => {
         svgHeight: 4000,
       },
     ),
-  ).toMatchSvgSnapshot(import.meta.path)
-
-  return
+  ).toMatchSvgSnapshot(import.meta.path, "partitionGraphForLayout01-iterations")
 
   const partitionGraphics = partitions.map((p, i) => getGraphicsForBpcGraph(p))
 
