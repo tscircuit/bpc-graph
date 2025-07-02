@@ -128,9 +128,9 @@ test("tscircuitsch01", async () => {
   /* 2.  Pick the centre-chip (max-pin count)                            */
   /* ------------------------------------------------------------------ */
   const centreBoxId = ogBpcGraph.boxes
-    .map((b) => ({
+    .map((b: any) => ({
       boxId: b.boxId,
-      pinCount: ogBpcGraph.pins.filter((p) => p.boxId === b.boxId).length,
+      pinCount: ogBpcGraph.pins.filter((p: any) => p.boxId === b.boxId).length,
     }))
     .sort((a: any, b: any) => b.pinCount - a.pinCount)[0]!.boxId
 
