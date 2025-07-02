@@ -321,8 +321,17 @@ test("tscircuitsch01", async () => {
 
     boxSingletonKeys: Record<BoxId, Set<string>> = {}
 
-    /** All explored pins in format "boxId:pinId" */
-    exploredPins: Set<`${string}:${string}`> = new Set()
+    /**
+     * Pins we have *investigated* per partition
+     *   key =  `${partitionId}[${boxId}:${pinId}]`
+     */
+    exploredPins: Set<`${string}[${string}:${string}]`> = new Set()
+
+    /**
+     * Pins that have actually been *added* to some partition
+     *   key =  `${boxId}:${pinId}`
+     */
+    addedPins: Set<`${string}:${string}`> = new Set()
 
     constructor(public initialGraph: MixedBpcGraph) {
       this.lastGraph = initialGraph
@@ -398,7 +407,9 @@ test("tscircuitsch01", async () => {
       )
       this.lastExploredPin = { ...current, partitionId: current.partitionId }
       const pinKey = `${current.boxId}:${current.pinId}`
-      if (this.exploredPins.has(pinKey)) return // already done
+      const exploredKey = `${current.partitionId}[${pinKey}]` as const
+      if (this.addedPins.has(pinKey) || this.exploredPins.has(exploredKey))
+        return
 
       const pinObj = this.initialGraph.pins.find(
         (p) => p.boxId === current.boxId && p.pinId === current.pinId,
@@ -410,30 +421,37 @@ test("tscircuitsch01", async () => {
       )
       if (!part) return
 
-      /* ――― singleton-color gate-keeping ――― */
-      const currentBoxPinCount = this.initialGraph.pins.filter(
-        (p) =>
-          p.boxId === current.boxId &&
-          getPinDirection(this.initialGraph, current.boxId, current.pinId),
-      )
-      const singletonKey = `${pinObj.color}/${currentBoxPinCount}`
+      /* ――― singleton-color gate-keeping (BOX-AWARE) ――― */
+      const boxPinsWithDir = this.initialGraph.pins
+        // same box
+        .filter((p) => p.boxId === current.boxId)
+        // only pins that have a resolvable direction
+        .filter((p) => getPinDirection(this.initialGraph, p.boxId, p))
 
-      const isSingleton = this.singletonKeys.includes(singletonKey)
-      if (isSingleton && part.singletonSlots[singletonKey]) {
-        // This pin can still live in another partition that does not yet
-        // contain a pin of the same singleton-color.  Re-queue it instead of
-        // marking it as explored (=discarded).
+      const boxPinCount = boxPinsWithDir.length
+
+      // all singleton keys that would be occupied if *this box* joined the partition
+      const singletonKeysForBox = boxPinsWithDir
+        .map((p) => `${p.color}/${boxPinCount}`)
+        .filter((k) => this.singletonKeys.includes(k))
+
+      // does the current partition already contain any of those singleton slots?
+      const hasConflict = singletonKeysForBox.some(
+        (k) => part.singletonSlots[k],
+      )
+
+      if (hasConflict) {
+        // try to find an alternative partition that has room for all keys
         const altPart = this.wipPartitions.find(
           (p) =>
             p.partitionId !== current.partitionId &&
-            !p.singletonSlots[singletonKey],
+            singletonKeysForBox.every((k) => !p.singletonSlots[k]),
         )
 
         if (altPart) {
           console.log(
-            `  ↳ re-queued to ${altPart.partitionId} (singleton ${pinObj.color} duplicate in ${current.partitionId})`,
+            `  ↳ re-queued to ${altPart.partitionId} (singleton conflict in ${current.partitionId})`,
           )
-          // avoid double-queueing
           if (
             !this.unexploredPins.some(
               (q) =>
@@ -449,26 +467,33 @@ test("tscircuitsch01", async () => {
             })
           }
         } else {
-          // no alternative partition available → permanently reject
-          console.log(
-            `  ↳ rejected (singleton ${pinObj.color} already present in all partitions)`,
-          )
-          this.exploredPins.add(pinKey as `${string}:${string}`)
+          // no partition can accept this pin/box – mark as explored (discard)
+          console.log("  ↳ rejected (singleton conflicts in all partitions)")
+          this.exploredPins.add(exploredKey)
         }
         return
       }
 
       /* ――― accept pin into partition ――― */
-      if (isSingleton) part.singletonSlots[singletonKey] = true
+      // reserve all singleton keys this box brings in
+      for (const k of singletonKeysForBox) {
+        part.singletonSlots[k] = true
+      }
       part.pins.push({ boxId: current.boxId, pinId: current.pinId })
+
+      this.addedPins.add(pinKey)
+      this.exploredPins.add(exploredKey)
       console.log(`  ↳ accepted → pins in partition now = ${part.pins.length}`)
-      this.exploredPins.add(pinKey as `${string}:${string}`)
 
       /* ――― queue other pins on the same network ――― */
       for (const other of this.initialGraph.pins) {
         if (other.networkId !== pinObj.networkId) continue
         const otherKey = `${other.boxId}:${other.pinId}`
-        if (this.exploredPins.has(otherKey)) continue
+        if (this.addedPins.has(otherKey)) continue
+        if (
+          this.exploredPins.has(`${current.partitionId}[${otherKey}]` as const)
+        )
+          continue
         this.unexploredPins.push({
           boxId: other.boxId,
           pinId: other.pinId,
@@ -483,7 +508,10 @@ test("tscircuitsch01", async () => {
       if (boxPins.length === 2) {
         const mate = boxPins.find((p) => p.pinId !== current.pinId)!
         const mateKey = `${mate.boxId}:${mate.pinId}`
-        if (!this.exploredPins.has(mateKey)) {
+        if (
+          !this.addedPins.has(mateKey) &&
+          !this.exploredPins.has(`${current.partitionId}[${mateKey}]` as const)
+        ) {
           this.unexploredPins.push({
             boxId: mate.boxId,
             pinId: mate.pinId,
@@ -574,13 +602,10 @@ test("tscircuitsch01", async () => {
               )
             : "black",
         })
-        const boxPinCount = this.initialGraph.pins
-          .filter((p) => p.boxId === boxId)
-          .filter((p) => getPinDirection(this.lastGraph, boxId, p)).length
         graphics.texts.push({
           x: pos.x,
           y: pos.y,
-          text: `${boxId}:${pinId}\n${color}/${boxPinCount}`,
+          text: `${boxId}:${pinId}\n${Array.from(this.boxSingletonKeys[boxId] ?? []).join(",")}`,
           fontSize: 0.1,
         })
       }
