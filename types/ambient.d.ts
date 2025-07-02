@@ -20,8 +20,18 @@ declare global {
 }
 
 declare module "bun:test" {
-  export const test: any
-  export const expect: any
+  export interface Expect {
+    <T = any>(value: T): Matchers<T>
+  }
+  export interface Matchers<T> {
+    toBe(value: any): void
+    toEqual(value: any): void
+    toMatchInlineSnapshot(snapshot?: string | any): void
+    toMatchSnapshot(): void
+    toMatchSvgSnapshot(...args: any[]): void
+  }
+  export const test: (name: string, fn: (...args: any[]) => any) => void
+  export const expect: Expect
 }
 
 declare module "tscircuit" {
