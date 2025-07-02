@@ -534,29 +534,21 @@ test("tscircuitsch01", async () => {
 
       // b) overlay one rectangle per pending partition
       const total = this.wipPartitions.length
+      const PIN_RECT_SIZE = 0.4 // side length of highlight around each pin
       this.wipPartitions.forEach((part, idx) => {
         if (part.pins.length === 0) return
 
-        // collect bounds of all pins in this partition
-        let minX = Infinity
-        let minY = Infinity
-        let maxX = -Infinity
-        let maxY = -Infinity
-        for (const { boxId, pinId } of part.pins) {
-          const pos = getPinPosition(this.lastGraph, boxId, pinId)
-          minX = Math.min(minX, pos.x)
-          minY = Math.min(minY, pos.y)
-          maxX = Math.max(maxX, pos.x)
-          maxY = Math.max(maxY, pos.y)
-        }
+        const fill = getColorByIndex(idx, total, 0.25) // 0.25 opacity
 
-        const margin = 0.3
-        graphics.rects.push({
-          center: { x: (minX + maxX) / 2, y: (minY + maxY) / 2 },
-          width: maxX - minX + margin * 2,
-          height: maxY - minY + margin * 2,
-          fill: getColorByIndex(idx, total, 0.5), // translucent fill
-        })
+        for (const { boxId, pinId } of part.pins) {
+          const { x, y } = getPinPosition(this.lastGraph, boxId, pinId)
+          graphics.rects.push({
+            center: { x, y },
+            width: PIN_RECT_SIZE,
+            height: PIN_RECT_SIZE,
+            fill,
+          })
+        }
       })
 
       // --- highlight last explored pin ---
