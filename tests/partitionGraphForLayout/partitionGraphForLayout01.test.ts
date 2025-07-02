@@ -274,6 +274,7 @@ test("tscircuitsch01", async () => {
 
   type WipPartition = {
     partitionId: string
+    singletonSlots: Record<string, boolean>
     pins: Array<{ boxId: string; pinId: string }>
   }
   /**
@@ -349,6 +350,7 @@ test("tscircuitsch01", async () => {
         for (const direction of uniqueDirections) {
           const partition: WipPartition = {
             partitionId: `partition${partitionId++}`,
+            singletonSlots: {},
             pins: [],
           }
 
@@ -396,14 +398,14 @@ test("tscircuitsch01", async () => {
       // b) overlay one rectangle per pending partition
       const total = this.wipPartitions.length
       this.wipPartitions.forEach((part, idx) => {
-        if (part.length === 0) return
+        if (part.pins.length === 0) return
 
         // collect bounds of all pins in this partition
         let minX = Infinity
         let minY = Infinity
         let maxX = -Infinity
         let maxY = -Infinity
-        for (const { boxId, pinId } of part) {
+        for (const { boxId, pinId } of part.pins) {
           const pos = getPinPosition(this.lastGraph, boxId, pinId)
           minX = Math.min(minX, pos.x)
           minY = Math.min(minY, pos.y)
@@ -445,7 +447,12 @@ test("tscircuitsch01", async () => {
   })
 
   expect(
-    stackGraphicsVertically([originalGraphics, ...stepGraphics]),
+    getSvgFromGraphicsObject(
+      stackGraphicsVertically([originalGraphics, ...stepGraphics]),
+      {
+        backgroundColor: "white",
+      },
+    ),
   ).toMatchSvgSnapshot(import.meta.path)
 
   return
