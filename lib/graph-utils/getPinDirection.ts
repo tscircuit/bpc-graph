@@ -1,18 +1,24 @@
-import type { BpcGraph, Direction } from "lib/types"
+import type { BpcBox, BpcGraph, BpcPin, Direction } from "lib/types"
 import { getBoundsOfBpcBox } from "./getBoundsOfBpcBox"
 import { getPinPosition } from "./getPinPosition"
 
 export const getPinDirectionOrThrow = (
   g: BpcGraph,
-  boxId: string,
-  pinId: string,
+  boxIdOrBox: string | BpcBox,
+  pinIdOrPin: string | BpcPin,
 ): Direction => {
-  const pin = g.pins.find((p) => p.pinId === pinId && p.boxId === boxId)
+  const pin =
+    typeof pinIdOrPin === "string"
+      ? g.pins.find((p) => p.pinId === pinIdOrPin && p.boxId === boxIdOrBox)
+      : pinIdOrPin
   if (!pin) {
     throw new Error(`Pin not found "${pinId}"`)
   }
 
-  const box = g.boxes.find((b) => b.boxId === pin.boxId)
+  const box =
+    typeof boxIdOrBox === "string"
+      ? g.boxes.find((b) => b.boxId === boxIdOrBox)
+      : boxIdOrBox
   if (!box) {
     throw new Error(
       `Box not found for pin "${pinId}" (looked for "${pin.boxId}")`,
@@ -92,11 +98,11 @@ export const getPinDirectionOrThrow = (
 
 export const getPinDirection = (
   g: BpcGraph,
-  boxId: string,
-  pinId: string,
+  boxIdOrBox: string | BpcBox,
+  pinIdOrPin: string | BpcPin,
 ): Direction | null => {
   try {
-    return getPinDirectionOrThrow(g, boxId, pinId)
+    return getPinDirectionOrThrow(g, boxIdOrBox, pinIdOrPin)
   } catch (e: any) {
     return null
   }
