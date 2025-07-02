@@ -1,8 +1,21 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
-import { getSvgFromGraphicsObject } from "graphics-debug"
+import {
+  getGraphicsForBpcGraph,
+  partitionByBoxSide,
+  matchGraph,
+  netAdaptBpcGraph,
+  assignFloatingBoxPositions,
+  mergeBoxSideSubgraphs,
+} from "lib/index"
+import { mergeNetworks } from "lib/renetwork/mergeNetworks"
+import {
+  getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
+  stackGraphicsVertically,
+} from "graphics-debug"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 
 test("tscircuitsch01", async () => {
@@ -113,5 +126,44 @@ test("tscircuitsch01", async () => {
     getSvgFromGraphicsObject(getGraphicsForBpcGraph(ogBpcGraph), {
       backgroundColor: "white",
     }),
+  ).toMatchSvgSnapshot(import.meta.path)
+
+  const {
+    leftSubgraph,
+    rightSubgraph,
+    renetworkedGraph,
+    renetworkedNetworkIdMap,
+  } = partitionByBoxSide(ogBpcGraph, "schematic_component_2")
+
+  const leftMatch = matchGraph(leftSubgraph, corpus as any)
+  const rightMatch = matchGraph(rightSubgraph, corpus as any)
+
+  const leftAdaptedFixed = assignFloatingBoxPositions(
+    netAdaptBpcGraph(leftSubgraph as any, leftMatch.graph as any)
+      .adaptedBpcGraph,
+  )
+  const rightAdaptedFixed = assignFloatingBoxPositions(
+    netAdaptBpcGraph(rightSubgraph as any, rightMatch.graph as any)
+      .adaptedBpcGraph,
+  )
+
+  const mergedSides = mergeBoxSideSubgraphs(
+    [leftAdaptedFixed, rightAdaptedFixed],
+    { renetworkedNetworkIdMap },
+  )
+  const mergedGraph = mergeNetworks(mergedSides, renetworkedNetworkIdMap)
+
+  const allGraphics = stackGraphicsVertically([
+    getGraphicsForBpcGraph(ogBpcGraph, { title: "Original" }),
+    getGraphicsForBpcGraph(renetworkedGraph, { title: "Renetworked" }),
+    stackGraphicsHorizontally([
+      getGraphicsForBpcGraph(leftSubgraph, { title: "Left" }),
+      getGraphicsForBpcGraph(rightSubgraph, { title: "Right" }),
+    ]),
+    getGraphicsForBpcGraph(mergedGraph, { title: "Merged" }),
+  ])
+
+  expect(
+    getSvgFromGraphicsObject(allGraphics, { backgroundColor: "white" }),
   ).toMatchSvgSnapshot(import.meta.path)
 })
