@@ -19,3 +19,18 @@ declare module "bun:test" {
   export const test: any
   export const expect: any
 }
+
+declare module "tscircuit" {
+  export const runTscircuitCode: any
+  export const sel: any
+}
+
+declare module "circuit-json-to-bpc" {
+  const fn: any
+  export = fn
+}
+
+declare module "circuit-to-svg" {
+  const fn: any
+  export = fn
+}
