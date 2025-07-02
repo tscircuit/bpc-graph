@@ -25,7 +25,7 @@ export interface BpcFixedBox {
   kind: "fixed"
   boxId: string
   center: Vec2
-  attributes?: Record<string, any>
+  boxAttributes?: Record<string, any>
 }
 
 export interface BpcFloatingBox {
