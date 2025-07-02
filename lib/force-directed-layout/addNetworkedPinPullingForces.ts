@@ -26,8 +26,8 @@ export const addNetworkedPinPullingForces = (
           continue // Pins facing the same direction do not pull each other
         }
 
-        const pos1 = getPinPosition(g, pin1.pinId)
-        const pos2 = getPinPosition(g, pin2.pinId)
+        const pos1 = getPinPosition(g, pin1.boxId, pin1.pinId)
+        const pos2 = getPinPosition(g, pin2.boxId, pin2.pinId)
 
         const dx = pos2.x - pos1.x
         const dy = pos2.y - pos1.y

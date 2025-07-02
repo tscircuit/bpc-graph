@@ -1,7 +1,11 @@
 import type { BpcGraph, Vec2 } from "../types"
 
-export const getPinPosition = (g: BpcGraph, pinId: string): Vec2 => {
-  const pin = g.pins.find((p) => p.pinId === pinId)
+export const getPinPosition = (
+  g: BpcGraph,
+  boxId: string,
+  pinId: string,
+): Vec2 => {
+  const pin = g.pins.find((p) => p.pinId === pinId && p.boxId === boxId)
   if (!pin) {
     throw new Error(`Pin "${pinId}" not found`)
   }

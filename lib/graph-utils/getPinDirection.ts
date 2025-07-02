@@ -12,7 +12,7 @@ export const getPinDirectionOrThrow = (
       ? g.pins.find((p) => p.pinId === pinIdOrPin && p.boxId === boxIdOrBox)
       : pinIdOrPin
   if (!pin) {
-    throw new Error(`Pin not found "${pinId}"`)
+    throw new Error(`Pin not found "${pinIdOrPin}"`)
   }
 
   const box =
@@ -21,12 +21,12 @@ export const getPinDirectionOrThrow = (
       : boxIdOrBox
   if (!box) {
     throw new Error(
-      `Box not found for pin "${pinId}" (looked for "${pin.boxId}")`,
+      `Box not found for pin "${pinIdOrPin}" (looked for "${pin.boxId}")`,
     )
   }
 
   const bounds = getBoundsOfBpcBox(g, pin.boxId)
-  const pinPosition = getPinPosition(g, pinId)
+  const pinPosition = getPinPosition(g, pin.boxId, pin.pinId)
 
   const width = bounds.maxX - bounds.minX
   const height = bounds.maxY - bounds.minY

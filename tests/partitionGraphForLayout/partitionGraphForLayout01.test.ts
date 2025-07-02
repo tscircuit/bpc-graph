@@ -6,6 +6,7 @@ import {
   getGraphicsForBpcGraph,
   getPinDirection,
   getPinDirectionOrThrow,
+  getPinPosition,
   type BpcGraph,
   type MixedBpcGraph,
 } from "lib/index"
@@ -15,6 +16,7 @@ import {
   stackGraphicsVertically,
   type GraphicsObject,
 } from "graphics-debug"
+import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 // import { partitionGraphForLayout } from "lib/schematic-layout/partitionGraphForLayout"
 
 test("tscircuitsch01", async () => {
@@ -344,8 +346,6 @@ test("tscircuitsch01", async () => {
       this.lastGraph = g
 
       // TODO Single traversal
-
-      this.getGraphicsForLastGraph()
     }
 
     getPartitions() {
@@ -354,20 +354,53 @@ test("tscircuitsch01", async () => {
     }
 
     getGraphicsForLastGraph(): GraphicsObject {
+      // a) base graphics
       const graphics = getGraphicsForBpcGraph(this.lastGraph, {
         title: `Iteration ${this.iteration}`,
       })
 
-      // TODO Modify graphics to show rects around explored sides
+      // b) overlay one rectangle per pending partition
+      const total = this.wipPartitions.length
+      this.wipPartitions.forEach((part, idx) => {
+        if (part.length === 0) return
 
+        // collect bounds of all pins in this partition
+        let minX = Infinity
+        let minY = Infinity
+        let maxX = -Infinity
+        let maxY = -Infinity
+        for (const { boxId, pinId } of part) {
+          const pos = getPinPosition(this.lastGraph, boxId, pinId)
+          minX = Math.min(minX, pos.x)
+          minY = Math.min(minY, pos.y)
+          maxX = Math.max(maxX, pos.x)
+          maxY = Math.max(maxY, pos.y)
+        }
+
+        const margin = 0.3
+        graphics.rects.push({
+          center: { x: (minX + maxX) / 2, y: (minY + maxY) / 2 },
+          width: maxX - minX + margin * 2,
+          height: maxY - minY + margin * 2,
+          fill: getColorByIndex(idx, total, 0.05), // translucent fill
+        })
+      })
+
+      // c) keep a copy for later inspection
+      this.frames.push(graphics)
+
+      // d) return graphics for external use
       return graphics
     }
   }
 
   const processor = new DFSPartitionProcessor(ogGraph)
 
+  const stepGraphics = []
+
   while (!processor.solved && processor.iteration < 1000) {
     processor.step()
+    stepGraphics.push(processor.getGraphicsForLastGraph())
   }
 
   const partitions = processor.getPartitions()
@@ -376,6 +409,12 @@ test("tscircuitsch01", async () => {
   const originalGraphics = getGraphicsForBpcGraph(ogGraph, {
     title: "Original Circuit",
   })
+
+  expect(
+    stackGraphicsVertically([originalGraphics, ...stepGraphics]),
+  ).toMatchSvgSnapshot(import.meta.path)
+
+  return
 
   const partitionGraphics = partitions.map((p, i) => getGraphicsForBpcGraph(p))
 

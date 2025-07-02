@@ -143,7 +143,11 @@ export class ForceDirectedLayoutSolver extends BaseSolver {
         let startPoint: Vec2
         if (force.sourcePinId) {
           try {
-            startPoint = getPinPosition(this.graph, force.sourcePinId)
+            startPoint = getPinPosition(
+              this.graph,
+              box.boxId,
+              force.sourcePinId,
+            )
           } catch (e) {
             // Fallback to boxCenter if pin not found (should not happen in normal operation)
             console.warn(
