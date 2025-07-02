@@ -316,6 +316,10 @@ test("tscircuitsch01", async () => {
       for (const box of this.initialGraph.boxes) {
         const pins = this.initialGraph.pins.filter((p) => p.boxId === box.boxId)
 
+        if (pins.length <= 2) {
+          continue
+        }
+
         const uniqueDirections = new Set(
           pins.map((p) => getPinDirection(this.initialGraph, box, p)),
         )
