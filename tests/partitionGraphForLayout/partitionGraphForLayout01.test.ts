@@ -374,6 +374,11 @@ test("tscircuitsch01", async () => {
     step() {
       if (this.solved) return
       this.iteration++
+      console.log(
+        `\n── Iteration ${this.iteration} ──` +
+          `  unexplored=${this.unexploredPins.length}` +
+          `  explored=${this.exploredPins.size}`,
+      )
 
       /* ――― no more work to do? ――― */
       if (this.unexploredPins.length === 0) {
@@ -383,6 +388,9 @@ test("tscircuitsch01", async () => {
 
       /* ――― pick next pin to explore ――― */
       const current = this.unexploredPins.shift()!
+      console.log(
+        `Exploring pin ${current.boxId}:${current.pinId} in partition ${current.partitionId}`,
+      )
       this.lastExploredPin = { boxId: current.boxId, pinId: current.pinId }
       const pinKey = `${current.boxId}:${current.pinId}`
       if (this.exploredPins.has(pinKey)) return // already done
@@ -400,6 +408,9 @@ test("tscircuitsch01", async () => {
       /* ――― singleton-color gatekeeping ――― */
       const isSingleton = this.singletonColors.includes(pinObj.color)
       if (isSingleton && part.singletonSlots[pinObj.color]) {
+        console.log(
+          `  ↳ rejected (singleton ${pinObj.color} already present in partition)`,
+        )
         // another of this color already in partition → discard
         this.exploredPins.add(pinKey)
         return
@@ -408,6 +419,9 @@ test("tscircuitsch01", async () => {
       /* ――― accept pin into partition ――― */
       if (isSingleton) part.singletonSlots[pinObj.color] = true
       part.pins.push({ boxId: current.boxId, pinId: current.pinId })
+      console.log(
+        `  ↳ accepted → pins in partition now = ${part.pins.length}`,
+      )
       this.exploredPins.add(pinKey as `${string}:${string}`)
 
       /* ――― queue other pins on the same network ――― */
@@ -440,6 +454,13 @@ test("tscircuitsch01", async () => {
 
       /* ――― done? ――― */
       if (this.unexploredPins.length === 0) this.solved = true
+
+      if (this.solved) {
+        console.log(
+          `Solver finished in ${this.iteration} iterations,` +
+            ` partitions=${this.getPartitions().length}`,
+        )
+      }
     }
 
     getPartitions(): MixedBpcGraph[] {
