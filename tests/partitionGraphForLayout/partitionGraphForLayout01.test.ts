@@ -7,7 +7,9 @@ import {
   getPinDirection,
   getPinDirectionOrThrow,
   getPinPosition,
+  type BoxId,
   type BpcGraph,
+  type BpcPin,
   type MixedBpcGraph,
 } from "lib/index"
 import {
@@ -296,7 +298,7 @@ test("tscircuitsch01", async () => {
 
     lastGraph: BpcGraph
 
-    lastExploredPin?: { boxId: string; pinId: string }
+    lastExploredPin?: BpcPin & { partitionId: string }
 
     solved = false
 
@@ -316,6 +318,8 @@ test("tscircuitsch01", async () => {
 
     /** color/boxPinCount */
     singletonKeys = ["vcc/1", "gnd/1"]
+
+    boxSingletonKeys: Record<BoxId, Set<string>> = {}
 
     /** All explored pins in format "boxId:pinId" */
     exploredPins: Set<`${string}:${string}`> = new Set()
@@ -392,7 +396,7 @@ test("tscircuitsch01", async () => {
       console.log(
         `Exploring pin ${current.boxId}:${current.pinId} in partition ${current.partitionId}`,
       )
-      this.lastExploredPin = { boxId: current.boxId, pinId: current.pinId }
+      this.lastExploredPin = { ...current, partitionId: current.partitionId }
       const pinKey = `${current.boxId}:${current.pinId}`
       if (this.exploredPins.has(pinKey)) return // already done
 
@@ -553,14 +557,31 @@ test("tscircuitsch01", async () => {
 
       // --- highlight last explored pin ---
       if (this.lastExploredPin) {
-        const { boxId, pinId } = this.lastExploredPin
+        const { boxId, pinId, color } = this.lastExploredPin
         const pos = getPinPosition(this.lastGraph, boxId, pinId)
         const size = 0.25
         graphics.rects.push({
           center: { x: pos.x, y: pos.y },
           width: size,
           height: size,
-          fill: "red",
+          fill: this.lastExploredPin.partitionId
+            ? getColorByIndex(
+                this.wipPartitions.findIndex(
+                  (p) => p.partitionId === this.lastExploredPin!.partitionId,
+                ),
+                this.wipPartitions.length,
+                1,
+              )
+            : "black",
+        })
+        const boxPinCount = this.initialGraph.pins
+          .filter((p) => p.boxId === boxId)
+          .filter((p) => getPinDirection(this.lastGraph, boxId, p)).length
+        graphics.texts.push({
+          x: pos.x,
+          y: pos.y,
+          text: `${boxId}:${pinId}\n${color}/${boxPinCount}`,
+          fontSize: 0.1,
         })
       }
 
