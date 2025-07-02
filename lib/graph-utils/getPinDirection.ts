@@ -1,26 +1,32 @@
-import type { BpcGraph, Direction } from "lib/types"
+import type { BpcBox, BpcGraph, BpcPin, Direction } from "lib/types"
 import { getBoundsOfBpcBox } from "./getBoundsOfBpcBox"
 import { getPinPosition } from "./getPinPosition"
 
 export const getPinDirectionOrThrow = (
   g: BpcGraph,
-  boxId: string,
-  pinId: string,
+  boxIdOrBox: string | BpcBox,
+  pinIdOrPin: string | BpcPin,
 ): Direction => {
-  const pin = g.pins.find((p) => p.pinId === pinId && p.boxId === boxId)
+  const pin =
+    typeof pinIdOrPin === "string"
+      ? g.pins.find((p) => p.pinId === pinIdOrPin && p.boxId === boxIdOrBox)
+      : pinIdOrPin
   if (!pin) {
-    throw new Error(`Pin not found "${pinId}"`)
+    throw new Error(`Pin not found "${pinIdOrPin}"`)
   }
 
-  const box = g.boxes.find((b) => b.boxId === pin.boxId)
+  const box =
+    typeof boxIdOrBox === "string"
+      ? g.boxes.find((b) => b.boxId === boxIdOrBox)
+      : boxIdOrBox
   if (!box) {
     throw new Error(
-      `Box not found for pin "${pinId}" (looked for "${pin.boxId}")`,
+      `Box not found for pin "${pinIdOrPin}" (looked for "${pin.boxId}")`,
     )
   }
 
   const bounds = getBoundsOfBpcBox(g, pin.boxId)
-  const pinPosition = getPinPosition(g, pinId)
+  const pinPosition = getPinPosition(g, pin.boxId, pin.pinId)
 
   const width = bounds.maxX - bounds.minX
   const height = bounds.maxY - bounds.minY
@@ -64,11 +70,13 @@ export const getPinDirectionOrThrow = (
 
   // If pin is on a corner, decide based on which direction has larger offset magnitude
   if ((onLeftEdge || onRightEdge) && (onBottomEdge || onTopEdge)) {
-    if (Math.abs(pin.offset.x) > Math.abs(pin.offset.y)) {
-      return pin.offset.x > 0 ? "x+" : "x-"
-    } else {
-      return pin.offset.y > 0 ? "y+" : "y-"
-    }
+    // HACK: temporary X bias
+    return pin.offset.x > 0 ? "x+" : "x-"
+    // if (Math.abs(pin.offset.x) > Math.abs(pin.offset.y)) {
+    //   return pin.offset.x > 0 ? "x+" : "x-"
+    // } else {
+    //   return pin.offset.y > 0 ? "y+" : "y-"
+    // }
   }
 
   // Pin is on a single edge
@@ -86,17 +94,17 @@ export const getPinDirectionOrThrow = (
   }
 
   throw new Error(
-    `Pin "${pinId}" not on the edge of the box "${pin.boxId}" so we couldn't determine the direction`,
+    `Pin "${pin.pinId}" not on the edge of the box "${pin.boxId}" so we couldn't determine the direction`,
   )
 }
 
 export const getPinDirection = (
   g: BpcGraph,
-  boxId: string,
-  pinId: string,
+  boxIdOrBox: string | BpcBox,
+  pinIdOrPin: string | BpcPin,
 ): Direction | null => {
   try {
-    return getPinDirectionOrThrow(g, boxId, pinId)
+    return getPinDirectionOrThrow(g, boxIdOrBox, pinIdOrPin)
   } catch (e: any) {
     return null
   }

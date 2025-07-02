@@ -16,7 +16,7 @@ export const addPinAlignmentForces = (
     const pinsInNetwork = g.pins.filter((p) => p.networkId === networkId)
 
     for (const pinEmitter of pinsInNetwork) {
-      const emitterPos = getPinPosition(g, pinEmitter.pinId)
+      const emitterPos = getPinPosition(g, pinEmitter.boxId, pinEmitter.pinId)
       const emitterDir = getPinDirectionOrThrow(
         g,
         pinEmitter.boxId,
@@ -26,7 +26,7 @@ export const addPinAlignmentForces = (
       for (const pinTarget of pinsInNetwork) {
         if (pinEmitter.pinId === pinTarget.pinId) continue
 
-        const targetPos = getPinPosition(g, pinTarget.pinId)
+        const targetPos = getPinPosition(g, pinTarget.boxId, pinTarget.pinId)
 
         let forceX = 0
         let forceY = 0
