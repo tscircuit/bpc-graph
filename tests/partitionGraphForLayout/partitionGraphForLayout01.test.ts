@@ -276,7 +276,7 @@ test("tscircuitsch01", async () => {
 
   type WipPartition = {
     partitionId: string
-    singletonSlots: Record<string, boolean>
+    filledSingletonSlots: Set<string>
     pins: Array<{ boxId: string; pinId: string }>
   }
   /**
@@ -304,11 +304,7 @@ test("tscircuitsch01", async () => {
 
     iteration = 0
 
-    wipPartitions: Array<{
-      partitionId: string
-      singletonSlots: Record<string, boolean>
-      pins: Array<{ boxId: string; pinId: string }>
-    }>
+    wipPartitions: WipPartition[]
 
     unexploredPins: Array<{
       boxId: string
@@ -317,9 +313,9 @@ test("tscircuitsch01", async () => {
     }> = []
 
     /** color/boxPinCount */
-    singletonKeys = ["vcc/1", "gnd/1"]
+    singletonKeys = ["vcc/2", "gnd/2"]
 
-    boxSingletonKeys: Record<BoxId, Set<string>> = {}
+    boxSingletonKeys: Record<BoxId, Set<string>>
 
     /**
      * Pins we have *investigated* per partition
@@ -340,12 +336,32 @@ test("tscircuitsch01", async () => {
       this.unexploredPins = this.wipPartitions.flatMap((part) =>
         part.pins.map((p) => ({ ...p, partitionId: part.partitionId })),
       )
+      this.boxSingletonKeys = this.initializeBoxSingletonKeys()
 
       this.frames.push(
         getGraphicsForBpcGraph(initialGraph, {
           title: "Initial Graph",
         }),
       )
+    }
+    initializeBoxSingletonKeys() {
+      const boxSingletonKeys: Record<BoxId, Set<string>> = {}
+      for (const box of this.initialGraph.boxes) {
+        const boxPins = this.initialGraph.pins.filter(
+          (p) => p.boxId === box.boxId,
+        )
+
+        const boxPinCount = boxPins.length
+
+        const singletonKeysForBox = boxPins
+          .map((p) => `${p.color}/${boxPinCount}`)
+          .filter((k) => this.singletonKeys.includes(k))
+
+        console.log(singletonKeysForBox)
+
+        boxSingletonKeys[box.boxId] = new Set(singletonKeysForBox)
+      }
+      return boxSingletonKeys
     }
 
     initializeWipPartitions(): WipPartition[] {
@@ -368,7 +384,7 @@ test("tscircuitsch01", async () => {
         for (const direction of uniqueDirections) {
           const partition: WipPartition = {
             partitionId: `partition${partitionId++}`,
-            singletonSlots: {},
+            filledSingletonSlots: new Set(),
             pins: [],
           }
 
@@ -405,8 +421,11 @@ test("tscircuitsch01", async () => {
       console.log(
         `Exploring pin ${current.boxId}:${current.pinId} in partition ${current.partitionId}`,
       )
-      this.lastExploredPin = { ...current, partitionId: current.partitionId }
-      const pinKey = `${current.boxId}:${current.pinId}`
+      this.lastExploredPin = {
+        ...current,
+        partitionId: current.partitionId,
+      } as BpcPin & { partitionId: string }
+      const pinKey = `${current.boxId}:${current.pinId}` as const
       const exploredKey = `${current.partitionId}[${pinKey}]` as const
       if (this.addedPins.has(pinKey) || this.exploredPins.has(exploredKey))
         return
@@ -421,63 +440,24 @@ test("tscircuitsch01", async () => {
       )
       if (!part) return
 
-      /* ――― singleton-color gate-keeping (BOX-AWARE) ――― */
-      const boxPinsWithDir = this.initialGraph.pins
-        // same box
-        .filter((p) => p.boxId === current.boxId)
-        // only pins that have a resolvable direction
-        .filter((p) => getPinDirection(this.initialGraph, p.boxId, p))
-
-      const boxPinCount = boxPinsWithDir.length
-
-      // all singleton keys that would be occupied if *this box* joined the partition
-      const singletonKeysForBox = boxPinsWithDir
-        .map((p) => `${p.color}/${boxPinCount}`)
-        .filter((k) => this.singletonKeys.includes(k))
+      const singletonKeysForBox = this.boxSingletonKeys[current.boxId]!
 
       // does the current partition already contain any of those singleton slots?
-      const hasConflict = singletonKeysForBox.some(
-        (k) => part.singletonSlots[k],
+      const hasConflict = Array.from(singletonKeysForBox).some((k) =>
+        part.filledSingletonSlots.has(k),
       )
 
       if (hasConflict) {
-        // try to find an alternative partition that has room for all keys
-        const altPart = this.wipPartitions.find(
-          (p) =>
-            p.partitionId !== current.partitionId &&
-            singletonKeysForBox.every((k) => !p.singletonSlots[k]),
-        )
-
-        if (altPart) {
-          console.log(
-            `  ↳ re-queued to ${altPart.partitionId} (singleton conflict in ${current.partitionId})`,
-          )
-          if (
-            !this.unexploredPins.some(
-              (q) =>
-                q.boxId === current.boxId &&
-                q.pinId === current.pinId &&
-                q.partitionId === altPart.partitionId,
-            )
-          ) {
-            this.unexploredPins.push({
-              boxId: current.boxId,
-              pinId: current.pinId,
-              partitionId: altPart.partitionId,
-            })
-          }
-        } else {
-          // no partition can accept this pin/box – mark as explored (discard)
-          console.log("  ↳ rejected (singleton conflicts in all partitions)")
-          this.exploredPins.add(exploredKey)
-        }
+        // no partition can accept this pin/box – mark as explored (discard)
+        console.log("  ↳ rejected (singleton conflicts in all partitions)")
+        this.exploredPins.add(exploredKey)
         return
       }
 
       /* ――― accept pin into partition ――― */
       // reserve all singleton keys this box brings in
       for (const k of singletonKeysForBox) {
-        part.singletonSlots[k] = true
+        part.filledSingletonSlots.add(k)
       }
       part.pins.push({ boxId: current.boxId, pinId: current.pinId })
 
@@ -488,10 +468,12 @@ test("tscircuitsch01", async () => {
       /* ――― queue other pins on the same network ――― */
       for (const other of this.initialGraph.pins) {
         if (other.networkId !== pinObj.networkId) continue
-        const otherKey = `${other.boxId}:${other.pinId}`
-        if (this.addedPins.has(otherKey)) continue
+        const otherPinKey = `${other.boxId}:${other.pinId}` as const
+        if (this.addedPins.has(otherPinKey)) continue
         if (
-          this.exploredPins.has(`${current.partitionId}[${otherKey}]` as const)
+          this.exploredPins.has(
+            `${current.partitionId}[${otherPinKey}]` as const,
+          )
         )
           continue
         this.unexploredPins.push({
@@ -507,7 +489,7 @@ test("tscircuitsch01", async () => {
       )
       if (boxPins.length === 2) {
         const mate = boxPins.find((p) => p.pinId !== current.pinId)!
-        const mateKey = `${mate.boxId}:${mate.pinId}`
+        const mateKey = `${mate.boxId}:${mate.pinId}` as const
         if (
           !this.addedPins.has(mateKey) &&
           !this.exploredPins.has(`${current.partitionId}[${mateKey}]` as const)
@@ -619,6 +601,8 @@ test("tscircuitsch01", async () => {
   }
 
   const processor = new DFSPartitionProcessor(ogGraph)
+
+  console.log(processor.boxSingletonKeys)
 
   const stepGraphics = []
 
