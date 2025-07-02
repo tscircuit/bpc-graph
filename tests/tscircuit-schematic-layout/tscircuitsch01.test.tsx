@@ -1,8 +1,21 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
-import { getSvgFromGraphicsObject } from "graphics-debug"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
+import {
+  getGraphicsForBpcGraph,
+  mergeBoxSideSubgraphs,
+  mergeNetworks,
+  netAdaptBpcGraph,
+  assignFloatingBoxPositions,
+  matchGraph,
+  partitionBoxSides,
+} from "lib/index"
+import {
+  getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
+  stackGraphicsVertically,
+} from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 
 test("tscircuitsch01", async () => {
@@ -112,6 +125,51 @@ test("tscircuitsch01", async () => {
   expect(
     getSvgFromGraphicsObject(getGraphicsForBpcGraph(ogBpcGraph), {
       backgroundColor: "white",
+    }),
+  ).toMatchSvgSnapshot(import.meta.path)
+
+  const { partitions, renetworkedGraph, renetworkedNetworkIdMap } =
+    partitionBoxSides(ogBpcGraph, "schematic_component_2")
+
+  const partitionGraphics = partitions.map((p, i) =>
+    getGraphicsForBpcGraph(p, { title: `Partition ${i}` }),
+  )
+
+  const adaptedParts = partitions.map((p) => {
+    const match = matchGraph(p, corpus as any)
+    const { adaptedBpcGraph } = netAdaptBpcGraph(p, match.graph as any)
+    const assigned = assignFloatingBoxPositions(adaptedBpcGraph)
+    return { assigned, matchName: match.graphName }
+  })
+
+  const adaptedGraphics = adaptedParts.map((p, i) =>
+    getGraphicsForBpcGraph(p.assigned, {
+      title: `Adapted ${i}`,
+      caption: p.matchName,
+    }),
+  )
+
+  const mergedSides = mergeBoxSideSubgraphs(
+    adaptedParts.map((p) => p.assigned),
+    { renetworkedNetworkIdMap },
+  )
+  const mergedGraph = mergeNetworks(mergedSides, renetworkedNetworkIdMap)
+  const mergedGraphics = getGraphicsForBpcGraph(mergedGraph, {
+    title: "Merged",
+  })
+
+  const allGraphics = stackGraphicsVertically([
+    getGraphicsForBpcGraph(ogBpcGraph, { title: "Original" }),
+    getGraphicsForBpcGraph(renetworkedGraph, { title: "Renetworked" }),
+    stackGraphicsHorizontally(partitionGraphics),
+    stackGraphicsHorizontally(adaptedGraphics),
+    mergedGraphics,
+  ])
+
+  expect(
+    getSvgFromGraphicsObject(allGraphics, {
+      backgroundColor: "white",
+      includeTextLabels: false,
     }),
   ).toMatchSvgSnapshot(import.meta.path)
 })
