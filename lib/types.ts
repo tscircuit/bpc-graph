@@ -8,6 +8,7 @@ export type BpcGraph = FloatingBpcGraph | FixedBpcGraph | MixedBpcGraph
 export interface MixedBpcGraph {
   boxes: (BpcFloatingBox | BpcFixedBox)[]
   pins: BpcPin[]
+  boxAttributes?: Record<string, any>
 }
 
 export interface FloatingBpcGraph {
@@ -24,6 +25,7 @@ export interface BpcFixedBox {
   kind: "fixed"
   boxId: string
   center: Vec2
+  attributes?: Record<string, any>
 }
 
 export interface BpcFloatingBox {
@@ -40,6 +42,7 @@ export interface BpcPin {
   networkId: string
   color: string
   offset: Vec2
+  pinAttributes?: Record<string, any>
 }
 
 export interface Bounds {
