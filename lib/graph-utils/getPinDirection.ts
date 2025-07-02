@@ -72,11 +72,11 @@ export const getPinDirectionOrThrow = (
   if ((onLeftEdge || onRightEdge) && (onBottomEdge || onTopEdge)) {
     // HACK: temporary X bias
     return pin.offset.x > 0 ? "x+" : "x-"
-    if (Math.abs(pin.offset.x) > Math.abs(pin.offset.y)) {
-      return pin.offset.x > 0 ? "x+" : "x-"
-    } else {
-      return pin.offset.y > 0 ? "y+" : "y-"
-    }
+    // if (Math.abs(pin.offset.x) > Math.abs(pin.offset.y)) {
+    //   return pin.offset.x > 0 ? "x+" : "x-"
+    // } else {
+    //   return pin.offset.y > 0 ? "y+" : "y-"
+    // }
   }
 
   // Pin is on a single edge
@@ -94,7 +94,7 @@ export const getPinDirectionOrThrow = (
   }
 
   throw new Error(
-    `Pin "${pinId}" not on the edge of the box "${pin.boxId}" so we couldn't determine the direction`,
+    `Pin "${pin.pinId}" not on the edge of the box "${pin.boxId}" so we couldn't determine the direction`,
   )
 }
 
