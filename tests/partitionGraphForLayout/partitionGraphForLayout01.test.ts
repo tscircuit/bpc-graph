@@ -314,7 +314,8 @@ test("tscircuitsch01", async () => {
       partitionId: string
     }> = []
 
-    singletonColors = ["vcc", "gnd"]
+    /** color/boxPinCount */
+    singletonKeys = ["vcc/1", "gnd/1"]
 
     /** All explored pins in format "boxId:pinId" */
     exploredPins: Set<`${string}:${string}`> = new Set()
@@ -405,23 +406,58 @@ test("tscircuitsch01", async () => {
       )
       if (!part) return
 
-      /* ――― singleton-color gatekeeping ――― */
-      const isSingleton = this.singletonColors.includes(pinObj.color)
-      if (isSingleton && part.singletonSlots[pinObj.color]) {
-        console.log(
-          `  ↳ rejected (singleton ${pinObj.color} already present in partition)`,
+      /* ――― singleton-color gate-keeping ――― */
+      const currentBoxPinCount = this.initialGraph.pins.filter(
+        (p) =>
+          p.boxId === current.boxId &&
+          getPinDirection(this.initialGraph, current.boxId, current.pinId),
+      )
+      const singletonKey = `${pinObj.color}/${currentBoxPinCount}`
+
+      const isSingleton = this.singletonKeys.includes(singletonKey)
+      if (isSingleton && part.singletonSlots[singletonKey]) {
+        // This pin can still live in another partition that does not yet
+        // contain a pin of the same singleton-color.  Re-queue it instead of
+        // marking it as explored (=discarded).
+        const altPart = this.wipPartitions.find(
+          (p) =>
+            p.partitionId !== current.partitionId &&
+            !p.singletonSlots[singletonKey],
         )
-        // another of this color already in partition → discard
-        this.exploredPins.add(pinKey)
+
+        if (altPart) {
+          console.log(
+            `  ↳ re-queued to ${altPart.partitionId} (singleton ${pinObj.color} duplicate in ${current.partitionId})`,
+          )
+          // avoid double-queueing
+          if (
+            !this.unexploredPins.some(
+              (q) =>
+                q.boxId === current.boxId &&
+                q.pinId === current.pinId &&
+                q.partitionId === altPart.partitionId,
+            )
+          ) {
+            this.unexploredPins.push({
+              boxId: current.boxId,
+              pinId: current.pinId,
+              partitionId: altPart.partitionId,
+            })
+          }
+        } else {
+          // no alternative partition available → permanently reject
+          console.log(
+            `  ↳ rejected (singleton ${pinObj.color} already present in all partitions)`,
+          )
+          this.exploredPins.add(pinKey as `${string}:${string}`)
+        }
         return
       }
 
       /* ――― accept pin into partition ――― */
-      if (isSingleton) part.singletonSlots[pinObj.color] = true
+      if (isSingleton) part.singletonSlots[singletonKey] = true
       part.pins.push({ boxId: current.boxId, pinId: current.pinId })
-      console.log(
-        `  ↳ accepted → pins in partition now = ${part.pins.length}`,
-      )
+      console.log(`  ↳ accepted → pins in partition now = ${part.pins.length}`)
       this.exploredPins.add(pinKey as `${string}:${string}`)
 
       /* ――― queue other pins on the same network ――― */
