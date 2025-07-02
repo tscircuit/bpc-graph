@@ -46,7 +46,7 @@ test("tscircuitsch01", async () => {
   const ogGraph: MixedBpcGraph = {
     boxes: [
       {
-        boxId: "schematic_component_0",
+        boxId: "U1",
         kind: "floating",
         center: {
           x: 0,
@@ -54,7 +54,7 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        boxId: "schematic_component_1",
+        boxId: "C1",
         kind: "floating",
         center: {
           x: 1,
@@ -62,7 +62,7 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        boxId: "schematic_net_label_0",
+        boxId: "NL1",
         kind: "fixed",
         center: {
           x: -1,
@@ -74,7 +74,7 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        boxId: "schematic_net_label_1",
+        boxId: "NL2",
         kind: "fixed",
         center: {
           x: -1,
@@ -86,7 +86,7 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        boxId: "schematic_net_label_2",
+        boxId: "NL3",
         kind: "fixed",
         center: {
           x: 1,
@@ -98,7 +98,7 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        boxId: "schematic_net_label_3",
+        boxId: "NL4",
         kind: "fixed",
         center: {
           x: 1,
@@ -112,88 +112,88 @@ test("tscircuitsch01", async () => {
     ],
     pins: [
       {
-        pinId: "schematic_component_0_center",
+        pinId: "U1_center",
         color: "component_center",
         networkId: "center_schematic_component_0",
         offset: {
           x: 0,
           y: 0,
         },
-        boxId: "schematic_component_0",
+        boxId: "U1",
       },
       {
-        pinId: "schematic_port_0",
+        pinId: "U1_pin1",
         color: "vcc",
         networkId: "unnamedsubcircuit12_connectivity_net0",
         offset: {
           x: -0.6000000000000001,
           y: 0.7,
         },
-        boxId: "schematic_component_0",
+        boxId: "U1",
       },
       {
-        pinId: "schematic_port_1",
+        pinId: "U1_pin2",
         color: "gnd",
         networkId: "unnamedsubcircuit12_connectivity_net1",
         offset: {
           x: -0.6000000000000001,
           y: -0.7,
         },
-        boxId: "schematic_component_0",
+        boxId: "U1",
       },
       {
-        pinId: "schematic_port_2",
+        pinId: "U1_pin3",
         color: "vcc",
         networkId: "unnamedsubcircuit12_connectivity_net0",
         offset: {
           x: 0.6000000000000001,
           y: 0.7,
         },
-        boxId: "schematic_component_0",
+        boxId: "U1",
       },
       {
-        pinId: "schematic_port_3",
+        pinId: "U1_pin4",
         color: "gnd",
         networkId: "unnamedsubcircuit12_connectivity_net1",
         offset: {
           x: 0.6000000000000001,
           y: -0.7,
         },
-        boxId: "schematic_component_0",
+        boxId: "U1",
       },
       {
-        pinId: "schematic_component_1_center",
+        pinId: "C1_center",
         color: "component_center",
         networkId: "center_schematic_component_1",
         offset: {
           x: 0,
           y: 0,
         },
-        boxId: "schematic_component_1",
+        boxId: "C1",
       },
       {
-        pinId: "schematic_port_4",
+        pinId: "C1_pin1",
         color: "vcc",
         networkId: "unnamedsubcircuit12_connectivity_net0",
         offset: {
           x: -0.00027334999999961695,
           y: 0.5512093000000002,
         },
-        boxId: "schematic_component_1",
+        boxId: "C1",
       },
       {
-        pinId: "schematic_port_5",
+        pinId: "C1_pin2",
         color: "gnd",
         networkId: "unnamedsubcircuit12_connectivity_net1",
         offset: {
           x: 0.00027334999999961695,
           y: -0.5512093000000002,
         },
-        boxId: "schematic_component_1",
+        boxId: "C1",
       },
       {
-        pinId: "schematic_net_label_0_pin",
-        boxId: "schematic_net_label_0",
+        pinId: "NL1_pin",
+        boxId: "NL1",
         networkId: "unnamedsubcircuit12_connectivity_net0",
         color: "vcc",
         offset: {
@@ -202,8 +202,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_0_center",
-        boxId: "schematic_net_label_0",
+        pinId: "NL1_center",
+        boxId: "NL1",
         networkId: "schematic_net_label_0_center",
         color: "netlabel_center",
         offset: {
@@ -212,8 +212,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_1_pin",
-        boxId: "schematic_net_label_1",
+        pinId: "NL2_pin",
+        boxId: "NL2",
         networkId: "unnamedsubcircuit12_connectivity_net1",
         color: "gnd",
         offset: {
@@ -222,8 +222,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_1_center",
-        boxId: "schematic_net_label_1",
+        pinId: "NL2_center",
+        boxId: "NL2",
         networkId: "schematic_net_label_1_center",
         color: "netlabel_center",
         offset: {
@@ -232,8 +232,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_2_pin",
-        boxId: "schematic_net_label_2",
+        pinId: "NL3_pin",
+        boxId: "NL3",
         networkId: "unnamedsubcircuit12_connectivity_net0",
         color: "vcc",
         offset: {
@@ -242,8 +242,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_2_center",
-        boxId: "schematic_net_label_2",
+        pinId: "NL3_center",
+        boxId: "NL3",
         networkId: "schematic_net_label_2_center",
         color: "netlabel_center",
         offset: {
@@ -252,8 +252,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_3_pin",
-        boxId: "schematic_net_label_3",
+        pinId: "NL4_pin",
+        boxId: "NL4",
         networkId: "unnamedsubcircuit12_connectivity_net1",
         color: "gnd",
         offset: {
@@ -262,8 +262,8 @@ test("tscircuitsch01", async () => {
         },
       },
       {
-        pinId: "schematic_net_label_3_center",
-        boxId: "schematic_net_label_3",
+        pinId: "NL4_center",
+        boxId: "NL4",
         networkId: "schematic_net_label_3_center",
         color: "netlabel_center",
         offset: {
@@ -289,7 +289,7 @@ test("tscircuitsch01", async () => {
    *
    * In this file (with the ogGraph above) there should be two partitions.
    *
-   * The tricky thing is the "schematic_component_1" could be put into either
+   * The tricky thing is the "C1" could be put into either
    * partition, but should not be a member of both.
    *
    */
@@ -605,7 +605,7 @@ test("tscircuitsch01", async () => {
         graphics.texts.push({
           x: pos.x,
           y: pos.y,
-          text: `${boxId}:${pinId}\n${Array.from(this.boxSingletonKeys[boxId] ?? []).join(",")}`,
+          text: `${boxId}:${pinId}-${Array.from(this.boxSingletonKeys[boxId] ?? []).join(",")}`,
           fontSize: 0.1,
         })
       }
