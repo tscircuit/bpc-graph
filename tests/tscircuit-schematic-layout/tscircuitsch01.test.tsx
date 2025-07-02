@@ -1,9 +1,21 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
-import { getSvgFromGraphicsObject } from "graphics-debug"
+import { 
+  getGraphicsForBpcGraph,
+  partitionBpcGraph,
+  mergePartitions,
+  matchGraph,
+  netAdaptBpcGraph,
+  assignFloatingBoxPositions,
+} from "lib/index"
+import { 
+  getSvgFromGraphicsObject,
+  stackGraphicsVertically,
+  stackGraphicsHorizontally,
+} from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 
 test("tscircuitsch01", async () => {
   const circuitJson = await runTscircuitCode(`
@@ -105,12 +117,74 @@ test("tscircuitsch01", async () => {
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
   const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
 
+  // Step 1: Original circuit and BPC graph
+  const originalCircuitGraphics = getGraphicsForBpcGraph(ogBpcGraph, {
+    title: "1. Original BPC Graph",
+  })
+
+  // Step 2: Partition the BPC graph
+  const partitions = partitionBpcGraph(ogBpcGraph)
+  
+  // Filter to only show main component partitions for clarity
+  const mainComponentPartitions = partitions.filter(p => 
+    p.boxId.includes("component") && p.boxId.includes("0")
+  )
+  
+  const partitionGraphics = stackGraphicsHorizontally(
+    mainComponentPartitions.map((partition, index) => 
+      getGraphicsForBpcGraph(partition.subgraph, {
+        title: `2.${index + 1} Partition: ${partition.partitionId}`,
+        caption: `Sides: ${partition.sides.join(", ")}`,
+      })
+    )
+  )
+
+  // Step 3: Match each partition to corpus
+  const processedPartitions = mainComponentPartitions.map((partition, index) => {
+    const matchResult = matchGraph(partition.subgraph, corpus as any)
+    return {
+      ...partition,
+      matchResult,
+    }
+  })
+
+  const matchedGraphics = stackGraphicsHorizontally(
+    processedPartitions.map((partition, index) => 
+      stackGraphicsVertically([
+        getGraphicsForBpcGraph(partition.subgraph, {
+          title: `3.${index + 1} Processed: ${partition.partitionId}`,
+          caption: `Match: ${partition.matchResult.graphName} (dist: ${partition.matchResult.distance.toFixed(2)})`,
+        }),
+        getGraphicsForBpcGraph(partition.matchResult.graph!, {
+          title: `Corpus Pattern: ${partition.matchResult.graphName}`,
+        }),
+      ])
+    )
+  )
+
+  // Step 4: Merge partitions back together
+  const mergedGraph = mergePartitions(processedPartitions)
+  const mergedGraphics = getGraphicsForBpcGraph(mergedGraph, {
+    title: "4. Merged Result",
+  })
+
+  // Stack all graphics vertically to show the pipeline
+  const allGraphics = stackGraphicsVertically([
+    originalCircuitGraphics,
+    partitionGraphics,
+    matchedGraphics,
+    mergedGraphics,
+  ])
+
+  // Verify the original circuit SVG
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
     "tscircuitsch01-input-circuit",
   )
+  
+  // Verify the complete pipeline visualization
   expect(
-    getSvgFromGraphicsObject(getGraphicsForBpcGraph(ogBpcGraph), {
+    getSvgFromGraphicsObject(allGraphics, {
       backgroundColor: "white",
     }),
   ).toMatchSvgSnapshot(import.meta.path)

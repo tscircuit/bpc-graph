@@ -4,7 +4,13 @@ import { getBoxSideSubgraph, type Side } from "./getBoxSideSubgraph"
 import { mergeBoxSideSubgraphs } from "./mergeBoxSideSubgraphs"
 
 export const findIsolatedBoxSides = (g: BpcGraph, boxId: string): Side[][] => {
-  const pins = g.pins.filter((p) => p.boxId === boxId)
+  // Filter out center pins and netlabel centers
+  const pins = g.pins.filter((p) => 
+    p.boxId === boxId && 
+    !p.pinId.includes("_center") && 
+    p.color !== "component_center" &&
+    p.color !== "netlabel_center"
+  )
   const sides = new Set<Side>()
   for (const p of pins) {
     const dir = getPinDirectionOrThrow(g, p.boxId, p.pinId)
