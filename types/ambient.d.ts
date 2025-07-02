@@ -46,3 +46,23 @@ declare module "circuit-json-to-bpc" {
 declare module "circuit-to-svg" {
   export function convertCircuitJsonToSchematicSvg(...args: any[]): any
 }
+
+declare module "lib/index" {
+  import type { BpcGraph } from "lib/types"
+  export function getGraphicsForBpcGraph(graph: any, opts?: any): any
+  export function renetworkWithCondition(
+    g: BpcGraph,
+    predicate: (
+      from: { box: any; pin: any },
+      to: { box: any; pin: any },
+      networkId: string,
+    ) => boolean,
+  ): { renetworkedGraph: BpcGraph; renetworkedNetworkIdMap: Record<string, string> }
+  export function getBoxSideSubgraph(args: any): BpcGraph
+  export function mergeBoxSideSubgraphs(graphs: BpcGraph[], opts?: any): BpcGraph
+  export function assignFloatingBoxPositions(g: any): any
+  export function netAdaptBpcGraph(src: any, tgt: any): { adaptedBpcGraph: any }
+  export function matchGraph(g: any, corpus: any, opts?: any): any
+  export function reflectGraph(args: any): any
+  export function mergeNetworks(graph: BpcGraph, map: Record<string, string>): BpcGraph
+}
