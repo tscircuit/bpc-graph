@@ -77,6 +77,32 @@ export const netAdaptBpcGraph = (
     }
   }
 
+  /* ---------- copy target box centers & attributes when available ----- */
+  for (const box of adaptedBpcGraph.boxes) {
+    const tgtBox = targetBpcGraph.boxes.find((b) => b.boxId === box.boxId)
+
+    // 1. Transfer absolute position if the corpus pattern provides one
+    if (tgtBox?.center) {
+      // Only assign when the box does NOT yet have a position – this avoids
+      // unexpectedly relocating components that were already placed in the
+      // source design.
+      if ((box as any).center === undefined) {
+        // Ensure the adapted box is considered "fixed" if the target had a concrete position
+        // (use a type-cast to appease the compiler – we know what we are doing)
+        ;(box as any).kind = "fixed"
+        ;(box as any).center = structuredClone(tgtBox.center)
+      }
+    }
+
+    // 2. Merge boxAttributes (non-destructively)
+    if ((tgtBox as any)?.boxAttributes) {
+      ;(box as any).boxAttributes = {
+        ...(tgtBox as any).boxAttributes,
+        ...(box as any).boxAttributes,
+      }
+    }
+  }
+
   for (const op of editOpsResult.operations) {
     switch (op.type) {
       case "create_node": {

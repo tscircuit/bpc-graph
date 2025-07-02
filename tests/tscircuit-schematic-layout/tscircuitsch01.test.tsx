@@ -1,9 +1,21 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  renetworkWithCondition,
+  getBoxSideSubgraph,
+  mergeBoxSideSubgraphs,
+  assignFloatingBoxPositions,
+  netAdaptBpcGraph,
+} from "lib/index"
+import { reflectGraph } from "lib/graph-utils/reflectGraph"
+import { matchGraph } from "lib/match-graph/matchGraph"
+import { mergeNetworks } from "lib/renetwork/mergeNetworks"
 import { getSvgFromGraphicsObject } from "graphics-debug"
+import { stackGraphicsHorizontally, stackGraphicsVertically } from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 
 test("tscircuitsch01", async () => {
   const circuitJson = await runTscircuitCode(`
@@ -105,13 +117,137 @@ test("tscircuitsch01", async () => {
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
   const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
 
-  expect(circuitSvg).toMatchSvgSnapshot(
-    import.meta.path,
-    "tscircuitsch01-input-circuit",
+  /* ------------------------------------------------------------------ */
+  /* 1.  Display the raw graph                                           */
+  /* ------------------------------------------------------------------ */
+  const ogGraphics = getGraphicsForBpcGraph(ogBpcGraph, {
+    title: "Original BPC Graph",
+  })
+
+  /* ------------------------------------------------------------------ */
+  /* 2.  Pick the centre-chip (max-pin count)                            */
+  /* ------------------------------------------------------------------ */
+  const centreBoxId = ogBpcGraph.boxes
+    .map((b) => ({
+      boxId: b.boxId,
+      pinCount: ogBpcGraph.pins.filter((p) => p.boxId === b.boxId).length,
+    }))
+    .sort((a: any, b: any) => b.pinCount - a.pinCount)[0]!.boxId
+
+  const centre = ogBpcGraph.boxes.find((b: any) => b.boxId === centreBoxId)!.center!
+
+  /* ------------------------------------------------------------------ */
+  /* 3.  Re-network so that each chip-side gets its own copy of nets     */
+  /* ------------------------------------------------------------------ */
+  const { renetworkedGraph, renetworkedNetworkIdMap } = renetworkWithCondition(
+    ogBpcGraph,
+    (from: any, to: any) => {
+      // Keep VCC/GND shared – detected via pin color (orange / purple)
+      if (from.pin.color === "orange" || from.pin.color === "purple") return true
+
+      const fromSide =
+        from.box.center!.x + from.pin.offset.x < centre.x ? "left" : "right"
+      const toSide =
+        to.box.center!.x + to.pin.offset.x < centre.x ? "left" : "right"
+      return fromSide === toSide
+    },
   )
+
+  const renetworkedGraphics = getGraphicsForBpcGraph(renetworkedGraph, {
+    title: "Renetworked (by chip side)",
+  })
+
+  /* ------------------------------------------------------------------ */
+  /* 4.  Extract left & right side sub-graphs                            */
+  /* ------------------------------------------------------------------ */
+  const leftSubgraph = getBoxSideSubgraph({
+    bpcGraph: renetworkedGraph,
+    boxId: centreBoxId,
+    side: "left",
+  })
+
+  const rightSubgraph = getBoxSideSubgraph({
+    bpcGraph: renetworkedGraph,
+    boxId: centreBoxId,
+    side: "right",
+  })
+
+  /* ------------------------------------------------------------------ */
+  /* 5.  Prepare left graph for corpus matching (mirror about X-axis)    */
+  /* ------------------------------------------------------------------ */
+  const leftReflected = reflectGraph({
+    graph: leftSubgraph,
+    axis: "x",
+    centerBoxId: centreBoxId,
+  })
+
+  /* ------------------------------------------------------------------ */
+  /* 6.  Corpus matching                                                 */
+  /* ------------------------------------------------------------------ */
+  const leftMatchResult = matchGraph(leftReflected, corpus as any)
+  const rightMatchResult = matchGraph(rightSubgraph, corpus as any)
+
+  /* ------------------------------------------------------------------ */
+  /* 7.  Net-adapt each side to its best pattern                         */
+  /* ------------------------------------------------------------------ */
+  const leftAdaptedFloating = netAdaptBpcGraph(
+    leftReflected as any,
+    leftMatchResult.graph as any,
+  ).adaptedBpcGraph
+  const leftAdaptedFixed = assignFloatingBoxPositions(leftAdaptedFloating)
+  const leftAdapted = reflectGraph({
+    graph: leftAdaptedFixed,
+    axis: "x",
+    centerBoxId: centreBoxId,
+  })
+
+  const rightAdaptedFloating = netAdaptBpcGraph(
+    rightSubgraph as any,
+    rightMatchResult.graph as any,
+  ).adaptedBpcGraph
+  const rightAdapted = assignFloatingBoxPositions(rightAdaptedFloating)
+
+  /* ------------------------------------------------------------------ */
+  /* 8.  Merge the two adapted sides back together                       */
+  /* ------------------------------------------------------------------ */
+  const mergedSides = mergeBoxSideSubgraphs([leftAdapted, rightAdapted])
+  const mergedGraph = mergeNetworks(mergedSides, renetworkedNetworkIdMap)
+
+  const mergedGraphics = getGraphicsForBpcGraph(mergedGraph, {
+    title: "Merged + Adapted Graph",
+  })
+
+  /* ------------------------------------------------------------------ */
+  /* 9.  Compose a big visual of every phase                             */
+  /* ------------------------------------------------------------------ */
+  const overview = stackGraphicsVertically([
+    ogGraphics,
+    renetworkedGraphics,
+    stackGraphicsHorizontally([
+      getGraphicsForBpcGraph(leftSubgraph, { title: "Left Subgraph" }),
+      getGraphicsForBpcGraph(rightSubgraph, { title: "Right Subgraph" }),
+    ]),
+    stackGraphicsHorizontally([
+      getGraphicsForBpcGraph(leftMatchResult.graph!, {
+        title: `Left Match (${leftMatchResult.graphName})`,
+      }),
+      getGraphicsForBpcGraph(rightMatchResult.graph!, {
+        title: `Right Match (${rightMatchResult.graphName})`,
+      }),
+    ]),
+    mergedGraphics,
+  ])
+
+  /* ------------------------------------------------------------------ */
+  /* 10.  Expectations                                                   */
+  /* ------------------------------------------------------------------ */
+  // @ts-ignore – bun provides `import.meta.path` at runtime but TS doesn't know it
+  expect(circuitSvg).toMatchSvgSnapshot(import.meta.path, "tscircuitsch01-input-circuit")
+  // @ts-ignore – bun provides `import.meta.path` at runtime but TS doesn't know it
   expect(
-    getSvgFromGraphicsObject(getGraphicsForBpcGraph(ogBpcGraph), {
+    getSvgFromGraphicsObject(overview, {
       backgroundColor: "white",
+      includeTextLabels: false,
     }),
   ).toMatchSvgSnapshot(import.meta.path)
 })
