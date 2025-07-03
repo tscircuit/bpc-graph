@@ -4,6 +4,7 @@ import {
   getGraphicsForBpcGraph,
   getBpcGraphWlDistance,
   type MixedBpcGraph,
+  getWlFeatureVecs,
 } from "lib/index"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { convertFlatBpcToGraphics } from "lib/debug/convertFlatBpcToGraphics"
@@ -68,17 +69,20 @@ test("wl-distance-debugging01 - investigate design001, design018, design020", ()
 
   for (const design of designs) {
     const flatGraph = convertToFlatBpcGraph(design.graph)
-    console.log(`${design.name} flat graph:`, {
-      nodeCount: flatGraph.nodes.length,
-      edgeCount: flatGraph.undirectedEdges.length,
-      nodes: flatGraph.nodes.map((n) => ({ id: n.id, color: n.color })),
-    })
+    // console.log(`${design.name} flat graph:`, {
+    //   nodeCount: flatGraph.nodes.length,
+    //   edgeCount: flatGraph.undirectedEdges.length,
+    //   nodes: flatGraph.nodes.map((n) => ({ id: n.id, color: n.color })),
+    // })
 
     const graphics = convertFlatBpcToGraphics(flatGraph, {
       title: `${design.name} (Flat)`,
     })
     flatGraphicsRow.push(graphics)
   }
+
+  const wlFeatureVecs = designs.map((d) => [d.name, getWlFeatureVecs(d.graph)])
+  console.log("wlFeatureVecs", wlFeatureVecs)
 
   /* ------------------------------------------------------------ */
   /* Create distance matrix grid between all pairs               */
