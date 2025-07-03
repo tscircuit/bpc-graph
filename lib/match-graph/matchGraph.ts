@@ -1,5 +1,5 @@
 import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
-import type { BpcGraph } from "lib/types"
+import type { BpcGraph, FixedBpcGraph, MixedBpcGraph } from "lib/types"
 
 export const matchGraph = (
   g: BpcGraph,
@@ -22,7 +22,7 @@ export const matchGraph = (
 
   return {
     graphName: bestMatch[0],
-    graph: corpus[bestMatch[0]],
+    graph: corpus[bestMatch[0]] as FixedBpcGraph,
     distance: bestMatch[1],
   }
 }
