@@ -25,6 +25,7 @@ import { matchGraph } from "lib/match-graph/matchGraph"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { assignFloatingBoxPositions } from "lib/bpc-graph-editing/assignFloatingBoxPositions"
 import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
+import { reflectGraph } from "lib/graph-utils/reflectGraph"
 
 test("tscircuitsch01", async () => {
   // export default () => (
@@ -277,6 +278,66 @@ test("tscircuitsch01", async () => {
         },
       },
     ],
+  }
+
+  /**
+   * The canonical right-facing graph has the largest left_right box with pins
+   * offset to the right of their box center (not the left)
+   */
+  const getCanonicalRightFacingGraph = (
+    g: MixedBpcGraph,
+  ): {
+    g: MixedBpcGraph
+    reflected: boolean
+  } => {
+    let largestLeftRightBox = null
+    let largestLeftRightBoxPins = -Infinity
+
+    for (const box of g.boxes) {
+      const lrPins = g.pins
+        .filter((p) => p.boxId === box.boxId)
+        .filter((p) =>
+          ["x-", "x+"].includes(getPinDirection(g, box, p) ?? "none"),
+        )
+
+      if (lrPins.length > largestLeftRightBoxPins && lrPins.length > 1) {
+        largestLeftRightBox = box
+        largestLeftRightBoxPins = lrPins.length
+      }
+    }
+
+    if (!largestLeftRightBox) {
+      return { g, reflected: false }
+    }
+
+    const largestBoxLRPinDirections = g.pins
+      .filter((p) => p.boxId === largestLeftRightBox.boxId)
+      .map((p) => getPinDirection(g, largestLeftRightBox, p))
+
+    const dirCounts = {
+      "x+": 0,
+      "x-": 0,
+      "y+": 0,
+      "y-": 0,
+    }
+
+    for (const dir of largestBoxLRPinDirections) {
+      if (!dir) continue
+      dirCounts[dir]++
+    }
+
+    if (dirCounts["x+"] > dirCounts["x-"]) {
+      return { g, reflected: false }
+    }
+
+    return {
+      g: reflectGraph({
+        graph: g,
+        axis: "x",
+        centerBoxId: largestLeftRightBox.boxId,
+      }),
+      reflected: true,
+    }
   }
 
   type WipPartition = {
@@ -540,15 +601,18 @@ test("tscircuitsch01", async () => {
         if (part.pins.length === 0) continue
 
         // ---- gather ids of boxes already represented in the partition ----
-        const pinKeySet = new Set(part.pins.map(({ boxId, pinId }) => `${boxId}:${pinId}`))
-        const boxIdSet  = new Set(part.pins.map(({ boxId }) => boxId))
+        const pinKeySet = new Set(
+          part.pins.map(({ boxId, pinId }) => `${boxId}:${pinId}`),
+        )
+        const boxIdSet = new Set(part.pins.map(({ boxId }) => boxId))
 
         // ---- collect pins ---------------------------------------------------
         const pins = this.initialGraph.pins
           .filter(
             (p) =>
               pinKeySet.has(`${p.boxId}:${p.pinId}`) ||
-              (this.duplicatePinIfColor.includes(p.color) && boxIdSet.has(p.boxId)),
+              (this.duplicatePinIfColor.includes(p.color) &&
+                boxIdSet.has(p.boxId)),
           )
           .map((p) => ({ ...p }))
 
@@ -635,15 +699,16 @@ test("tscircuitsch01", async () => {
   }
 
   const partitions = processor.getPartitions()
+  const canonicalPartitions = partitions.map(getCanonicalRightFacingGraph)
 
   /* ───────── net-adapt each partition to its best corpus match ───────── */
-  const adaptedGraphics = partitions.map((part, idx) => {
+  const adaptedGraphics = canonicalPartitions.map((part, idx) => {
     const {
       graph: corpusSource,
       graphName,
       distance,
-    } = matchGraph(part, corpus as any)
-    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part)
+    } = matchGraph(part.g, corpus as any)
+    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
     return getGraphicsForBpcGraph(adaptedBpcGraph, {
       title: `Partition ${idx} → ${graphName}  (d=${distance.toFixed(2)})`,
     })
@@ -670,12 +735,22 @@ test("tscircuitsch01", async () => {
   const bottomRow = stackGraphicsHorizontally(partitionGraphics, {
     titles: partitions.map((_p, i) => `Partition ${i}`),
   })
+
+  const canonicalPartitionGraphics = canonicalPartitions.map((p, i) =>
+    getGraphicsForBpcGraph(p.g),
+  )
+
+  const canonicalRow = stackGraphicsHorizontally(canonicalPartitionGraphics, {
+    titles: canonicalPartitions.map((_p, i) => `Canonical Partition ${i}`),
+  })
+
   const adaptedRow = stackGraphicsHorizontally(adaptedGraphics, {
     titles: partitions.map((_p, i) => `Adapted ${i}`),
   })
   const allGraphics = stackGraphicsVertically([
     originalGraphics,
     bottomRow,
+    canonicalRow,
     adaptedRow,
   ])
 
