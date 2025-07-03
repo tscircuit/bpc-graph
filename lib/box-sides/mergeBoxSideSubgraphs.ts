@@ -29,7 +29,11 @@ export const mergeBoxSideSubgraphs = (
     .map(([str]) => str)
 
   if (partitionedBoxIds.length > 1) {
-    throw new Error("Expected at most one box to be partitioned")
+    throw new Error(
+      `Expected at most one shared box across all partitions, the following box ids are shared across all graphs: ${partitionedBoxIds.join(
+        ", ",
+      )}`,
+    )
   }
 
   const partitionedBoxId = partitionedBoxIds[0]
