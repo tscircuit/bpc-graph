@@ -10,6 +10,7 @@ import {
   type BoxId,
   type BpcGraph,
   type BpcPin,
+  type FixedBpcGraph,
   type MixedBpcGraph,
 } from "lib/index"
 import {
@@ -20,6 +21,10 @@ import {
 } from "graphics-debug"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 // import { partitionGraphForLayout } from "lib/schematic-layout/partitionGraphForLayout"
+import { matchGraph } from "lib/match-graph/matchGraph"
+import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
+import { assignFloatingBoxPositions } from "lib/bpc-graph-editing/assignFloatingBoxPositions"
+import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 
 test("tscircuitsch01", async () => {
   // export default () => (
@@ -613,6 +618,19 @@ test("tscircuitsch01", async () => {
 
   const partitions = processor.getPartitions()
 
+  /* ───────── net-adapt each partition to its best corpus match ───────── */
+  const adaptedGraphics = partitions.map((part, idx) => {
+    const {
+      graph: corpusSource,
+      graphName,
+      distance,
+    } = matchGraph(part, corpus as any)
+    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part)
+    return getGraphicsForBpcGraph(adaptedBpcGraph, {
+      title: `Partition ${idx} → ${graphName}  (d=${distance.toFixed(2)})`,
+    })
+  })
+
   // ──────────── build graphics ────────────
   const originalGraphics = getGraphicsForBpcGraph(ogGraph, {
     title: "Original Circuit",
@@ -634,7 +652,14 @@ test("tscircuitsch01", async () => {
   const bottomRow = stackGraphicsHorizontally(partitionGraphics, {
     titles: partitions.map((_p, i) => `Partition ${i}`),
   })
-  const allGraphics = stackGraphicsVertically([originalGraphics, bottomRow])
+  const adaptedRow = stackGraphicsHorizontally(adaptedGraphics, {
+    titles: partitions.map((_p, i) => `Adapted ${i}`),
+  })
+  const allGraphics = stackGraphicsVertically([
+    originalGraphics,
+    bottomRow,
+    adaptedRow,
+  ])
 
   expect(
     getSvgFromGraphicsObject(allGraphics, { backgroundColor: "white" }),
