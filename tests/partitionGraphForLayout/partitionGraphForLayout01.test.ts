@@ -289,6 +289,7 @@ test("tscircuitsch01", async () => {
   ): {
     g: MixedBpcGraph
     reflected: boolean
+    centerBoxId: BoxId | null
   } => {
     let largestLeftRightBox = null
     let largestLeftRightBoxPins = -Infinity
@@ -307,7 +308,7 @@ test("tscircuitsch01", async () => {
     }
 
     if (!largestLeftRightBox) {
-      return { g, reflected: false }
+      return { g, reflected: false, centerBoxId: null }
     }
 
     const largestBoxLRPinDirections = g.pins
@@ -327,7 +328,7 @@ test("tscircuitsch01", async () => {
     }
 
     if (dirCounts["x+"] > dirCounts["x-"]) {
-      return { g, reflected: false }
+      return { g, reflected: false, centerBoxId: largestLeftRightBox.boxId }
     }
 
     return {
@@ -337,6 +338,7 @@ test("tscircuitsch01", async () => {
         centerBoxId: largestLeftRightBox.boxId,
       }),
       reflected: true,
+      centerBoxId: largestLeftRightBox.boxId,
     }
   }
 
@@ -701,18 +703,41 @@ test("tscircuitsch01", async () => {
   const partitions = processor.getPartitions()
   const canonicalPartitions = partitions.map(getCanonicalRightFacingGraph)
 
-  /* ───────── net-adapt each partition to its best corpus match ───────── */
-  const adaptedGraphics = canonicalPartitions.map((part, idx) => {
+  const adaptedGraphs = canonicalPartitions.map((part) => {
     const {
       graph: corpusSource,
       graphName,
       distance,
     } = matchGraph(part.g, corpus as any)
     const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
-    return getGraphicsForBpcGraph(adaptedBpcGraph, {
-      title: `Partition ${idx} → ${graphName}  (d=${distance.toFixed(2)})`,
+    return { adaptedBpcGraph, graphName, distance }
+  })
+
+  const adaptedUnreflectedGraphs = adaptedGraphs.map(
+    ({ adaptedBpcGraph }, idx) => {
+      if (!canonicalPartitions[idx]!.reflected) return adaptedBpcGraph
+      return reflectGraph({
+        graph: adaptedBpcGraph,
+        axis: "x",
+        centerBoxId: canonicalPartitions[idx]!.centerBoxId!,
+      })
+    },
+  )
+
+  const adaptedUnreflectedGraphics = adaptedUnreflectedGraphs.map((g, idx) => {
+    return getGraphicsForBpcGraph(g, {
+      title: `Unreflected Adaptation ${idx}`,
     })
   })
+
+  /* ───────── net-adapt each partition to its best corpus match ───────── */
+  const adaptedGraphics = adaptedGraphs.map(
+    ({ adaptedBpcGraph, graphName, distance }, idx) => {
+      return getGraphicsForBpcGraph(adaptedBpcGraph, {
+        title: `Partition ${idx} → ${graphName}  (d=${distance.toFixed(2)})`,
+      })
+    },
+  )
 
   // ──────────── build graphics ────────────
   const originalGraphics = getGraphicsForBpcGraph(ogGraph, {
@@ -747,11 +772,20 @@ test("tscircuitsch01", async () => {
   const adaptedRow = stackGraphicsHorizontally(adaptedGraphics, {
     titles: partitions.map((_p, i) => `Adapted ${i}`),
   })
+  const adaptedUnreflectedRow = stackGraphicsHorizontally(
+    adaptedUnreflectedGraphics,
+    {
+      titles: adaptedUnreflectedGraphs.map(
+        (_g, i) => `Adapted Unreflected ${i}`,
+      ),
+    },
+  )
   const allGraphics = stackGraphicsVertically([
     originalGraphics,
     bottomRow,
     canonicalRow,
     adaptedRow,
+    adaptedUnreflectedRow,
   ])
 
   expect(
