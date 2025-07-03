@@ -1,8 +1,11 @@
 import { test, expect } from "bun:test"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
-import { getGraphicsForBpcGraph } from "lib/index"
-import { getSvgFromGraphicsObject } from "graphics-debug"
+import { getGraphicsForBpcGraph, SchematicPartitionProcessor } from "lib/index"
+import {
+  getSvgFromGraphicsObject,
+  stackGraphicsVertically,
+} from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 
 test("tscircuitsch01", async () => {
@@ -33,13 +36,31 @@ export default () => (
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
   const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
 
+  const partitionProcessor = new SchematicPartitionProcessor(ogBpcGraph, {
+    singletonKeys: ["vcc/2", "gnd/2"],
+    duplicatePinIfColor: ["netlabel_center", "component_center"],
+  })
+
+  partitionProcessor.solve()
+  const partitions = partitionProcessor.getPartitions()
+
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
     "tscircuitsch01-input-circuit",
   )
   expect(
-    getSvgFromGraphicsObject(getGraphicsForBpcGraph(ogBpcGraph), {
-      backgroundColor: "white",
-    }),
+    getSvgFromGraphicsObject(
+      stackGraphicsVertically([
+        getGraphicsForBpcGraph(ogBpcGraph),
+        ...partitions.map((p, pIdx) =>
+          getGraphicsForBpcGraph(p, {
+            title: `Partition ${pIdx}`,
+          }),
+        ),
+      ]),
+      {
+        backgroundColor: "white",
+      },
+    ),
   ).toMatchSvgSnapshot(import.meta.path)
 })

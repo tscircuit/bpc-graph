@@ -285,7 +285,7 @@ test("partitionGraphForLayout01", async () => {
 
   const processor = new SchematicPartitionProcessor(ogGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
+    centerPinColors: ["netlabel_center", "component_center"],
   })
 
   const stepGraphics = []
@@ -297,6 +297,22 @@ test("partitionGraphForLayout01", async () => {
 
   const partitions = processor.getPartitions()
   const canonicalPartitions = partitions.map(getCanonicalRightFacingGraph)
+
+  // ──────────── build graphics ────────────
+  const originalGraphics = getGraphicsForBpcGraph(ogGraph, {
+    title: "Original Circuit",
+  })
+
+  expect(
+    getSvgFromGraphicsObject(
+      stackGraphicsVertically([originalGraphics, ...stepGraphics]),
+      {
+        backgroundColor: "white",
+        svgWidth: 320,
+        svgHeight: 4000,
+      },
+    ),
+  ).toMatchSvgSnapshot(import.meta.path, "partitionGraphForLayout01-iterations")
 
   const adaptedGraphs = canonicalPartitions.map((part) => {
     const {
@@ -339,22 +355,6 @@ test("partitionGraphForLayout01", async () => {
       })
     },
   )
-
-  // ──────────── build graphics ────────────
-  const originalGraphics = getGraphicsForBpcGraph(ogGraph, {
-    title: "Original Circuit",
-  })
-
-  expect(
-    getSvgFromGraphicsObject(
-      stackGraphicsVertically([originalGraphics, ...stepGraphics]),
-      {
-        backgroundColor: "white",
-        svgWidth: 320,
-        svgHeight: 4000,
-      },
-    ),
-  ).toMatchSvgSnapshot(import.meta.path, "partitionGraphForLayout01-iterations")
 
   const partitionGraphics = partitions.map((p, i) => getGraphicsForBpcGraph(p))
 
