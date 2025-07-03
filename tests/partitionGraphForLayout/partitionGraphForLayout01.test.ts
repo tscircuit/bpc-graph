@@ -434,13 +434,16 @@ test("tscircuitsch01", async () => {
       } as BpcPin & { partitionId: string }
       const pinKey = `${current.boxId}:${current.pinId}` as const
       const exploredKey = `${current.partitionId}[${pinKey}]` as const
-      if (this.addedPins.has(pinKey) || this.exploredPins.has(exploredKey))
-        return
 
       const pinObj = this.initialGraph.pins.find(
         (p) => p.boxId === current.boxId && p.pinId === current.pinId,
       )
       if (!pinObj) return
+      const isDuplicable = this.duplicatePinIfColor.includes(pinObj.color)
+
+      // skip only if non-duplicable pin was already put in some partition
+      if (this.addedPins.has(pinKey) && !isDuplicable) return
+      if (this.exploredPins.has(exploredKey)) return
 
       const part = this.wipPartitions.find(
         (p) => p.partitionId === current.partitionId,
@@ -468,7 +471,8 @@ test("tscircuitsch01", async () => {
       }
       part.pins.push({ boxId: current.boxId, pinId: current.pinId })
 
-      this.addedPins.add(pinKey)
+      // add to global set only if it must stay unique
+      if (!isDuplicable) this.addedPins.add(pinKey)
       this.exploredPins.add(exploredKey)
       console.log(`  ↳ accepted → pins in partition now = ${part.pins.length}`)
 
@@ -476,7 +480,11 @@ test("tscircuitsch01", async () => {
       for (const other of this.initialGraph.pins) {
         if (other.networkId !== pinObj.networkId) continue
         const otherPinKey = `${other.boxId}:${other.pinId}` as const
-        if (this.addedPins.has(otherPinKey)) continue
+        if (
+          this.addedPins.has(otherPinKey) &&
+          !this.duplicatePinIfColor.includes(other.color)
+        )
+          continue
         if (
           this.exploredPins.has(
             `${current.partitionId}[${otherPinKey}]` as const,
@@ -497,10 +505,13 @@ test("tscircuitsch01", async () => {
       if (boxPins.length === 2) {
         const mate = boxPins.find((p) => p.pinId !== current.pinId)!
         const mateKey = `${mate.boxId}:${mate.pinId}` as const
+        const mateIsDuplicable = this.duplicatePinIfColor.includes(mate.color)
         if (
-          !this.addedPins.has(mateKey) &&
-          !this.exploredPins.has(`${current.partitionId}[${mateKey}]` as const)
+          (this.addedPins.has(mateKey) && !mateIsDuplicable) ||
+          this.exploredPins.has(`${current.partitionId}[${mateKey}]` as const)
         ) {
+          /* skip */
+        } else {
           this.unexploredPins.push({
             boxId: mate.boxId,
             pinId: mate.pinId,
@@ -528,17 +539,22 @@ test("tscircuitsch01", async () => {
       for (const part of this.wipPartitions) {
         if (part.pins.length === 0) continue
 
-        // ---- gather pins for this partition ---------------------------------
-        const pinKeySet = new Set(part.pins.map((p) => `${p.boxId}:${p.pinId}`))
+        // ---- gather ids of boxes already represented in the partition ----
+        const pinKeySet = new Set(part.pins.map(({ boxId, pinId }) => `${boxId}:${pinId}`))
+        const boxIdSet  = new Set(part.pins.map(({ boxId }) => boxId))
+
+        // ---- collect pins ---------------------------------------------------
         const pins = this.initialGraph.pins
-          .filter((p) => pinKeySet.has(`${p.boxId}:${p.pinId}`))
-          // make shallow clones so the partition graphs are independent
+          .filter(
+            (p) =>
+              pinKeySet.has(`${p.boxId}:${p.pinId}`) ||
+              (this.duplicatePinIfColor.includes(p.color) && boxIdSet.has(p.boxId)),
+          )
           .map((p) => ({ ...p }))
 
-        // ---- gather boxes that own those pins --------------------------------
-        const boxIdSet = new Set(pins.map((p) => p.boxId))
+        // ---- collect boxes that own at least one of those pins --------------
         const boxes = this.initialGraph.boxes
-          .filter((b) => boxIdSet.has(b.boxId))
+          .filter((b) => pins.some((p) => p.boxId === b.boxId))
           .map((b) => ({ ...b }))
 
         partitions.push({ boxes, pins })
