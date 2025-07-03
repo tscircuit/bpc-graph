@@ -47,13 +47,13 @@ export class SchematicPartitionProcessor {
    * Pins we have *investigated* per partition
    *   key =  `${partitionId}[${boxId}:${pinId}]`
    */
-  exploredPins: Set<`${string}[${string}:${string}]`> = new Set()
+  exploredPins: Set<`${string}[${string}:${string}]`>
 
   /**
    * Pins that have actually been *added* to some partition
    *   key =  `${boxId}:${string}`
    */
-  addedPins: Set<`${string}:${string}`> = new Set()
+  addedPins: Set<`${string}:${string}`>
 
   /**
    * All pins that have been accepted into any partition (regardless of duplicability)
@@ -62,10 +62,16 @@ export class SchematicPartitionProcessor {
   allAcceptedPins: Set<`${string}:${string}`> = new Set()
 
   /**
+   * Boxes that have been split into multiple partitions
+   *   key = boxId
+   */
+  splitBoxIds: Set<string>
+
+  /**
    * Track which boxes have been accepted into partitions
    *   key = boxId, value = partitionId where it was first accepted
    */
-  acceptedBoxes: Map<string, string> = new Map()
+  acceptedBoxPartitionMap: Map<string, string> = new Map()
 
   singletonKeys: PartitionSingletonKey[]
 
@@ -102,7 +108,11 @@ export class SchematicPartitionProcessor {
     this.singletonKeys = opts.singletonKeys ?? []
     this.centerPinColors = opts.centerPinColors ?? []
 
-    this.wipPartitions = this.initializeWipPartitions()
+    const partitionInit = this.initializeWipPartitions()
+    this.wipPartitions = partitionInit.wipPartitions
+    this.splitBoxIds = partitionInit.splitBoxIds
+    this.addedPins = partitionInit.addedPins
+    this.exploredPins = new Set()
     this.unexploredPins = this.wipPartitions.flatMap((part) =>
       part.pins.map((p) => ({ ...p, partitionId: part.partitionId })),
     )
@@ -132,8 +142,15 @@ export class SchematicPartitionProcessor {
     return boxSingletonKeys
   }
 
-  initializeWipPartitions(): WipPartition[] {
+  initializeWipPartitions(): {
+    wipPartitions: WipPartition[]
+    splitBoxIds: Set<string>
+    addedPins: Set<`${string}:${string}`>
+  } {
     const wipPartitions: WipPartition[] = []
+
+    const addedPins = new Set<`${string}:${string}`>()
+    const splitBoxIds = new Set<string>()
 
     let partitionId = 0
     for (const box of this.initialGraph.boxes) {
@@ -149,6 +166,10 @@ export class SchematicPartitionProcessor {
         pins.map((p) => getPinDirection(this.initialGraph, box, p)),
       )
 
+      if (uniqueDirections.size > 1) {
+        splitBoxIds.add(box.boxId)
+      }
+
       for (const direction of uniqueDirections) {
         const partition: WipPartition = {
           partitionId: `partition${partitionId++}`,
@@ -159,13 +180,18 @@ export class SchematicPartitionProcessor {
         for (const pin of pins) {
           if (getPinDirection(this.initialGraph, box, pin) === direction) {
             partition.pins.push({ boxId: box.boxId, pinId: pin.pinId })
+            addedPins.add(`${box.boxId}:${pin.pinId}`)
           }
         }
 
         wipPartitions.push(partition)
       }
     }
-    return wipPartitions
+    debug(`splitBoxIds = ${Array.from(splitBoxIds).join(", ")}`)
+    debug(
+      `wipPartitions = ${wipPartitions.map((p) => p.partitionId).join(", ")}`,
+    )
+    return { wipPartitions, splitBoxIds, addedPins }
   }
 
   step() {
@@ -185,34 +211,41 @@ export class SchematicPartitionProcessor {
 
     /* ――― pick next pin to explore ――― */
     const current = this.unexploredPins.shift()!
+    const currentPinKey = `${current.boxId}:${current.pinId}` as const
     debug(
-      `Exploring pin ${current.boxId}:${current.pinId} in partition ${current.partitionId}`,
+      `Exploring pin ${current.boxId}:${current.pinId} for partition "${current.partitionId}"`,
     )
     this.lastExploredPin = {
       ...current,
       partitionId: current.partitionId,
     } as BpcPin & { partitionId: string }
-    const pinKey = `${current.boxId}:${current.pinId}` as const
-    const exploredKey = `${current.partitionId}[${pinKey}]` as const
+    const currentPinPartitionKey =
+      `${current.partitionId}[${currentPinKey}]` as const
 
-    const pinObj = this.initialGraph.pins.find(
+    const currentPin = this.initialGraph.pins.find(
       (p) => p.boxId === current.boxId && p.pinId === current.pinId,
     )
-    if (!pinObj) return
+    if (!currentPin) return
 
-    if (this.addedPins.has(pinKey)) return
-    if (this.exploredPins.has(exploredKey)) return
+    if (this.exploredPins.has(currentPinPartitionKey)) return
 
-    const part = this.wipPartitions.find(
+    const currentPartition = this.wipPartitions.find(
       (p) => p.partitionId === current.partitionId,
     )
-    if (!part) return
+    if (!currentPartition) return
 
-    if (this.acceptedBoxes.has(current.boxId)) {
+    const pinAlreadyAcceptedIntoPartitionId = this.acceptedBoxPartitionMap.get(
+      current.boxId,
+    )
+    if (
+      pinAlreadyAcceptedIntoPartitionId &&
+      pinAlreadyAcceptedIntoPartitionId !== current.partitionId &&
+      !this.splitBoxIds.has(current.boxId)
+    ) {
       debug(
-        `  ↳ rejected (box ${current.boxId} for partition ${current.partitionId} already in partition ${this.acceptedBoxes.get(current.boxId)})`,
+        `  ↳ rejected (box ${current.boxId} for partition ${current.partitionId} already in partition ${this.acceptedBoxPartitionMap.get(current.boxId)})`,
       )
-      this.exploredPins.add(exploredKey)
+      this.exploredPins.add(currentPinPartitionKey)
       return
     }
 
@@ -220,66 +253,52 @@ export class SchematicPartitionProcessor {
 
     // does the current partition already contain any of those singleton slots?
     const hasConflict = Array.from(singletonKeysForBox).some((k) =>
-      part.filledSingletonSlots.has(k),
+      currentPartition.filledSingletonSlots.has(k),
     )
 
     if (hasConflict) {
       debug(
         `  ↳ rejected (singleton already in partition "${current.partitionId}")`,
       )
-      this.exploredPins.add(exploredKey)
-      return
-    }
-
-    // Check if this box is already in another partition
-    const existingPartition = this.acceptedBoxes.get(current.boxId)
-    if (existingPartition && existingPartition !== current.partitionId) {
-      debug(
-        `  ↳ rejected (box ${current.boxId} already in partition ${existingPartition})`,
-      )
-      this.exploredPins.add(exploredKey)
+      this.exploredPins.add(currentPinPartitionKey)
       return
     }
 
     /* ――― accept pin into partition ――― */
     // reserve all singleton keys this box brings in
     for (const k of singletonKeysForBox) {
-      part.filledSingletonSlots.add(k)
+      currentPartition.filledSingletonSlots.add(k)
     }
-    part.pins.push({ boxId: current.boxId, pinId: current.pinId })
+    currentPartition.pins.push({ boxId: current.boxId, pinId: current.pinId })
 
-    this.allAcceptedPins.add(pinKey)
-    this.acceptedBoxes.set(current.boxId, current.partitionId)
-    this.exploredPins.add(exploredKey)
-    debug(`  ↳ accepted → pins in partition now = ${part.pins.length}`)
+    this.allAcceptedPins.add(currentPinKey)
+    this.addedPins.add(currentPinKey)
+    if (!this.splitBoxIds.has(current.boxId)) {
+      this.acceptedBoxPartitionMap.set(current.boxId, current.partitionId)
+    }
+    this.exploredPins.add(currentPinPartitionKey)
+    debug(
+      `  ↳ accepted → pins in partition now = ${currentPartition.pins.length}`,
+    )
 
     /* ――― queue other pins on the same network ――― */
-    for (const other of this.initialGraph.pins) {
-      if (other.networkId !== pinObj.networkId) continue
-      const otherPinKey = `${other.boxId}:${other.pinId}` as const
-      if (this.addedPins.has(otherPinKey)) continue
+    const neighbors = this.getNeighbors(currentPin)
+    for (const neighbor of neighbors) {
+      const neighborPinKey = `${neighbor.boxId}:${neighbor.pinId}` as const
+      if (this.addedPins.has(neighborPinKey)) continue
+      if (this.centerPinColors.includes(neighbor.color)) continue
       if (
-        this.exploredPins.has(`${current.partitionId}[${otherPinKey}]` as const)
+        this.exploredPins.has(
+          `${current.partitionId}[${neighborPinKey}]` as const,
+        )
       )
         continue
-
       this.unexploredPins.push({
-        boxId: other.boxId,
-        pinId: other.pinId,
+        boxId: neighbor.boxId,
+        pinId: neighbor.pinId,
         partitionId: current.partitionId,
       })
     }
-
-    const boxPins = this.initialGraph.pins.filter(
-      (p) => p.boxId === current.boxId,
-    )
-    this.unexploredPins.push(
-      ...boxPins.map((p) => ({
-        boxId: p.boxId,
-        pinId: p.pinId,
-        partitionId: current.partitionId,
-      })),
-    )
 
     /* ――― done? ――― */
     if (this.unexploredPins.length === 0) this.solved = true
@@ -290,6 +309,26 @@ export class SchematicPartitionProcessor {
           ` partitions=${this.getPartitions().length}`,
       )
     }
+  }
+
+  /**
+   * Returns all pins reachable from the given pin
+   *
+   * A pin traverses it's own box as well as it's network
+   */
+  getNeighbors(pin: BpcPin) {
+    const neighbors = []
+    for (const pinInNetwork of this.initialGraph.pins) {
+      if (pinInNetwork.networkId !== pin.networkId) continue
+      if (pin.boxId === pinInNetwork.boxId && pinInNetwork.pinId === pin.pinId)
+        continue
+      neighbors.push(pinInNetwork)
+    }
+    for (const pinInBox of this.initialGraph.pins) {
+      if (pinInBox.boxId !== pin.boxId) continue
+      neighbors.push(pinInBox)
+    }
+    return neighbors
   }
 
   solve() {
