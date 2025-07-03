@@ -102,9 +102,9 @@ export default () => (
     getSvgFromGraphicsObject(
       stackGraphicsVertically([
         getGraphicsForBpcGraph(ogBpcGraph),
-        ...processor.getPartitions().map((g) =>
+        ...processor.getPartitions().map((g, gIdx) =>
           getGraphicsForBpcGraph(g, {
-            title: "Partitions",
+            title: `Partition ${gIdx}`,
           }),
         ),
       ]),
