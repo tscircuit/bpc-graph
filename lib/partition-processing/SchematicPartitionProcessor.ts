@@ -62,6 +62,12 @@ export class SchematicPartitionProcessor {
   allAcceptedPins: Set<`${string}:${string}`> = new Set()
 
   /**
+   * Cached fan-out ( #neighbors ) for every pin
+   *   key = `${boxId}:${pinId}`
+   */
+  pinConnectionCount: Record<`${string}:${string}`, number>
+
+  /**
    * Boxes that have been split into multiple partitions
    *   key = boxId
    */
@@ -117,6 +123,15 @@ export class SchematicPartitionProcessor {
       part.pins.map((p) => ({ ...p, partitionId: part.partitionId })),
     )
     this.boxSingletonKeys = this.initializeBoxSingletonKeys()
+
+    // Pre-compute how many connections each pin has
+    this.pinConnectionCount = (() => {
+      const counts: Record<`${string}:${string}`, number> = {}
+      for (const pin of this.initialGraph.pins) {
+        counts[`${pin.boxId}:${pin.pinId}`] = this.getNeighbors(pin).length
+      }
+      return counts
+    })()
 
     //   this.frames.push(
     //     getGraphicsForBpcGraph(initialGraph, {
@@ -202,6 +217,13 @@ export class SchematicPartitionProcessor {
       `\n── Iteration ${this.iteration} ──` +
         `  unexplored=${this.unexploredPins.length}` +
         `  explored=${this.exploredPins.size}`,
+    )
+
+    // Always explore pins with the smallest fan-out first
+    this.unexploredPins.sort(
+      (a, b) =>
+        this.pinConnectionCount[`${a.boxId}:${a.pinId}`]! -
+        this.pinConnectionCount[`${b.boxId}:${b.pinId}`]!,
     )
 
     /* ――― no more work to do? ――― */
