@@ -8,16 +8,17 @@ import { matchGraph } from "lib/match-graph/matchGraph"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
-import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 
 export const layoutSchematicGraph = (
   g: BpcGraph,
   {
+    corpus,
     singletonKeys,
     duplicatePinIfColor,
   }: {
     singletonKeys?: PartitionSingletonKey[]
     duplicatePinIfColor?: string[]
+    corpus: Record<string, FixedBpcGraph>
   },
 ): FixedBpcGraph => {
   const processor = new SchematicPartitionProcessor(g, {

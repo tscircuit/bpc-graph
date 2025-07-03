@@ -9,6 +9,7 @@ import {
   getSvgFromGraphicsObject,
   stackGraphicsVertically,
 } from "graphics-debug"
+import corpus from "@tscircuit/schematic-corpus"
 
 /* ─── identical test fixture used in 01 ─── */
 const ogGraph: MixedBpcGraph = {
@@ -248,6 +249,7 @@ test("partitionGraphForLayout02 – layoutSchematicGraph pipeline", () => {
   const laidOut = layoutSchematicGraph(ogGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
     duplicatePinIfColor: ["netlabel_center", "component_center"],
+    corpus,
   })
 
   // 2. create before/after graphics for snapshot
