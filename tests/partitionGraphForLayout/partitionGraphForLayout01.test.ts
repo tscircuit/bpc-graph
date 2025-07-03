@@ -7,6 +7,7 @@ import {
   getPinDirection,
   getPinDirectionOrThrow,
   getPinPosition,
+  mergeBoxSideSubgraphs,
   type BoxId,
   type BpcGraph,
   type BpcPin,
@@ -724,6 +725,12 @@ test("tscircuitsch01", async () => {
     },
   )
 
+  const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
+
+  const remergedGraphics = getGraphicsForBpcGraph(remergedGraph, {
+    title: "Merged Graph",
+  })
+
   const adaptedUnreflectedGraphics = adaptedUnreflectedGraphs.map((g, idx) => {
     return getGraphicsForBpcGraph(g, {
       title: `Unreflected Adaptation ${idx}`,
@@ -786,6 +793,7 @@ test("tscircuitsch01", async () => {
     canonicalRow,
     adaptedRow,
     adaptedUnreflectedRow,
+    remergedGraphics,
   ])
 
   expect(
