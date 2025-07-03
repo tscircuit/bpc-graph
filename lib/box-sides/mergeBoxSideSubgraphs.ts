@@ -10,6 +10,10 @@ export const mergeBoxSideSubgraphs = (
 ): BpcGraph => {
   renetworkedNetworkIdMap ??= {}
 
+  if (graphs.length === 1) {
+    return graphs[0]!
+  }
+
   const merged: BpcGraph = { boxes: [], pins: [] }
   const boxMap = new Map<string, BpcGraph["boxes"][0]>()
   const pinMap = new Map<string, BpcGraph["pins"][0]>()

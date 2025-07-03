@@ -4,10 +4,12 @@ import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
 import { getGraphicsForBpcGraph, layoutSchematicGraph } from "lib/index"
 import {
   getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
   stackGraphicsVertically,
 } from "graphics-debug"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import corpus from "@tscircuit/schematic-corpus"
+import { debugLayout } from "tests/fixtures/debugLayout"
 
 test("tscircuitsch02", async () => {
   const circuitJson = await runTscircuitCode(`
@@ -45,11 +47,21 @@ export default () => (
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
   const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
 
-  const laidOutBpcGraph = layoutSchematicGraph(ogBpcGraph, {
-    singletonKeys: ["vcc/2", "gnd/2"],
-    centerPinColors: ["netlabel_center", "component_center"],
-    corpus,
-  })
+  // Use the debugLayout utility from tests/fixtures/debugLayout.ts
+  // (assumes debugLayout is available in the test environment)
+  // If not already imported, add: import { debugLayout } from "tests/fixtures/debugLayout"
+  // For this rewrite, we assume it's available.
+
+  const {
+    partitions,
+    partitionIterationGraphics,
+    partitionGraphics,
+    adaptedGraphGraphics,
+    laidOutGraph,
+    laidOutGraphGraphics,
+    matchedCorpusGraphs,
+    matchedCorpusGraphGraphics,
+  } = debugLayout(ogBpcGraph)
 
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
@@ -57,12 +69,26 @@ export default () => (
   )
   expect(
     getSvgFromGraphicsObject(
+      stackGraphicsVertically(partitionIterationGraphics),
+      {
+        backgroundColor: "white",
+      },
+    ),
+  ).toMatchSvgSnapshot(
+    import.meta.path,
+    "tscircuitsch02-partition-iteration-graphics",
+  )
+  expect(
+    getSvgFromGraphicsObject(
       stackGraphicsVertically([
         getGraphicsForBpcGraph(ogBpcGraph),
-        getGraphicsForBpcGraph(laidOutBpcGraph, { title: "Laid out graph" }),
+        stackGraphicsHorizontally(partitionGraphics),
+        stackGraphicsHorizontally(matchedCorpusGraphGraphics),
+        stackGraphicsHorizontally(adaptedGraphGraphics),
         getGraphicsForBpcGraph(corpus["design018"]!, {
           title: "Matched corpus",
         }),
+        laidOutGraphGraphics,
       ]),
       {
         backgroundColor: "white",

@@ -157,6 +157,7 @@ export class SchematicPartitionProcessor {
       const pins = this.initialGraph.pins
         .filter((p) => p.boxId === box.boxId)
         .filter((p) => getPinDirection(this.initialGraph, box, p))
+        .filter((p) => !this.centerPinColors.includes(p.color))
 
       if (pins.length < 4) {
         continue
