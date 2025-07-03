@@ -15,7 +15,7 @@ export const matchGraph = (
   const distances = Object.fromEntries(
     Object.entries(corpus).map(([k, v]) => [k, distanceFn(g, v)]),
   )
-  console.table(distances)
+  // console.table(distances)
 
   const bestMatch = Object.entries(distances).reduce((best, [k, d]) =>
     d < best[1] ? [k, d] : best,
