@@ -8,22 +8,22 @@ center_schematic_component_0" data-x="0" data-y="0" cx="319.96888699186997" cy="
   <g>
     <circle data-type="point" data-label="schematic_port_0
 vcc
-unnamedsubcircuit12_connectivity_net0" data-x="-0.6000000000000001" data-y="0.7" cx="183.3835211382114" cy="160.65040650406502" r="3" fill="orange" />
+unnamedsubcircuit240_connectivity_net0" data-x="-0.6000000000000001" data-y="0.7" cx="183.3835211382114" cy="160.65040650406502" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 gnd
-unnamedsubcircuit12_connectivity_net1" data-x="-0.6000000000000001" data-y="-0.7" cx="183.3835211382114" cy="479.349593495935" r="3" fill="purple" />
+unnamedsubcircuit240_connectivity_net1" data-x="-0.6000000000000001" data-y="-0.7" cx="183.3835211382114" cy="479.349593495935" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit12_connectivity_net0" data-x="0.6000000000000001" data-y="0.7" cx="456.55425284552854" cy="160.65040650406502" r="3" fill="orange" />
+unnamedsubcircuit240_connectivity_net0" data-x="0.6000000000000001" data-y="0.7" cx="456.55425284552854" cy="160.65040650406502" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit12_connectivity_net1" data-x="0.6000000000000001" data-y="-0.7" cx="456.55425284552854" cy="479.349593495935" r="3" fill="purple" />
+unnamedsubcircuit240_connectivity_net1" data-x="0.6000000000000001" data-y="-0.7" cx="456.55425284552854" cy="479.349593495935" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_component_1_center
@@ -33,17 +33,17 @@ center_schematic_component_1" data-x="1" data-y="0" cx="547.6111634146342" cy="3
   <g>
     <circle data-type="point" data-label="schematic_port_4
 vcc
-unnamedsubcircuit12_connectivity_net0" data-x="0.9997266500000004" data-y="0.5512093000000002" cx="547.5489373983742" cy="194.52146016260156" r="3" fill="orange" />
+unnamedsubcircuit240_connectivity_net0" data-x="0.9997266500000004" data-y="0.5512093000000002" cx="547.5489373983742" cy="194.52146016260156" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_5
 gnd
-unnamedsubcircuit12_connectivity_net1" data-x="1.0002733499999996" data-y="-0.5512093000000002" cx="547.6733894308943" cy="445.47853983739844" r="3" fill="purple" />
+unnamedsubcircuit240_connectivity_net1" data-x="1.0002733499999996" data-y="-0.5512093000000002" cx="547.6733894308943" cy="445.47853983739844" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_0_pin
 vcc
-unnamedsubcircuit12_connectivity_net0" data-x="-1" data-y="1" cx="92.3266105691057" cy="92.35772357723573" r="3" fill="orange" />
+unnamedsubcircuit240_connectivity_net0" data-x="-1" data-y="1" cx="92.3266105691057" cy="92.35772357723573" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_0_center
@@ -53,7 +53,7 @@ schematic_net_label_0_center" data-x="-1" data-y="1.18" cx="92.3266105691057" cy
   <g>
     <circle data-type="point" data-label="schematic_net_label_1_pin
 gnd
-unnamedsubcircuit12_connectivity_net1" data-x="-1" data-y="-1" cx="92.3266105691057" cy="547.6422764227643" r="3" fill="purple" />
+unnamedsubcircuit240_connectivity_net1" data-x="-1" data-y="-1" cx="92.3266105691057" cy="547.6422764227643" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_1_center
@@ -63,7 +63,7 @@ schematic_net_label_1_center" data-x="-1" data-y="-1.18" cx="92.3266105691057" c
   <g>
     <circle data-type="point" data-label="schematic_net_label_2_pin
 vcc
-unnamedsubcircuit12_connectivity_net0" data-x="1" data-y="1" cx="547.6111634146342" cy="92.35772357723573" r="3" fill="orange" />
+unnamedsubcircuit240_connectivity_net0" data-x="1" data-y="1" cx="547.6111634146342" cy="92.35772357723573" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_2_center
@@ -73,7 +73,7 @@ schematic_net_label_2_center" data-x="1" data-y="1.18" cx="547.6111634146342" cy
   <g>
     <circle data-type="point" data-label="schematic_net_label_3_pin
 gnd
-unnamedsubcircuit12_connectivity_net1" data-x="1" data-y="-1" cx="547.6111634146342" cy="547.6422764227643" r="3" fill="purple" />
+unnamedsubcircuit240_connectivity_net1" data-x="1" data-y="-1" cx="547.6111634146342" cy="547.6422764227643" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_3_center
