@@ -320,6 +320,8 @@ test("tscircuitsch01", async () => {
     /** color/boxPinCount */
     singletonKeys = ["vcc/2", "gnd/2"]
 
+    duplicatePinIfColor = ["netlabel_center", "component_center"]
+
     boxSingletonKeys: Record<BoxId, Set<string>>
 
     /**
