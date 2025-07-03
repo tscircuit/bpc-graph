@@ -14,16 +14,16 @@ export const layoutSchematicGraph = (
   {
     corpus,
     singletonKeys,
-    duplicatePinIfColor,
+    centerPinColors,
   }: {
     singletonKeys?: PartitionSingletonKey[]
-    duplicatePinIfColor?: string[]
+    centerPinColors?: string[]
     corpus: Record<string, FixedBpcGraph>
   },
 ): FixedBpcGraph => {
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys,
-    duplicatePinIfColor,
+    centerPinColors,
   })
 
   while (!processor.solved && processor.iteration < 1000) {
@@ -38,10 +38,7 @@ export const layoutSchematicGraph = (
 
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
-    const { graph: corpusSource /*, graphName, distance */ } = matchGraph(
-      part.g,
-      corpus as any,
-    )
+    const { graph: corpusSource } = matchGraph(part.g, corpus as any)
     const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
     return {
       adaptedBpcGraph,

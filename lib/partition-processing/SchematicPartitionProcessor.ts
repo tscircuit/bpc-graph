@@ -47,16 +47,39 @@ export class SchematicPartitionProcessor {
    * Pins we have *investigated* per partition
    *   key =  `${partitionId}[${boxId}:${pinId}]`
    */
-  exploredPins: Set<`${string}[${string}:${string}]`> = new Set()
+  exploredPins: Set<`${string}[${string}:${string}]`>
 
   /**
    * Pins that have actually been *added* to some partition
    *   key =  `${boxId}:${string}`
    */
-  addedPins: Set<`${string}:${string}`> = new Set()
+  addedPins: Set<`${string}:${string}`>
+
+  /**
+   * All pins that have been accepted into any partition (regardless of duplicability)
+   *   key =  `${boxId}:${string}`
+   */
+  allAcceptedPins: Set<`${string}:${string}`> = new Set()
+
+  /**
+   * Boxes that have been split into multiple partitions
+   *   key = boxId
+   */
+  splitBoxIds: Set<string>
+
+  /**
+   * Track which boxes have been accepted into partitions
+   *   key = boxId, value = partitionId where it was first accepted
+   */
+  acceptedBoxPartitionMap: Map<string, string> = new Map()
 
   singletonKeys: PartitionSingletonKey[]
-  duplicatePinIfColor: string[]
+
+  /**
+   * Center pins are alignment pins, they are duplicated to wherever a box is
+   * copied and are duplicated across partitions
+   */
+  centerPinColors: string[]
 
   constructor(
     public initialGraph: MixedBpcGraph,
@@ -73,17 +96,23 @@ export class SchematicPartitionProcessor {
       singletonKeys?: PartitionSingletonKey[]
 
       /**
-       * If provided, pins with this color are duplicated to every partition.
-       * This is typically used for "pins" that represent box centers
+       * Center pins are alignment pins, they are duplicated to wherever a box is
+       * copied and are duplicated across partitions.
+       *
+       * Center pin colors typically end with "_center"
        */
-      duplicatePinIfColor?: string[]
+      centerPinColors?: string[]
     } = {},
   ) {
     this.lastGraph = initialGraph
     this.singletonKeys = opts.singletonKeys ?? []
-    this.duplicatePinIfColor = opts.duplicatePinIfColor ?? []
+    this.centerPinColors = opts.centerPinColors ?? []
 
-    this.wipPartitions = this.initializeWipPartitions()
+    const partitionInit = this.initializeWipPartitions()
+    this.wipPartitions = partitionInit.wipPartitions
+    this.splitBoxIds = partitionInit.splitBoxIds
+    this.addedPins = partitionInit.addedPins
+    this.exploredPins = new Set()
     this.unexploredPins = this.wipPartitions.flatMap((part) =>
       part.pins.map((p) => ({ ...p, partitionId: part.partitionId })),
     )
@@ -113,22 +142,34 @@ export class SchematicPartitionProcessor {
     return boxSingletonKeys
   }
 
-  initializeWipPartitions(): WipPartition[] {
+  initializeWipPartitions(): {
+    wipPartitions: WipPartition[]
+    splitBoxIds: Set<string>
+    addedPins: Set<`${string}:${string}`>
+  } {
     const wipPartitions: WipPartition[] = []
+
+    const addedPins = new Set<`${string}:${string}`>()
+    const splitBoxIds = new Set<string>()
 
     let partitionId = 0
     for (const box of this.initialGraph.boxes) {
       const pins = this.initialGraph.pins
         .filter((p) => p.boxId === box.boxId)
         .filter((p) => getPinDirection(this.initialGraph, box, p))
+        .filter((p) => !this.centerPinColors.includes(p.color))
 
-      if (pins.length <= 2) {
+      if (pins.length < 4) {
         continue
       }
 
       const uniqueDirections = new Set(
         pins.map((p) => getPinDirection(this.initialGraph, box, p)),
       )
+
+      if (uniqueDirections.size > 1) {
+        splitBoxIds.add(box.boxId)
+      }
 
       for (const direction of uniqueDirections) {
         const partition: WipPartition = {
@@ -140,13 +181,18 @@ export class SchematicPartitionProcessor {
         for (const pin of pins) {
           if (getPinDirection(this.initialGraph, box, pin) === direction) {
             partition.pins.push({ boxId: box.boxId, pinId: pin.pinId })
+            addedPins.add(`${box.boxId}:${pin.pinId}`)
           }
         }
 
         wipPartitions.push(partition)
       }
     }
-    return wipPartitions
+    debug(`splitBoxIds = ${Array.from(splitBoxIds).join(", ")}`)
+    debug(
+      `wipPartitions = ${wipPartitions.map((p) => p.partitionId).join(", ")}`,
+    )
+    return { wipPartitions, splitBoxIds, addedPins }
   }
 
   step() {
@@ -166,97 +212,93 @@ export class SchematicPartitionProcessor {
 
     /* ――― pick next pin to explore ――― */
     const current = this.unexploredPins.shift()!
+    const currentPinKey = `${current.boxId}:${current.pinId}` as const
     debug(
-      `Exploring pin ${current.boxId}:${current.pinId} in partition ${current.partitionId}`,
+      `Exploring pin ${current.boxId}:${current.pinId} for partition "${current.partitionId}"`,
     )
     this.lastExploredPin = {
       ...current,
       partitionId: current.partitionId,
     } as BpcPin & { partitionId: string }
-    const pinKey = `${current.boxId}:${current.pinId}` as const
-    const exploredKey = `${current.partitionId}[${pinKey}]` as const
+    const currentPinPartitionKey =
+      `${current.partitionId}[${currentPinKey}]` as const
 
-    const pinObj = this.initialGraph.pins.find(
+    const currentPin = this.initialGraph.pins.find(
       (p) => p.boxId === current.boxId && p.pinId === current.pinId,
     )
-    if (!pinObj) return
-    const isDuplicable = this.duplicatePinIfColor.includes(pinObj.color)
+    if (!currentPin) return
 
-    // skip only if non-duplicable pin was already put in some partition
-    if (this.addedPins.has(pinKey) && !isDuplicable) return
-    if (this.exploredPins.has(exploredKey)) return
+    if (this.exploredPins.has(currentPinPartitionKey)) return
 
-    const part = this.wipPartitions.find(
+    const currentPartition = this.wipPartitions.find(
       (p) => p.partitionId === current.partitionId,
     )
-    if (!part) return
+    if (!currentPartition) return
+
+    const pinAlreadyAcceptedIntoPartitionId = this.acceptedBoxPartitionMap.get(
+      current.boxId,
+    )
+    if (
+      pinAlreadyAcceptedIntoPartitionId &&
+      pinAlreadyAcceptedIntoPartitionId !== current.partitionId &&
+      !this.splitBoxIds.has(current.boxId)
+    ) {
+      debug(
+        `  ↳ rejected (box ${current.boxId} for partition ${current.partitionId} already in partition ${this.acceptedBoxPartitionMap.get(current.boxId)})`,
+      )
+      this.exploredPins.add(currentPinPartitionKey)
+      return
+    }
 
     const singletonKeysForBox = this.boxSingletonKeys[current.boxId]!
 
     // does the current partition already contain any of those singleton slots?
     const hasConflict = Array.from(singletonKeysForBox).some((k) =>
-      part.filledSingletonSlots.has(k),
+      currentPartition.filledSingletonSlots.has(k),
     )
 
     if (hasConflict) {
-      // no partition can accept this pin/box – mark as explored (discard)
-      debug("  ↳ rejected (singleton conflicts in all partitions)")
-      this.exploredPins.add(exploredKey)
+      debug(
+        `  ↳ rejected (singleton already in partition "${current.partitionId}")`,
+      )
+      this.exploredPins.add(currentPinPartitionKey)
       return
     }
 
     /* ――― accept pin into partition ――― */
     // reserve all singleton keys this box brings in
     for (const k of singletonKeysForBox) {
-      part.filledSingletonSlots.add(k)
+      currentPartition.filledSingletonSlots.add(k)
     }
-    part.pins.push({ boxId: current.boxId, pinId: current.pinId })
+    currentPartition.pins.push({ boxId: current.boxId, pinId: current.pinId })
 
-    // add to global set only if it must stay unique
-    if (!isDuplicable) this.addedPins.add(pinKey)
-    this.exploredPins.add(exploredKey)
-    debug(`  ↳ accepted → pins in partition now = ${part.pins.length}`)
+    this.allAcceptedPins.add(currentPinKey)
+    this.addedPins.add(currentPinKey)
+    if (!this.splitBoxIds.has(current.boxId)) {
+      this.acceptedBoxPartitionMap.set(current.boxId, current.partitionId)
+    }
+    this.exploredPins.add(currentPinPartitionKey)
+    debug(
+      `  ↳ accepted → pins in partition now = ${currentPartition.pins.length}`,
+    )
 
     /* ――― queue other pins on the same network ――― */
-    for (const other of this.initialGraph.pins) {
-      if (other.networkId !== pinObj.networkId) continue
-      const otherPinKey = `${other.boxId}:${other.pinId}` as const
+    const neighbors = this.getNeighbors(currentPin)
+    for (const neighbor of neighbors) {
+      const neighborPinKey = `${neighbor.boxId}:${neighbor.pinId}` as const
+      if (this.addedPins.has(neighborPinKey)) continue
+      if (this.centerPinColors.includes(neighbor.color)) continue
       if (
-        this.addedPins.has(otherPinKey) &&
-        !this.duplicatePinIfColor.includes(other.color)
-      )
-        continue
-      if (
-        this.exploredPins.has(`${current.partitionId}[${otherPinKey}]` as const)
+        this.exploredPins.has(
+          `${current.partitionId}[${neighborPinKey}]` as const,
+        )
       )
         continue
       this.unexploredPins.push({
-        boxId: other.boxId,
-        pinId: other.pinId,
+        boxId: neighbor.boxId,
+        pinId: neighbor.pinId,
         partitionId: current.partitionId,
       })
-    }
-
-    /* ――― if the current box only has two pins, queue the mate pin ――― */
-    const boxPins = this.initialGraph.pins.filter(
-      (p) => p.boxId === current.boxId,
-    )
-    if (boxPins.length === 2) {
-      const mate = boxPins.find((p) => p.pinId !== current.pinId)!
-      const mateKey = `${mate.boxId}:${mate.pinId}` as const
-      const mateIsDuplicable = this.duplicatePinIfColor.includes(mate.color)
-      if (
-        (this.addedPins.has(mateKey) && !mateIsDuplicable) ||
-        this.exploredPins.has(`${current.partitionId}[${mateKey}]` as const)
-      ) {
-        /* skip */
-      } else {
-        this.unexploredPins.push({
-          boxId: mate.boxId,
-          pinId: mate.pinId,
-          partitionId: current.partitionId,
-        })
-      }
     }
 
     /* ――― done? ――― */
@@ -270,6 +312,32 @@ export class SchematicPartitionProcessor {
     }
   }
 
+  /**
+   * Returns all pins reachable from the given pin
+   *
+   * A pin traverses it's own box as well as it's network
+   */
+  getNeighbors(pin: BpcPin) {
+    const neighbors = []
+    for (const pinInNetwork of this.initialGraph.pins) {
+      if (pinInNetwork.networkId !== pin.networkId) continue
+      if (pin.boxId === pinInNetwork.boxId && pinInNetwork.pinId === pin.pinId)
+        continue
+      neighbors.push(pinInNetwork)
+    }
+    for (const pinInBox of this.initialGraph.pins) {
+      if (pinInBox.boxId !== pin.boxId) continue
+      neighbors.push(pinInBox)
+    }
+    return neighbors
+  }
+
+  solve() {
+    while (!this.solved && this.iteration < 1000) {
+      this.step()
+    }
+  }
+
   getPartitions(): MixedBpcGraph[] {
     if (!this.solved) throw new Error("Graph not solved")
 
@@ -278,28 +346,22 @@ export class SchematicPartitionProcessor {
     for (const part of this.wipPartitions) {
       if (part.pins.length === 0) continue
 
-      // ---- gather ids of boxes already represented in the partition ----
-      const pinKeySet = new Set(
-        part.pins.map(({ boxId, pinId }) => `${boxId}:${pinId}`),
+      const partBoxIds = new Set(part.pins.map((p) => p.boxId))
+
+      const partBoxes = this.initialGraph.boxes.filter((b) =>
+        partBoxIds.has(b.boxId),
       )
-      const boxIdSet = new Set(part.pins.map(({ boxId }) => boxId))
 
-      // ---- collect pins ---------------------------------------------------
-      const pins = this.initialGraph.pins
-        .filter(
+      partitions.push({
+        boxes: partBoxes,
+        pins: this.initialGraph.pins.filter(
           (p) =>
-            pinKeySet.has(`${p.boxId}:${p.pinId}`) ||
-            (this.duplicatePinIfColor.includes(p.color) &&
-              boxIdSet.has(p.boxId)),
-        )
-        .map((p) => ({ ...p }))
-
-      // ---- collect boxes that own at least one of those pins --------------
-      const boxes = this.initialGraph.boxes
-        .filter((b) => pins.some((p) => p.boxId === b.boxId))
-        .map((b) => ({ ...b }))
-
-      partitions.push({ boxes, pins })
+            part.pins.some(
+              (pp) => pp.pinId === p.pinId && pp.boxId === p.boxId,
+            ) ||
+            (this.centerPinColors.includes(p.color) && partBoxIds.has(p.boxId)),
+        ),
+      })
     }
 
     return partitions
@@ -354,6 +416,29 @@ export class SchematicPartitionProcessor {
         y: pos.y,
         text: `${boxId}:${pinId}-${Array.from(this.boxSingletonKeys[boxId] ?? []).join(",")}`,
         fontSize: 0.1,
+      })
+    }
+
+    // Draw a light stroke-only rect around each pin in unexploredPins,
+    // color it like the partition, and make it 10% bigger per partition index
+    const unexploredRectBaseSize = PIN_RECT_SIZE
+    for (const pin of this.unexploredPins) {
+      const { boxId, pinId, partitionId } = pin
+      const partitionIdx = this.wipPartitions.findIndex(
+        (p) => p.partitionId === partitionId,
+      )
+      if (partitionIdx === -1) continue
+      const stroke = getColorByIndex(partitionIdx, this.wipPartitions.length, 1)
+      const { x, y } = getPinPosition(this.lastGraph, boxId, pinId)
+      const scale = 1 + 0.1 * partitionIdx
+      // Remove strokeWidth property as it's not valid for Rect type
+      graphics.rects.push({
+        center: { x, y },
+        width: unexploredRectBaseSize * scale,
+        height: unexploredRectBaseSize * scale,
+        fill: "none",
+        stroke,
+        // If you need to represent stroke width, consider adding a comment or handling it elsewhere
       })
     }
 

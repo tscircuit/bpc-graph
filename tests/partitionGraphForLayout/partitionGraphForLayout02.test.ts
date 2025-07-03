@@ -248,7 +248,7 @@ test("partitionGraphForLayout02 – layoutSchematicGraph pipeline", () => {
   // 1. run the high-level layout helper
   const laidOut = layoutSchematicGraph(ogGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
+    centerPinColors: ["netlabel_center", "component_center"],
     corpus,
   })
 
