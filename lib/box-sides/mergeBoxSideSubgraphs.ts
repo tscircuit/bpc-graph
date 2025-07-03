@@ -16,7 +16,7 @@ export const mergeBoxSideSubgraphs = (
 
   const partitionedBoxIds = Object.entries(
     graphs
-      .flatMap((g) => g.boxes.map((b) => b.boxId))
+      .flatMap((g) => Array.from(new Set(g.boxes.map((b) => b.boxId))))
       .reduce(
         (acc, str) => {
           acc[str] = (acc[str] || 0) + 1
@@ -25,7 +25,7 @@ export const mergeBoxSideSubgraphs = (
         {} as Record<string, number>,
       ),
   )
-    .filter(([_, count]) => count >= 2)
+    .filter(([_, count]) => count === graphs.length)
     .map(([str]) => str)
 
   if (partitionedBoxIds.length > 1) {
