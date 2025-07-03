@@ -14,16 +14,16 @@ export const layoutSchematicGraph = (
   {
     corpus,
     singletonKeys,
-    duplicatePinIfColor,
+    centerPinColors,
   }: {
     singletonKeys?: PartitionSingletonKey[]
-    duplicatePinIfColor?: string[]
+    centerPinColors?: string[]
     corpus: Record<string, FixedBpcGraph>
   },
 ): FixedBpcGraph => {
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys,
-    duplicatePinIfColor,
+    centerPinColors,
   })
 
   while (!processor.solved && processor.iteration < 1000) {

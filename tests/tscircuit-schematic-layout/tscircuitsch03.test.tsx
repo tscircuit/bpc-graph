@@ -92,7 +92,7 @@ export default () => (
 
   const processor = new SchematicPartitionProcessor(ogBpcGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
+    centerPinColors: ["netlabel_center", "component_center"],
   })
   while (!processor.solved && processor.iteration < 1000) {
     processor.step()

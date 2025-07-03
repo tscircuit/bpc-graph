@@ -345,8 +345,10 @@ export class SchematicPartitionProcessor {
     for (const part of this.wipPartitions) {
       if (part.pins.length === 0) continue
 
+      const partBoxIds = new Set(part.pins.map((p) => p.boxId))
+
       const partBoxes = this.initialGraph.boxes.filter((b) =>
-        part.pins.some((pp) => pp.boxId === b.boxId),
+        partBoxIds.has(b.boxId),
       )
 
       partitions.push({
@@ -356,8 +358,7 @@ export class SchematicPartitionProcessor {
             part.pins.some(
               (pp) => pp.pinId === p.pinId && pp.boxId === p.boxId,
             ) ||
-            (this.centerPinColors.includes(p.color) &&
-              partBoxes.some((b) => b.boxId === p.boxId)),
+            (this.centerPinColors.includes(p.color) && partBoxIds.has(p.boxId)),
         ),
       })
     }

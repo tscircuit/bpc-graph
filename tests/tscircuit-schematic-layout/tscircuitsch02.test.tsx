@@ -47,7 +47,7 @@ export default () => (
 
   const laidOutBpcGraph = layoutSchematicGraph(ogBpcGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
+    centerPinColors: ["netlabel_center", "component_center"],
     corpus,
   })
 

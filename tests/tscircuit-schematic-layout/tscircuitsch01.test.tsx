@@ -38,7 +38,7 @@ export default () => (
 
   const partitionProcessor = new SchematicPartitionProcessor(ogBpcGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
+    centerPinColors: ["netlabel_center", "component_center"],
   })
 
   partitionProcessor.solve()

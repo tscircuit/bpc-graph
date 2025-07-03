@@ -8,42 +8,42 @@ center_schematic_component_0" data-x="0" data-y="0" cx="349.392651032932" cy="18
   <g>
     <circle data-type="point" data-label="U3_VDD
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.4" data-y="0.42500000000000004" cx="231.86794030074486" cy="153.85548013303975" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.4" data-y="0.42500000000000004" cx="231.86794030074486" cy="153.85548013303975" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_GND
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-0.42500000000000004" cx="231.86794030074486" cy="225.2097687918677" r="3" fill="purple" />
+unnamedsubcircuit265_connectivity_net1" data-x="-1.4" data-y="-0.42500000000000004" cx="231.86794030074486" cy="225.2097687918677" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_N_CS
 normal
-unnamedsubcircuit37_connectivity_net5" data-x="1.4" data-y="0.5" cx="466.91736176511915" cy="147.55951348667259" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net5" data-x="1.4" data-y="0.5" cx="466.91736176511915" cy="147.55951348667259" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_CLK
 normal
-unnamedsubcircuit37_connectivity_net4" data-x="1.4" data-y="0.30000000000000004" cx="466.91736176511915" cy="164.34875787698505" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net4" data-x="1.4" data-y="0.30000000000000004" cx="466.91736176511915" cy="164.34875787698505" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D0_DI
 normal
-unnamedsubcircuit37_connectivity_net3" data-x="1.4" data-y="0.10000000000000009" cx="466.91736176511915" cy="181.13800226729748" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net3" data-x="1.4" data-y="0.10000000000000009" cx="466.91736176511915" cy="181.13800226729748" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D1_DO
 normal
-unnamedsubcircuit37_connectivity_net2" data-x="1.4" data-y="-0.09999999999999998" cx="466.91736176511915" cy="197.92724665760994" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net2" data-x="1.4" data-y="-0.09999999999999998" cx="466.91736176511915" cy="197.92724665760994" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D2_N_WP
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-0.3" cx="466.91736176511915" cy="214.7164910479224" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="1.4" data-y="-0.3" cx="466.91736176511915" cy="214.7164910479224" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D3_N_HOLD
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-0.5" cx="466.91736176511915" cy="231.50573543823486" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="1.4" data-y="-0.5" cx="466.91736176511915" cy="231.50573543823486" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="C20_center
@@ -53,12 +53,12 @@ center_schematic_component_1" data-x="-3" data-y="0" cx="97.55398517824523" cy="
   <g>
     <circle data-type="point" data-label="C20_pin1
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-2.999726650000001" data-y="-0.5512093000000002" cx="97.57693187801561" cy="235.804562702019" r="3" fill="purple" />
+unnamedsubcircuit265_connectivity_net1" data-x="-2.999726650000001" data-y="-0.5512093000000002" cx="97.57693187801561" cy="235.804562702019" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="C20_pin2
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-3.0002733499999996" data-y="0.5512093000000002" cx="97.53103847847478" cy="143.26068622288844" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-3.0002733499999996" data-y="0.5512093000000002" cx="97.53103847847478" cy="143.26068622288844" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="R11_center
@@ -68,17 +68,17 @@ center_schematic_component_2" data-x="2" data-y="1" cx="517.2850949360566" cy="1
   <g>
     <circle data-type="point" data-label="R11_pin1
 normal
-unnamedsubcircuit37_connectivity_net5" data-x="1.9997267500000007" data-y="0.44870929999999964" cx="517.2621566309083" cy="151.86517397292363" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net5" data-x="1.9997267500000007" data-y="0.44870929999999964" cx="517.2621566309083" cy="151.86517397292363" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="R11_pin2
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="2.0002732499999993" data-y="1.5512907000000002" cx="517.3080332412047" cy="59.30763104885932" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="2.0002732499999993" data-y="1.5512907000000002" cx="517.3080332412047" cy="59.30763104885932" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_30_pin
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.4" data-y="0.42500000000000004" cx="231.86794030074486" cy="153.85548013303975" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.4" data-y="0.42500000000000004" cx="231.86794030074486" cy="153.85548013303975" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_30_center
@@ -88,7 +88,7 @@ NL_V3_30_center" data-x="-1.7599999999999998" data-y="0.42500000000000004" cx="2
   <g>
     <circle data-type="point" data-label="NL_GND0_pin
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-0.42500000000000004" cx="231.86794030074486" cy="225.2097687918677" r="3" fill="purple" />
+unnamedsubcircuit265_connectivity_net1" data-x="-1.4" data-y="-0.42500000000000004" cx="231.86794030074486" cy="225.2097687918677" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_GND0_center
@@ -98,7 +98,7 @@ NL_GND0_center" data-x="-1.67" data-y="-0.42500000000000004" cx="209.20246037382
   <g>
     <circle data-type="point" data-label="NL_V3_31_pin
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-0.5" cx="466.91736176511915" cy="231.50573543823486" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="1.4" data-y="-0.5" cx="466.91736176511915" cy="231.50573543823486" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_31_center
@@ -108,7 +108,7 @@ NL_V3_31_center" data-x="1.7599999999999998" data-y="-0.5" cx="497.1380016676816
   <g>
     <circle data-type="point" data-label="NL_V3_32_pin
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-0.3" cx="466.91736176511915" cy="214.7164910479224" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="1.4" data-y="-0.3" cx="466.91736176511915" cy="214.7164910479224" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_32_center
@@ -118,7 +118,7 @@ NL_V3_32_center" data-x="1.7599999999999998" data-y="-0.3" cx="497.1380016676816
   <g>
     <circle data-type="point" data-label="NL_FLASH_SDO0_pin
 normal
-unnamedsubcircuit37_connectivity_net2" data-x="1.4" data-y="-0.09999999999999998" cx="466.91736176511915" cy="197.92724665760994" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net2" data-x="1.4" data-y="-0.09999999999999998" cx="466.91736176511915" cy="197.92724665760994" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_FLASH_SDO0_center
@@ -128,7 +128,7 @@ NL_FLASH_SDO0_center" data-x="2.21" data-y="-0.09999999999999998" cx="534.913801
   <g>
     <circle data-type="point" data-label="NL_FLASH_SDI0_pin
 normal
-unnamedsubcircuit37_connectivity_net3" data-x="1.4" data-y="0.10000000000000009" cx="466.91736176511915" cy="181.13800226729748" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net3" data-x="1.4" data-y="0.10000000000000009" cx="466.91736176511915" cy="181.13800226729748" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_FLASH_SDI0_center
@@ -138,7 +138,7 @@ NL_FLASH_SDI0_center" data-x="2.21" data-y="0.10000000000000009" cx="534.9138015
   <g>
     <circle data-type="point" data-label="NL_FLASH_SCK0_pin
 normal
-unnamedsubcircuit37_connectivity_net4" data-x="1.4" data-y="0.30000000000000004" cx="466.91736176511915" cy="164.34875787698505" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net4" data-x="1.4" data-y="0.30000000000000004" cx="466.91736176511915" cy="164.34875787698505" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_FLASH_SCK0_center
@@ -148,7 +148,7 @@ NL_FLASH_SCK0_center" data-x="2.21" data-y="0.30000000000000004" cx="534.9138015
   <g>
     <circle data-type="point" data-label="NL_FLASH_N_CS0_pin
 normal
-unnamedsubcircuit37_connectivity_net5" data-x="1.4" data-y="0.5" cx="466.91736176511915" cy="147.55951348667259" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net5" data-x="1.4" data-y="0.5" cx="466.91736176511915" cy="147.55951348667259" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_FLASH_N_CS0_center
@@ -158,7 +158,7 @@ NL_FLASH_N_CS0_center" data-x="2.3" data-y="0.5" cx="542.4689615215252" cy="147.
   <g>
     <circle data-type="point" data-label="NL_V3_33_pin
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="2.0002732499999993" data-y="1.5512907000000002" cx="517.3080332412047" cy="59.30763104885932" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="2.0002732499999993" data-y="1.5512907000000002" cx="517.3080332412047" cy="59.30763104885932" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_33_center
@@ -173,22 +173,12 @@ center_schematic_component_0" data-x="0" data-y="-2.7756250000000007" cx="349.39
   <g>
     <circle data-type="point" data-label="U3_VDD
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.4" data-y="-2.350625000000001" cx="231.86794030074486" cy="386.8587124373448" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.4" data-y="-2.350625000000001" cx="231.86794030074486" cy="386.8587124373448" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_GND
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-3.2006250000000005" cx="231.86794030074486" cy="458.2130010961727" r="3" fill="purple" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="U3_D2_N_WP
-vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-3.0756250000000005" cx="466.91736176511915" cy="447.71972335222745" r="3" fill="orange" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="U3_D3_N_HOLD
-vcc
-unnamedsubcircuit37_connectivity_net0" data-x="1.4" data-y="-3.2756250000000007" cx="466.91736176511915" cy="464.50896774253994" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net1" data-x="-1.4" data-y="-3.2006250000000005" cx="231.86794030074486" cy="458.2130010961727" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="C20_center
@@ -198,12 +188,12 @@ center_schematic_component_1" data-x="-3" data-y="-2.7756250000000007" cx="97.55
   <g>
     <circle data-type="point" data-label="C20_pin1
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-2.999726650000001" data-y="-3.3268343000000007" cx="97.57693187801561" cy="468.80779500632406" r="3" fill="purple" />
+unnamedsubcircuit265_connectivity_net1" data-x="-2.999726650000001" data-y="-3.3268343000000007" cx="97.57693187801561" cy="468.80779500632406" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="C20_pin2
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-3.0002733499999996" data-y="-2.2244157000000007" cx="97.53103847847478" cy="376.2639185271935" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-3.0002733499999996" data-y="-2.2244157000000007" cx="97.53103847847478" cy="376.2639185271935" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="R11_center
@@ -211,14 +201,19 @@ component_center
 center_schematic_component_2" data-x="2" data-y="-1.7756250000000007" cx="517.2850949360566" cy="338.5896348151965" r="3" fill="gray" />
   </g>
   <g>
+    <circle data-type="point" data-label="R11_pin1
+normal
+unnamedsubcircuit265_connectivity_net5" data-x="1.9997267500000007" data-y="-2.326915700000001" cx="517.2621566309083" cy="384.8684062772287" r="3" fill="blue" />
+  </g>
+  <g>
     <circle data-type="point" data-label="R11_pin2
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="2.0002732499999993" data-y="-1.2243343000000004" cx="517.3080332412047" cy="292.3108633531644" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="2.0002732499999993" data-y="-1.2243343000000004" cx="517.3080332412047" cy="292.3108633531644" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_30_pin
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.4" data-y="-2.350625000000001" cx="231.86794030074486" cy="386.8587124373448" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.4" data-y="-2.350625000000001" cx="231.86794030074486" cy="386.8587124373448" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_V3_30_center
@@ -228,7 +223,7 @@ NL_V3_30_center" data-x="-1.7599999999999998" data-y="-2.350625000000001" cx="20
   <g>
     <circle data-type="point" data-label="NL_GND0_pin
 gnd
-unnamedsubcircuit37_connectivity_net1" data-x="-1.4" data-y="-3.2006250000000005" cx="231.86794030074486" cy="458.2130010961727" r="3" fill="purple" />
+unnamedsubcircuit265_connectivity_net1" data-x="-1.4" data-y="-3.2006250000000005" cx="231.86794030074486" cy="458.2130010961727" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="NL_GND0_center
@@ -243,32 +238,82 @@ center_schematic_component_0" data-x="-3.0002733499999996" data-y="-4.3396468000
   <g>
     <circle data-type="point" data-label="U3_N_CS
 normal
-unnamedsubcircuit37_connectivity_net5" data-x="-1.6002733499999997" data-y="-3.8396468000000015" cx="215.05574921066196" cy="511.85646695085967" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net5" data-x="-1.6002733499999997" data-y="-3.8396468000000015" cx="215.05574921066196" cy="511.85646695085967" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_CLK
 normal
-unnamedsubcircuit37_connectivity_net4" data-x="-1.6002733499999997" data-y="-4.039646800000002" cx="215.05574921066196" cy="528.645711341172" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net4" data-x="-1.6002733499999997" data-y="-4.039646800000002" cx="215.05574921066196" cy="528.645711341172" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D0_DI
 normal
-unnamedsubcircuit37_connectivity_net3" data-x="-1.6002733499999997" data-y="-4.239646800000001" cx="215.05574921066196" cy="545.4349557314845" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net3" data-x="-1.6002733499999997" data-y="-4.239646800000001" cx="215.05574921066196" cy="545.4349557314845" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D1_DO
 normal
-unnamedsubcircuit37_connectivity_net2" data-x="-1.6002733499999997" data-y="-4.439646800000001" cx="215.05574921066196" cy="562.2242001217969" r="3" fill="blue" />
+unnamedsubcircuit265_connectivity_net2" data-x="-1.6002733499999997" data-y="-4.439646800000001" cx="215.05574921066196" cy="562.2242001217969" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D2_N_WP
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.639646800000001" cx="215.05574921066196" cy="579.0134445121095" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.639646800000001" cx="215.05574921066196" cy="579.0134445121095" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="U3_D3_N_HOLD
 vcc
-unnamedsubcircuit37_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8396468000000015" cx="215.05574921066196" cy="595.8026889024219" r="3" fill="orange" />
+unnamedsubcircuit265_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8396468000000015" cx="215.05574921066196" cy="595.8026889024219" r="3" fill="orange" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_V3_31_pin
+vcc
+unnamedsubcircuit265_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8396468000000015" cx="215.05574921066196" cy="595.8026889024219" r="3" fill="orange" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_V3_31_center
+netlabel_center
+NL_V3_31_center" data-x="-1.2402733499999998" data-y="-4.8396468000000015" cx="245.27638911322435" cy="595.8026889024219" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SDO0_pin
+normal
+unnamedsubcircuit265_connectivity_net2" data-x="-1.6002733499999997" data-y="-4.439646800000001" cx="215.05574921066196" cy="562.2242001217969" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SDO0_center
+netlabel_center
+NL_FLASH_SDO0_center" data-x="-0.7902733499999997" data-y="-4.439646800000001" cx="283.0521889914274" cy="562.2242001217969" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SDI0_pin
+normal
+unnamedsubcircuit265_connectivity_net3" data-x="-1.6002733499999997" data-y="-4.239646800000001" cx="215.05574921066196" cy="545.4349557314845" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SDI0_center
+netlabel_center
+NL_FLASH_SDI0_center" data-x="-0.7902733499999997" data-y="-4.239646800000001" cx="283.0521889914274" cy="545.4349557314845" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SCK0_pin
+normal
+unnamedsubcircuit265_connectivity_net4" data-x="-1.6002733499999997" data-y="-4.039646800000002" cx="215.05574921066196" cy="528.645711341172" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_SCK0_center
+netlabel_center
+NL_FLASH_SCK0_center" data-x="-0.7902733499999997" data-y="-4.039646800000002" cx="283.0521889914274" cy="528.645711341172" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_N_CS0_pin
+normal
+unnamedsubcircuit265_connectivity_net5" data-x="-1.6002733499999997" data-y="-3.8396468000000015" cx="215.05574921066196" cy="511.85646695085967" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="NL_FLASH_N_CS0_center
+netlabel_center
+NL_FLASH_N_CS0_center" data-x="-0.7002733499999998" data-y="-3.8396468000000015" cx="290.607348967068" cy="511.85646695085967" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
   </g>
   <g>
     <polyline data-points="-1.4,0.42500000000000004 1.4,-0.3" data-type="line" data-label="" points="231.86794030074486,153.85548013303975 466.91736176511915,214.7164910479224" fill="none" stroke="hsl(20, 100%, 50%, 0.5)" stroke-width="1" />
@@ -406,61 +451,52 @@ unnamedsubcircuit37_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8
     <polyline data-points="1.4,-0.09999999999999998 1.4,-0.09999999999999998" data-type="line" data-label="" points="466.91736176511915,197.92724665760994 466.91736176511915,197.92724665760994" fill="none" stroke="hsl(120, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.350625000000001 1.4,-3.0756250000000005" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 466.91736176511915,447.71972335222745" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.4,-2.350625000000001 -3.0002733499999996,-2.2244157000000007" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 97.53103847847478,376.2639185271935" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.350625000000001 1.4,-3.2756250000000007" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 466.91736176511915,464.50896774253994" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.4,-2.350625000000001 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.350625000000001 -3.0002733499999996,-2.2244157000000007" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 97.53103847847478,376.2639185271935" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.4,-2.350625000000001 -1.4,-2.350625000000001" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.350625000000001 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-3.0002733499999996,-2.2244157000000007 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="97.53103847847478,376.2639185271935 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-2.350625000000001 -1.4,-2.350625000000001" data-type="line" data-label="" points="231.86794030074486,386.8587124373448 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-3.0002733499999996,-2.2244157000000007 -1.4,-2.350625000000001" data-type="line" data-label="" points="97.53103847847478,376.2639185271935 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.0756250000000005 1.4,-3.2756250000000007" data-type="line" data-label="" points="466.91736176511915,447.71972335222745 466.91736176511915,464.50896774253994" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="2.0002732499999993,-1.2243343000000004 -1.4,-2.350625000000001" data-type="line" data-label="" points="517.3080332412047,292.3108633531644 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(45, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.0756250000000005 -3.0002733499999996,-2.2244157000000007" data-type="line" data-label="" points="466.91736176511915,447.71972335222745 97.53103847847478,376.2639185271935" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.4,-3.2006250000000005 -2.999726650000001,-3.3268343000000007" data-type="line" data-label="" points="231.86794030074486,458.2130010961727 97.57693187801561,468.80779500632406" fill="none" stroke="hsl(90, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.0756250000000005 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="466.91736176511915,447.71972335222745 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.4,-3.2006250000000005 -1.4,-3.2006250000000005" data-type="line" data-label="" points="231.86794030074486,458.2130010961727 231.86794030074486,458.2130010961727" fill="none" stroke="hsl(90, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.0756250000000005 -1.4,-2.350625000000001" data-type="line" data-label="" points="466.91736176511915,447.71972335222745 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-2.999726650000001,-3.3268343000000007 -1.4,-3.2006250000000005" data-type="line" data-label="" points="97.57693187801561,468.80779500632406 231.86794030074486,458.2130010961727" fill="none" stroke="hsl(90, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.2756250000000007 -3.0002733499999996,-2.2244157000000007" data-type="line" data-label="" points="466.91736176511915,464.50896774253994 97.53103847847478,376.2639185271935" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-3.8396468000000015 -1.6002733499999997,-3.8396468000000015" data-type="line" data-label="" points="215.05574921066196,511.85646695085967 215.05574921066196,511.85646695085967" fill="none" stroke="hsl(32.72727272727273, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.2756250000000007 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="466.91736176511915,464.50896774253994 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.039646800000002 -1.6002733499999997,-4.039646800000002" data-type="line" data-label="" points="215.05574921066196,528.645711341172 215.05574921066196,528.645711341172" fill="none" stroke="hsl(65.45454545454545, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="1.4,-3.2756250000000007 -1.4,-2.350625000000001" data-type="line" data-label="" points="466.91736176511915,464.50896774253994 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.239646800000001 -1.6002733499999997,-4.239646800000001" data-type="line" data-label="" points="215.05574921066196,545.4349557314845 215.05574921066196,545.4349557314845" fill="none" stroke="hsl(98.18181818181819, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-3.0002733499999996,-2.2244157000000007 2.0002732499999993,-1.2243343000000004" data-type="line" data-label="" points="97.53103847847478,376.2639185271935 517.3080332412047,292.3108633531644" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.439646800000001 -1.6002733499999997,-4.439646800000001" data-type="line" data-label="" points="215.05574921066196,562.2242001217969 215.05574921066196,562.2242001217969" fill="none" stroke="hsl(130.9090909090909, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-3.0002733499999996,-2.2244157000000007 -1.4,-2.350625000000001" data-type="line" data-label="" points="97.53103847847478,376.2639185271935 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.639646800000001 -1.6002733499999997,-4.8396468000000015" data-type="line" data-label="" points="215.05574921066196,579.0134445121095 215.05574921066196,595.8026889024219" fill="none" stroke="hsl(163.63636363636363, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="2.0002732499999993,-1.2243343000000004 -1.4,-2.350625000000001" data-type="line" data-label="" points="517.3080332412047,292.3108633531644 231.86794030074486,386.8587124373448" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.639646800000001 -1.6002733499999997,-4.8396468000000015" data-type="line" data-label="" points="215.05574921066196,579.0134445121095 215.05574921066196,595.8026889024219" fill="none" stroke="hsl(163.63636363636363, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="-1.4,-3.2006250000000005 -2.999726650000001,-3.3268343000000007" data-type="line" data-label="" points="231.86794030074486,458.2130010961727 97.57693187801561,468.80779500632406" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
-  </g>
-  <g>
-    <polyline data-points="-1.4,-3.2006250000000005 -1.4,-3.2006250000000005" data-type="line" data-label="" points="231.86794030074486,458.2130010961727 231.86794030074486,458.2130010961727" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
-  </g>
-  <g>
-    <polyline data-points="-2.999726650000001,-3.3268343000000007 -1.4,-3.2006250000000005" data-type="line" data-label="" points="97.57693187801561,468.80779500632406 231.86794030074486,458.2130010961727" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
-  </g>
-  <g>
-    <polyline data-points="-1.6002733499999997,-4.639646800000001 -1.6002733499999997,-4.8396468000000015" data-type="line" data-label="" points="215.05574921066196,579.0134445121095 215.05574921066196,595.8026889024219" fill="none" stroke="hsl(300, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="-1.6002733499999997,-4.8396468000000015 -1.6002733499999997,-4.8396468000000015" data-type="line" data-label="" points="215.05574921066196,595.8026889024219 215.05574921066196,595.8026889024219" fill="none" stroke="hsl(163.63636363636363, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
     <rect data-type="rect" data-label="U3" data-x="0" data-y="0" x="227.67062920316673" y="143.36220238909448" width="243.44404365953054" height="92.3408441467185" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
@@ -499,13 +535,13 @@ unnamedsubcircuit37_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8
     <rect data-type="rect" data-label="NL_V3_33" data-x="2.0002732499999993" data-y="1.6412907000000003" x="513.1107221436266" y="40" width="8.394622195156217" height="23.504942146437415" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
   </g>
   <g>
-    <rect data-type="rect" data-label="U3" data-x="0" data-y="-2.8131250000000008" x="227.67062920316673" y="382.6614013397667" width="243.44404365953054" height="86.04487750035133" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+    <rect data-type="rect" data-label="U3" data-x="-0.7" data-y="-2.7756250000000007" x="227.67062920316673" y="382.6614013397667" width="125.91933292734339" height="79.74891085398417" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
   </g>
   <g>
     <rect data-type="rect" data-label="C20" data-x="-3" data-y="-2.7756250000000007" x="93.33372738089668" y="372.0666074296154" width="8.440515594697075" height="100.93849867428685" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
   </g>
   <g>
-    <rect data-type="rect" data-label="R11" data-x="2.0001366249999997" data-y="-1.4999796500000007" x="513.0877838384785" y="288.1135522555863" width="8.417560500304376" height="54.67339365718834" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+    <rect data-type="rect" data-label="R11" data-x="2" data-y="-1.7756250000000007" x="513.0648455333302" y="288.1135522555863" width="8.440498805452648" height="100.95216511922052" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
   </g>
   <g>
     <rect data-type="rect" data-label="NL_V3_30" data-x="-1.5799999999999998" data-y="-2.350625000000001" x="197.44998930060433" y="382.6614013397667" width="38.61526209771864" height="8.394622195156217" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
@@ -515,7 +551,22 @@ unnamedsubcircuit37_connectivity_net0" data-x="-1.6002733499999997" data-y="-4.8
   </g>
   <g>
     <rect data-type="rect" data-label="U3" data-x="-2.3002733499999994" data-y="-4.3396468000000015" x="93.33372738089668" y="507.65915585328156" width="125.91933292734342" height="92.34084414671844" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
-  </g><text data-type="text" data-label="Partition 0" data-x="-3.0502733499999994" data-y="-1.1743343000000006" x="93.33372738089668" y="288.1135522555863" fill="black" font-size="9.244577692415797" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Partition 0</text><text data-type="text" data-label="Partition 1" data-x="-3.0502733499999994" data-y="-3.7896468000000016" x="93.33372738089668" y="507.65915585328156" fill="black" font-size="4.617042207335925" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Partition 1</text>
+  </g>
+  <g>
+    <rect data-type="rect" data-label="NL_V3_31" data-x="-1.4202733499999998" data-y="-4.8396468000000015" x="210.85843811308382" y="591.6053778048438" width="38.61526209771864" height="8.394622195156217" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="NL_FLASH_SDO0" data-x="-1.1952733499999997" data-y="-4.439646800000001" x="210.85843811308382" y="558.0268890242189" width="76.39106197592167" height="8.394622195156217" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="NL_FLASH_SDI0" data-x="-1.1952733499999997" data-y="-4.239646800000001" x="210.85843811308382" y="541.2376446339065" width="76.39106197592167" height="8.394622195156103" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="NL_FLASH_SCK0" data-x="-1.1952733499999997" data-y="-4.039646800000002" x="210.85843811308382" y="524.448400243594" width="76.39106197592167" height="8.394622195156217" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="NL_FLASH_N_CS0" data-x="-1.1502733499999998" data-y="-3.8396468000000015" x="210.85843811308382" y="507.65915585328156" width="83.94622195156228" height="8.394622195156273" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.011912388392857146" />
+  </g><text data-type="text" data-label="Partition 0" data-x="-3.0502733499999994" data-y="-1.1743343000000004" x="93.33372738089668" y="288.1135522555863" fill="black" font-size="9.244577692415797" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Partition 0</text><text data-type="text" data-label="Partition 1" data-x="-3.0502733499999994" data-y="-3.7896468000000016" x="93.33372738089668" y="507.65915585328156" fill="black" font-size="4.617042207335925" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Partition 1</text>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="640" stroke="#666" stroke-width="0.5" />
     <line id="crosshair-v" x1="0" x2="640" stroke="#666" stroke-width="0.5" /><text id="coordinates" font-family="monospace" font-size="12" fill="#666"></text>
