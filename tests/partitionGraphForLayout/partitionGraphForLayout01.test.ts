@@ -30,7 +30,7 @@ import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
 
-test("tscircuitsch01", async () => {
+test("partitionGraphForLayout01", async () => {
   // export default () => (
   //   <board width="10mm" height="10mm" routingDisabled>
   //     <chip
