@@ -8,10 +8,13 @@ import {
   SchematicPartitionProcessor,
 } from "lib/index"
 import {
+  createGraphicsGrid,
   getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
   stackGraphicsVertically,
 } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus"
+import { debugLayout } from "tests/fixtures/debugLayout"
 
 test("tscircuitsch03", async () => {
   /* ── run the schematic JSX through tscircuit ── */
@@ -83,55 +86,50 @@ export default () => (
 )
   `)
 
-  /* ── generate SVG directly from the schematic ── */
+  // Use the same debugLayout-based output structure as tscircuitsch02.test.tsx
+
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
+  const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
 
-  const ogBpcGraph = convertCircuitJsonToBpc(circuitJson, {
-    useReadableIds: true,
-  })
-
-  const processor = new SchematicPartitionProcessor(ogBpcGraph, {
-    singletonKeys: ["vcc/2", "gnd/2"],
-    centerPinColors: ["netlabel_center", "component_center"],
-  })
-  while (!processor.solved && processor.iteration < 1000) {
-    processor.step()
-  }
-
-  expect(
-    getSvgFromGraphicsObject(
-      stackGraphicsVertically([
-        getGraphicsForBpcGraph(ogBpcGraph),
-        ...processor.getPartitions().map((g, gIdx) =>
-          getGraphicsForBpcGraph(g, {
-            title: `Partition ${gIdx}`,
-          }),
-        ),
-      ]),
-      {
-        backgroundColor: "white",
-      },
-    ),
-  ).toMatchSvgSnapshot(import.meta.path, "tscircuitsch03-partitions")
-
-  const laidOutBpcGraph = layoutSchematicGraph(ogBpcGraph, {
-    singletonKeys: ["vcc/2", "gnd/2"],
-    duplicatePinIfColor: ["netlabel_center", "component_center"],
-    corpus,
-  })
+  // Use the debugLayout utility from tests/fixtures/debugLayout.ts
+  const {
+    partitions,
+    partitionIterationGraphics,
+    partitionGraphics,
+    adaptedGraphGraphics,
+    laidOutGraph,
+    laidOutGraphGraphics,
+    matchedCorpusGraphs,
+    matchedCorpusGraphGraphics,
+  } = debugLayout(ogBpcGraph)
 
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
     "tscircuitsch03-input-circuit",
   )
+  const iterationChunks: GraphicsObject[][] = []
+  for (let i = 0; i < partitionIterationGraphics.length; i += 5) {
+    iterationChunks.push(partitionIterationGraphics.slice(i, i + 5))
+  }
+  expect(
+    getSvgFromGraphicsObject(createGraphicsGrid(iterationChunks), {
+      backgroundColor: "white",
+    }),
+  ).toMatchSvgSnapshot(
+    import.meta.path,
+    "tscircuitsch03-partition-iteration-graphics",
+  )
   expect(
     getSvgFromGraphicsObject(
       stackGraphicsVertically([
         getGraphicsForBpcGraph(ogBpcGraph),
-        getGraphicsForBpcGraph(laidOutBpcGraph, { title: "Laid out graph" }),
+        stackGraphicsHorizontally(partitionGraphics),
+        stackGraphicsHorizontally(matchedCorpusGraphGraphics),
+        stackGraphicsHorizontally(adaptedGraphGraphics),
         getGraphicsForBpcGraph(corpus["design018"]!, {
           title: "Matched corpus",
         }),
+        laidOutGraphGraphics,
       ]),
       {
         backgroundColor: "white",
