@@ -59,7 +59,10 @@ export default () => (
     getSvgFromGraphicsObject(
       stackGraphicsVertically([
         getGraphicsForBpcGraph(ogBpcGraph),
-        getGraphicsForBpcGraph(laidOutBpcGraph),
+        getGraphicsForBpcGraph(laidOutBpcGraph, { title: "Laid out graph" }),
+        getGraphicsForBpcGraph(corpus["design018"]!, {
+          title: "Matched corpus",
+        }),
       ]),
       {
         backgroundColor: "white",
