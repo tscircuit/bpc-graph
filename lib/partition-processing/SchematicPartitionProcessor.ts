@@ -141,7 +141,7 @@ export class SchematicPartitionProcessor {
         .filter((p) => p.boxId === box.boxId)
         .filter((p) => getPinDirection(this.initialGraph, box, p))
 
-      if (pins.length <= 2) {
+      if (pins.length < 4) {
         continue
       }
 
@@ -398,7 +398,6 @@ export class SchematicPartitionProcessor {
         fill: "none",
         stroke,
         // If you need to represent stroke width, consider adding a comment or handling it elsewhere
-        // strokeWidth: 0.06,
       })
     }
 
