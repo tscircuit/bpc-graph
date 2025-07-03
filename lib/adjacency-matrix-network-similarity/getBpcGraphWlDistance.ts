@@ -6,16 +6,16 @@ import { getWlDotProduct } from "./wlDotProduct"
 
 const WL_DEGREES = 2
 
-export const getBpcGraphWlDistance = (g1: BpcGraph, g2: BpcGraph) => {
-  const adjacencyMatrix1 = getAdjacencyMatrixFromFlatBpcGraph(
-    convertToFlatBpcGraph(g1 as MixedBpcGraph),
+export const getWlFeatureVecs = (g: BpcGraph) => {
+  const adjacencyMatrix = getAdjacencyMatrixFromFlatBpcGraph(
+    convertToFlatBpcGraph(g as MixedBpcGraph),
   ).matrix
-  const adjacencyMatrix2 = getAdjacencyMatrixFromFlatBpcGraph(
-    convertToFlatBpcGraph(g2 as MixedBpcGraph),
-  ).matrix
+  return wlFeatureVec(adjacencyMatrix, WL_DEGREES)
+}
 
-  const wlVec1 = wlFeatureVec(adjacencyMatrix1, WL_DEGREES)
-  const wlVec2 = wlFeatureVec(adjacencyMatrix2, WL_DEGREES)
+export const getBpcGraphWlDistance = (g1: BpcGraph, g2: BpcGraph) => {
+  const wlVec1 = getWlFeatureVecs(g1)
+  const wlVec2 = getWlFeatureVecs(g2)
 
   return WL_DEGREES + 1 - getWlDotProduct(wlVec1, wlVec2)
 }
