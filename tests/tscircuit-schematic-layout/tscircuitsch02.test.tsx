@@ -85,9 +85,6 @@ export default () => (
         stackGraphicsHorizontally(partitionGraphics),
         stackGraphicsHorizontally(matchedCorpusGraphGraphics),
         stackGraphicsHorizontally(adaptedGraphGraphics),
-        getGraphicsForBpcGraph(corpus["design018"]!, {
-          title: "Matched corpus",
-        }),
         laidOutGraphGraphics,
       ]),
       {

@@ -12,6 +12,7 @@ import {
   getSvgFromGraphicsObject,
   stackGraphicsHorizontally,
   stackGraphicsVertically,
+  type GraphicsObject,
 } from "graphics-debug"
 import corpus from "@tscircuit/schematic-corpus"
 import { debugLayout } from "tests/fixtures/debugLayout"
