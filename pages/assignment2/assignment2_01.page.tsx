@@ -8,7 +8,7 @@ const fixedGraph = corpus.design018
 
 export default () => {
   const [stepCount, setStepCount] = useState(0)
-  const [solver, setSolver] = useState<AssignmentSolver2 | null>(() => {
+  const [solver, _setSolver] = useState<AssignmentSolver2 | null>(() => {
     const solver = new AssignmentSolver2(floatingGraph!, fixedGraph!)
     return solver
   })
@@ -25,6 +25,27 @@ export default () => {
         Step
       </button>
       <InteractiveGraphics graphics={solver?.visualize()!} />
+      <table>
+        <thead>
+          <tr>
+            <th>Floating Box ID</th>
+            <th>Fixed Box ID</th>
+            <th>Distance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {solver?.lastDistanceEvaluation &&
+            Array.from(solver.lastDistanceEvaluation.distances.entries()).map(
+              ([fixedBoxId, distance]) => (
+                <tr key={fixedBoxId}>
+                  <td>{solver.lastDistanceEvaluation?.floatingBoxId}</td>
+                  <td>{fixedBoxId}</td>
+                  <td>{distance}</td>
+                </tr>
+              ),
+            )}
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -31,6 +31,12 @@ export class AssignmentSolver2 {
   rejectedFloatingBoxIds: Set<FloatingBoxId> = new Set()
   assignment: Map<FloatingBoxId, FixedBoxId> = new Map()
 
+  lastDistanceEvaluation: {
+    floatingBoxId: FloatingBoxId
+    currentDist: number
+    distances: Map<FixedBoxId, number>
+  } | null = null
+
   constructor(
     public floatingGraph: BpcGraph,
     public fixedGraph: BpcGraph,
@@ -95,6 +101,12 @@ export class AssignmentSolver2 {
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
+    this.lastDistanceEvaluation = {
+      floatingBoxId: nextFloatingBoxId,
+      currentDist,
+      distances: new Map(),
+    }
+
     let bestDist = currentDist
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
       const wipGraphWithAddedFixedBoxId =
@@ -103,6 +115,7 @@ export class AssignmentSolver2 {
         this.floatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
+      this.lastDistanceEvaluation.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
         bestDist = dist
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
@@ -139,18 +152,55 @@ export class AssignmentSolver2 {
       title: "Fixed",
     })
 
-    // Anywhere in the floatingGraphics where the rect.label matches an assignment,
-    // change the fill to correspond with the assignment and the text to
-    // show the assignment, same with the wipGraphics and fixedGraphics but
-    // be mindful that the labels represents the fixed box id, not the floating
-    // box id
-    for (const rect of floatingGraphics.rects) {
-      // const color = getColorByIndex(
-      //   hashStringToNumber(rect.label!) % 100,
-      //   100,
-      //   0.5
-      // )
-      // rect.fill = color
+    // ------------------------------------------------------------------
+    // 1.  Build colour table – one colour per (floating → fixed) mapping
+    // ------------------------------------------------------------------
+    const colorByFloatingId = new Map<FloatingBoxId, string>()
+    const fixedToFloating = new Map<FixedBoxId, FloatingBoxId>()
+    for (const [floatId, fixedId] of this.assignment) {
+      const colour = getColorByIndex(
+        hashStringToNumber(floatId) % 100,
+        100,
+        0.5,
+      )
+      colorByFloatingId.set(floatId, colour)
+      fixedToFloating.set(fixedId, floatId)
+    }
+
+    // ------------------------------------------------------------------
+    // 2.  Helper that paints & relabels a rect when we know the mapping
+    // ------------------------------------------------------------------
+    function decorateRect(
+      rect: { label?: string; fill?: string },
+      floatId: string,
+      fixedId: string,
+    ) {
+      const colour = colorByFloatingId.get(floatId)!
+      rect.fill = colour
+      rect.label = `${floatId}→${fixedId}`
+    }
+
+    // ------------------------------------------------------------------
+    // 3.  Update floating-graph rects (labels are floating ids)
+    // ------------------------------------------------------------------
+    for (const rect of floatingGraphics.rects ?? []) {
+      const floatId = rect.label
+      if (!floatId) continue
+      const fixedId = this.assignment.get(floatId)
+      if (fixedId) decorateRect(rect, floatId, fixedId)
+    }
+
+    // ------------------------------------------------------------------
+    // 4.  Update wip & fixed-graph rects (labels are fixed ids)
+    // ------------------------------------------------------------------
+    const targetGraphics = [wipGraphics, fixedGraphics]
+    for (const g of targetGraphics) {
+      for (const rect of g.rects ?? []) {
+        const fixedId = rect.label
+        if (!fixedId) continue
+        const floatId = fixedToFloating.get(fixedId)
+        if (floatId) decorateRect(rect, floatId, fixedId)
+      }
     }
 
     const graphics = stackGraphicsHorizontally([
