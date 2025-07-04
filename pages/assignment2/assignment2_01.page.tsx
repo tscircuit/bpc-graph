@@ -14,10 +14,12 @@ const fixedGraph = corpus.design018
 
 const WlVecDialog = ({
   wlVec,
+  fixedBoxId,
   targetFloatingVec,
   wipGraphWithAddedFixedBoxId,
   onClose,
 }: {
+  fixedBoxId?: string | null
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
   wipGraphWithAddedFixedBoxId: BpcGraph | null
@@ -37,6 +39,21 @@ const WlVecDialog = ({
     }
   }
 
+  const graphics = useMemo(() => {
+    if (!wipGraphWithAddedFixedBoxId) return null
+    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+
+    // Highlight the added fixed box
+    if (fixedBoxId) {
+      const rect = graphics.rects?.find((r) => r.label === fixedBoxId)
+      if (rect) {
+        rect.fill = `rgba(255, 0, 0, 0.5)`
+      }
+    }
+
+    return graphics
+  }, [wipGraphWithAddedFixedBoxId])
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-4 rounded-lg max-h-[80vh] overflow-auto">
@@ -46,11 +63,7 @@ const WlVecDialog = ({
         >
           Close
         </button>
-        {wipGraphWithAddedFixedBoxId && (
-          <InteractiveGraphics
-            graphics={getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId)}
-          />
-        )}
+        {graphics && <InteractiveGraphics graphics={graphics} />}
         <table className="border-collapse mb-4">
           <thead>
             <tr>
@@ -199,6 +212,7 @@ export default () => {
       </table>
       <WlVecDialog
         wlVec={openVec}
+        fixedBoxId={openVecFixedBoxId}
         targetFloatingVec={targetFloatingVec}
         wipGraphWithAddedFixedBoxId={
           solver?.lastDistanceEvaluation?.wipGraphsWithAddedFixedBoxId.get(
