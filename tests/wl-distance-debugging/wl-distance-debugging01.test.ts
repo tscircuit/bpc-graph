@@ -14,6 +14,7 @@ import {
   stackGraphicsVertically,
   createGraphicsGrid,
   type GraphicsObject,
+  type Text,
 } from "graphics-debug"
 
 test("wl-distance-debugging01 - investigate design001, design018, design020", () => {
@@ -35,8 +36,8 @@ test("wl-distance-debugging01 - investigate design001, design018, design020", ()
   // Log distances between all pairs
   for (let i = 0; i < designs.length; i++) {
     for (let j = i + 1; j < designs.length; j++) {
-      const d1 = designs[i]
-      const d2 = designs[j]
+      const d1 = designs[i]!
+      const d2 = designs[j]!
       const distance = getBpcGraphWlDistance(d1.graph, d2.graph)
       console.log(`${d1.name} <-> ${d2.name}: ${distance.toFixed(6)}`)
     }
@@ -81,58 +82,14 @@ test("wl-distance-debugging01 - investigate design001, design018, design020", ()
     flatGraphicsRow.push(graphics)
   }
 
-  const wlFeatureVecs = designs.map((d) => [d.name, getWlFeatureVecs(d.graph)])
-
-  /* ------------------------------------------------------------ */
-  /* Create distance matrix grid between all pairs               */
-  /* ------------------------------------------------------------ */
-  const distanceMatrixRows: GraphicsObject[][] = []
-
-  for (let i = 0; i < designs.length; i++) {
-    const row: GraphicsObject[] = []
-    for (let j = 0; j < designs.length; j++) {
-      const d1 = designs[i]
-      const d2 = designs[j]
-      const distance = getBpcGraphWlDistance(d1.graph, d2.graph)
-
-      // Create a simple text graphics object for the distance
-      const distanceGraphics: GraphicsObject = {
-        type: "text",
-        x: 0,
-        y: 0,
-        text: `${d1.name}\n↔\n${d2.name}\n\nWL: ${distance.toFixed(4)}`,
-        fontSize: 12,
-        color: distance === 0 ? "red" : "black",
-        backgroundColor: distance === 0 ? "#ffeeee" : "#f0f0f0",
-        padding: 10,
-        bounds: { minX: -50, maxX: 50, minY: -30, maxY: 30 },
-      }
-      row.push(distanceGraphics)
-    }
-    distanceMatrixRows.push(row)
-  }
-
   /* ------------------------------------------------------------ */
   /* Stack all graphics sections vertically                      */
   /* ------------------------------------------------------------ */
-  const originalGrid = stackGraphicsHorizontally(originalGraphicsRow, {
-    gapAsCellWidthFraction: 0.1,
-  })
+  const originalGrid = stackGraphicsHorizontally(originalGraphicsRow, {})
 
-  const flatGrid = stackGraphicsHorizontally(flatGraphicsRow, {
-    gapAsCellWidthFraction: 0.1,
-  })
+  const flatGrid = stackGraphicsHorizontally(flatGraphicsRow, {})
 
-  const distanceGrid = createGraphicsGrid(distanceMatrixRows, {
-    gapAsCellWidthFraction: 0.1,
-  })
-
-  const allGraphics = stackGraphicsVertically(
-    [originalGrid, flatGrid, distanceGrid],
-    {
-      gapAsCellHeightFraction: 0.2,
-    },
-  )
+  const allGraphics = stackGraphicsVertically([originalGrid, flatGrid], {})
 
   /* ------------------------------------------------------------ */
   /* Generate SVG snapshot                                        */
