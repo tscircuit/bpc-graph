@@ -134,15 +134,15 @@ export default () => {
         Step
       </button>
       <InteractiveGraphics graphics={solver?.visualize()!} />
-      <table>
+      <table className="border-collapse">
         <thead>
           <tr>
-            <th>Floating Box ID</th>
-            <th>Fixed Box ID</th>
-            <th>
+            <th className="px-2 py-1 border">Floating Box ID</th>
+            <th className="px-2 py-1 border">Fixed Box ID</th>
+            <th className="px-2 py-1 border">
               Distance (base={solver?.lastDistanceEvaluation?.currentDist})
             </th>
-            <th>
+            <th className="px-2 py-1 border">
               WL Vec{" "}
               <span
                 onClick={() => {
@@ -174,11 +174,13 @@ export default () => {
             Array.from(solver.lastDistanceEvaluation.distances.entries()).map(
               ([fixedBoxId, distance]) => (
                 <tr key={fixedBoxId}>
-                  <td>{solver.lastDistanceEvaluation?.floatingBoxId}</td>
-                  <td>{fixedBoxId}</td>
-                  <td>{distance}</td>
+                  <td className="px-2 py-1 border">
+                    {solver.lastDistanceEvaluation?.floatingBoxId}
+                  </td>
+                  <td className="px-2 py-1 border">{fixedBoxId}</td>
+                  <td className="px-2 py-1 border">{distance}</td>
                   <td
-                    className="text-blue-500 cursor-pointer"
+                    className="px-2 py-1 border text-blue-500 cursor-pointer"
                     onClick={() => {
                       const vec =
                         solver?.lastDistanceEvaluation?.wlVecs.get(
