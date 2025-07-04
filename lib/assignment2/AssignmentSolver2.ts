@@ -144,7 +144,10 @@ export class AssignmentSolver2 {
   evaluateFloatingBoxAssignment(nextFloatingBoxId: FloatingBoxId) {
     const partialFloatingGraph = this.getPartialFloatingGraph(nextFloatingBoxId)
 
-    const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
+    const currentDist = getBpcGraphWlDistance(
+      partialFloatingGraph,
+      this.wipGraph,
+    )
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
@@ -158,7 +161,7 @@ export class AssignmentSolver2 {
       wipGraphsWithAddedFixedBoxId: new Map(),
     }
 
-    let bestDist = Infinity // currentDist
+    let bestDist = currentDist
     // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
     const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
