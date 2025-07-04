@@ -29,5 +29,8 @@ export const getBpcGraphWlDistance = (
   const wlVec1 = getWlFeatureVecs(g1, wlDegrees)
   const wlVec2 = getWlFeatureVecs(g2, wlDegrees)
 
-  return DEFAULT_WL_DEGREES + 1 - getWlDotProduct(wlVec1, wlVec2)
+  return (
+    (DEFAULT_WL_DEGREES + 1 - getWlDotProduct(wlVec1, wlVec2)) /
+    (DEFAULT_WL_DEGREES + 1)
+  )
 }

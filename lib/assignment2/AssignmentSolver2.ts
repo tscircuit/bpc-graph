@@ -203,13 +203,8 @@ export class AssignmentSolver2 {
       wipGraphsWithAddedFixedBoxIdWithReassignedNetworks: new Map(),
     }
 
-    const partialFloatingBagOfAnglesMap =
-      computeGraphNetworkBagOfAnglesMap(partialFloatingGraph)
-    const floatingBagOfAnglesMap = computeGraphNetworkBagOfAnglesMap(
-      this.floatingGraph,
-    )
-
     let bestDist = currentWlDist
+    let bestWlDist = currentWlDist
     let bestTotalNetworkLength = Infinity
     // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
     const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
@@ -220,17 +215,15 @@ export class AssignmentSolver2 {
           fixedBoxId,
           nextFloatingBoxId,
         )
-      const dist = getBpcGraphWlDistance(
+      const wlDist = getBpcGraphWlDistance(
         partialFloatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
 
-      const reassignedGraph = reassignGraphNetworksUsingBagOfAngles(
-        wipGraphWithAddedFixedBoxId,
-        floatingBagOfAnglesMap,
-      ).reassignedGraph as FixedBpcGraph
-      const { totalNetworkLength } = getTotalNetworkLength(reassignedGraph)
+      const { totalNetworkLength } = getTotalNetworkLength(
+        wipGraphWithAddedFixedBoxId as FixedBpcGraph,
+      )
 
       // const dist = getWlDotProduct(floatingBoxWlVec, debug_wlVec)
 
@@ -242,15 +235,15 @@ export class AssignmentSolver2 {
       )
 
       dEval!.wlVecs.set(fixedBoxId, debug_wlVec)
-      dEval!.wlDistances.set(fixedBoxId, dist)
+      dEval!.wlDistances.set(fixedBoxId, wlDist)
       dEval!.networkLengths.set(fixedBoxId, totalNetworkLength)
-      dEval!.wipGraphsWithAddedFixedBoxIdWithReassignedNetworks.set(
-        fixedBoxId,
-        reassignedGraph,
-      )
+
+      // TODO figure out how to normalize the network length [0,1]
+      const dist = wlDist + totalNetworkLength / 100
 
       if (dist < bestDist) {
         bestDist = dist
+        bestWlDist = wlDist
         bestTotalNetworkLength = totalNetworkLength
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
         bestFixedBoxId = fixedBoxId
@@ -261,6 +254,7 @@ export class AssignmentSolver2 {
       bestFixedBoxId,
       bestNewWipGraph,
       bestDist,
+      bestWlDist,
       bestTotalNetworkLength,
       lastDistanceEvaluation: dEval,
       nextFloatingBoxId,
