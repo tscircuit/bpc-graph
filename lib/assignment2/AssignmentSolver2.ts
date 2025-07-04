@@ -29,6 +29,7 @@ export class AssignmentSolver2 {
 
   acceptedFloatingBoxIds: Set<FloatingBoxId> = new Set()
   rejectedFloatingBoxIds: Set<FloatingBoxId> = new Set()
+  acceptedFixedBoxIds: Set<FixedBoxId> = new Set()
   assignment: Map<FloatingBoxId, FixedBoxId> = new Map()
 
   lastDistanceEvaluation: {
@@ -109,6 +110,7 @@ export class AssignmentSolver2 {
 
     let bestDist = currentDist
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
+      if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
       const wipGraphWithAddedFixedBoxId =
         this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
       const dist = getBpcGraphWlDistance(
@@ -130,6 +132,7 @@ export class AssignmentSolver2 {
 
     this.acceptedFloatingBoxIds.add(nextFloatingBoxId!)
     this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
+    this.acceptedFixedBoxIds.add(bestFixedBoxId)
     this.wipGraph = bestNewWipGraph!
   }
 
@@ -159,7 +162,7 @@ export class AssignmentSolver2 {
     const fixedToFloating = new Map<FixedBoxId, FloatingBoxId>()
     for (const [floatId, fixedId] of this.assignment) {
       const colour = getColorByIndex(
-        hashStringToNumber(floatId) % 100,
+        (hashStringToNumber(floatId) * 47) % 100,
         100,
         0.5,
       )
