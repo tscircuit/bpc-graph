@@ -7,10 +7,15 @@ import { getWlDotProduct } from "./wlDotProduct"
 const WL_DEGREES = 2
 
 export const getWlFeatureVecs = (g: BpcGraph) => {
-  const adjacencyMatrix = getAdjacencyMatrixFromFlatBpcGraph(
-    convertToFlatBpcGraph(g as MixedBpcGraph),
-  ).matrix
-  return wlFeatureVec(adjacencyMatrix, WL_DEGREES)
+  const flatBpc = convertToFlatBpcGraph(g as MixedBpcGraph)
+
+  const { matrix, indexMapping } = getAdjacencyMatrixFromFlatBpcGraph(flatBpc)
+
+  return wlFeatureVec(matrix, WL_DEGREES, {
+    nodeInitialColors: indexMapping.map(
+      (id) => flatBpc.nodes.find((n) => n.id === id)?.color ?? "_",
+    ),
+  })
 }
 
 export const getBpcGraphWlDistance = (g1: BpcGraph, g2: BpcGraph) => {

@@ -82,7 +82,6 @@ test("wl-distance-debugging01 - investigate design001, design018, design020", ()
   }
 
   const wlFeatureVecs = designs.map((d) => [d.name, getWlFeatureVecs(d.graph)])
-  console.log("wlFeatureVecs", wlFeatureVecs)
 
   /* ------------------------------------------------------------ */
   /* Create distance matrix grid between all pairs               */
