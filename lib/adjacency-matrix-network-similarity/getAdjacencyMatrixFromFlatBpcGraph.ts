@@ -2,10 +2,16 @@ import type { FlatBpcGraph } from "lib/types"
 
 export const getAdjacencyMatrixFromFlatBpcGraph = (
   flatBpcGraph: FlatBpcGraph,
-): { matrix: number[][]; mapping: Map<string, number> } => {
+): {
+  matrix: number[][]
+  mapping: Map<string, number>
+  indexMapping: string[]
+} => {
   const nodeIdToIndex = new Map<string, number>()
+  const indexMapping: string[] = []
   flatBpcGraph.nodes.forEach((node, idx) => {
     nodeIdToIndex.set(node.id, idx)
+    indexMapping.push(node.id)
   })
   const N = flatBpcGraph.nodes.length
   const matrix: number[][] = Array.from({ length: N }, () =>
@@ -23,5 +29,5 @@ export const getAdjacencyMatrixFromFlatBpcGraph = (
   for (let i = 0; i < N; ++i) {
     matrix[i]![i] = 1
   }
-  return { matrix, mapping: nodeIdToIndex }
+  return { matrix, mapping: nodeIdToIndex, indexMapping }
 }
