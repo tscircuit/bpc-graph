@@ -1,4 +1,8 @@
-import { stackGraphicsHorizontally, type GraphicsObject } from "graphics-debug"
+import {
+  stackGraphicsHorizontally,
+  stackGraphicsVertically,
+  type GraphicsObject,
+} from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import type { BpcFixedBox, BpcGraph } from "lib/types"
 import {
@@ -7,6 +11,9 @@ import {
 } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { hashStringToNumber } from "lib/graph-utils/hashStringToNumber"
+import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
+import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
+import { convertFlatBpcToGraphics } from "lib/debug/convertFlatBpcToGraphics"
 
 type FloatingBoxId = string
 type FixedBoxId = string
@@ -115,7 +122,8 @@ export class AssignmentSolver2 {
       wlVecs: new Map(),
     }
 
-    let bestDist = currentDist
+    let bestDist = Infinity // currentDist
+    const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
       if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
       const wipGraphWithAddedFixedBoxId =
@@ -125,6 +133,11 @@ export class AssignmentSolver2 {
         wipGraphWithAddedFixedBoxId,
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
+
+      // const dist = getWlDotProduct(floatingBoxWlVec, debug_wlVec)
+
+      // console.log(dist, dist2)
+
       this.lastDistanceEvaluation.wlVecs.set(fixedBoxId, debug_wlVec)
       this.lastDistanceEvaluation.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
@@ -133,6 +146,11 @@ export class AssignmentSolver2 {
         bestFixedBoxId = fixedBoxId
       }
     }
+
+    console.log({
+      currentDist,
+      bestDist,
+    })
 
     if (bestFixedBoxId === null) {
       this.rejectedFloatingBoxIds.add(nextFloatingBoxId!)
@@ -215,10 +233,24 @@ export class AssignmentSolver2 {
       }
     }
 
+    const floatingFlatG = convertToFlatBpcGraph(this.floatingGraph)
+    const wipFlatG = convertToFlatBpcGraph(this.wipGraph)
+    const fixedFlatG = convertToFlatBpcGraph(this.fixedGraph)
+
+    const floatingFlatGraphics = convertFlatBpcToGraphics(floatingFlatG, {
+      title: "Floating Flat",
+    })
+    const wipFlatGraphics = convertFlatBpcToGraphics(wipFlatG, {
+      title: "WIP Flat",
+    })
+    const fixedFlatGraphics = convertFlatBpcToGraphics(fixedFlatG, {
+      title: "Fixed Flat",
+    })
+
     const graphics = stackGraphicsHorizontally([
-      floatingGraphics,
-      wipGraphics,
-      fixedGraphics,
+      stackGraphicsVertically([floatingGraphics, floatingFlatGraphics]),
+      stackGraphicsVertically([wipGraphics, wipFlatGraphics]),
+      stackGraphicsVertically([fixedGraphics, fixedFlatGraphics]),
     ])
 
     return graphics

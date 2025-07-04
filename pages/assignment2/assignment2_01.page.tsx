@@ -19,14 +19,15 @@ const WlVecDialog = ({
 }) => {
   if (!wlVec) return null
 
-  const degreeDists: Array<{ degree: number; dist: number }> = []
+  const degreeDists: Array<{ degree: number; dotProd: number; dist: number }> =
+    []
   if (targetFloatingVec) {
     for (let i = 0; i < 3; i++) {
-      const dist = getWlDotProduct(
+      const dotProd = getWlDotProduct(
         wlVec.slice(0, i + 1),
         targetFloatingVec.slice(0, i + 1),
       )
-      degreeDists.push({ degree: i, dist })
+      degreeDists.push({ degree: i, dotProd, dist: i + 1 - dotProd })
     }
   }
 
@@ -43,13 +44,15 @@ const WlVecDialog = ({
           <thead>
             <tr>
               <th className="px-2 py-1 border">Degree</th>
-              <th className="px-2 py-1 border">Distance</th>
+              <th className="px-2 py-1 border">Dot Product Result</th>
+              <th className="px-2 py-1 border">WL Distance</th>
             </tr>
           </thead>
           <tbody>
-            {degreeDists.map(({ degree, dist }) => (
+            {degreeDists.map(({ degree, dotProd, dist }) => (
               <tr key={degree}>
                 <td className="px-2 py-1 border">{degree}</td>
+                <td className="px-2 py-1 border">{dotProd.toFixed(4)}</td>
                 <td className="px-2 py-1 border">{dist.toFixed(4)}</td>
               </tr>
             ))}
