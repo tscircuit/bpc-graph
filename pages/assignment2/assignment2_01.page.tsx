@@ -157,7 +157,7 @@ export default () => {
             <th className="px-2 py-1 border">Floating Box ID</th>
             <th className="px-2 py-1 border">Fixed Box ID</th>
             <th className="px-2 py-1 border">
-              Distance (base={solver?.lastAcceptedEvaluation?.currentDist})
+              WL Distance (base={solver?.lastAcceptedEvaluation?.currentWlDist})
             </th>
             <th className="px-2 py-1 border">
               WL Vec{" "}
@@ -188,7 +188,7 @@ export default () => {
         </thead>
         <tbody>
           {solver?.lastAcceptedEvaluation &&
-            Array.from(solver.lastAcceptedEvaluation.distances.entries()).map(
+            Array.from(solver.lastAcceptedEvaluation.wlDistances.entries()).map(
               ([fixedBoxId, distance]) => (
                 <tr key={fixedBoxId}>
                   <td className="px-2 py-1 border">
@@ -220,7 +220,7 @@ export default () => {
         <thead>
           <tr>
             <th className="px-2 py-1 border">Floating Box ID</th>
-            <th className="px-2 py-1 border">Best Distance</th>
+            <th className="px-2 py-1 border">Best WL Distance</th>
           </tr>
         </thead>
         <tbody>

@@ -56,6 +56,7 @@ export type Axis = "x" | "y"
 
 export type BoxId = string
 export type PinId = string
+export type NetworkId = string
 
 /**
  * A flat BPC graph is a non-hierarchical and looks a lot like a regular graph.
