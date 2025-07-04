@@ -103,6 +103,16 @@ export class AssignmentSolver2 {
     return bestFloatingBoxId
   }
 
+  getRemainingFloatingBoxIds() {
+    return this.floatingGraph.boxes
+      .map((b) => b.boxId)
+      .filter(
+        (b) =>
+          !this.acceptedFloatingBoxIds.has(b) &&
+          !this.rejectedFloatingBoxIds.has(b),
+      )
+  }
+
   /**
    * The floating graph, but with only the boxes that have been accepted so far
    */
@@ -127,27 +137,14 @@ export class AssignmentSolver2 {
     return g
   }
 
-  step() {
-    if (this.solved) return
-    if (this.iterations > 1000) {
-      throw new Error("Too many iterations")
-    }
-    this.iterations++
-
-    const nextFloatingBoxId = this.getNextFloatingBoxId()
-
-    if (!nextFloatingBoxId) {
-      this.solved = true
-      return
-    }
-
+  evaluateFloatingBoxAssignment(nextFloatingBoxId: FloatingBoxId) {
     const partialFloatingGraph = this.getPartialFloatingGraph(nextFloatingBoxId)
 
     const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
-    this.lastDistanceEvaluation = {
+    const lastDistanceEvaluation: typeof this.lastDistanceEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
       partialFloatingGraph,
@@ -174,13 +171,13 @@ export class AssignmentSolver2 {
 
       // console.log(dist, dist2)
 
-      this.lastDistanceEvaluation!.wipGraphsWithAddedFixedBoxId.set(
+      lastDistanceEvaluation.wipGraphsWithAddedFixedBoxId.set(
         fixedBoxId,
         wipGraphWithAddedFixedBoxId,
       )
 
-      this.lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
-      this.lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
+      lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
+      lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
         bestDist = dist
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
@@ -188,11 +185,59 @@ export class AssignmentSolver2 {
       }
     }
 
-    console.log({
-      currentDist,
+    return {
+      bestFixedBoxId,
+      bestNewWipGraph,
       bestDist,
-    })
+      lastDistanceEvaluation,
+      nextFloatingBoxId,
+      partialFloatingGraph,
+      floatingBoxWlVec,
+    }
+  }
 
+  step() {
+    if (this.solved) return
+    if (this.iterations > 1000) {
+      throw new Error("Too many iterations")
+    }
+    this.iterations++
+
+    if (this.iterations === 1) {
+      const nextFloatingBoxId = this.getNextFloatingBoxId()
+      const evalResult = this.evaluateFloatingBoxAssignment(nextFloatingBoxId!)
+      this.acceptEvaluationResult(evalResult)
+      return
+    }
+
+    const remainingFloatingBoxIds = this.getRemainingFloatingBoxIds()
+
+    if (remainingFloatingBoxIds.length === 0) {
+      this.solved = true
+      return
+    }
+
+    let bestEvalDist = Infinity
+    let bestEvalResult: ReturnType<
+      AssignmentSolver2["evaluateFloatingBoxAssignment"]
+    > | null = null
+    for (const floatingBoxId of remainingFloatingBoxIds) {
+      const evalResult = this.evaluateFloatingBoxAssignment(floatingBoxId)
+      if (evalResult.bestDist < bestEvalDist) {
+        bestEvalDist = evalResult.bestDist
+        bestEvalResult = evalResult
+      }
+    }
+
+    if (bestEvalResult) {
+      this.acceptEvaluationResult(bestEvalResult)
+    }
+  }
+
+  acceptEvaluationResult(
+    evalResult: ReturnType<AssignmentSolver2["evaluateFloatingBoxAssignment"]>,
+  ) {
+    const { bestFixedBoxId, bestNewWipGraph, nextFloatingBoxId } = evalResult
     if (bestFixedBoxId === null) {
       this.rejectedFloatingBoxIds.add(nextFloatingBoxId!)
       return
@@ -202,6 +247,7 @@ export class AssignmentSolver2 {
     this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
     this.acceptedFixedBoxIds.add(bestFixedBoxId)
     this.wipGraph = bestNewWipGraph!
+    this.lastDistanceEvaluation = evalResult.lastDistanceEvaluation
   }
 
   getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {
