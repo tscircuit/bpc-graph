@@ -210,6 +210,26 @@ export default () => {
             )}
         </tbody>
       </table>
+      {/* ── Last-computed evaluations ─────────────────────────────────── */}
+      <table className="border-collapse mt-4">
+        <thead>
+          <tr>
+            <th className="px-2 py-1 border">Floating Box ID</th>
+            <th className="px-2 py-1 border">Best Distance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {solver?.lastComputedEvaluations
+            ?.slice()                               // copy so we can sort
+            .sort((a, b) => a.bestDist - b.bestDist) // ascending distance
+            .map((ev) => (
+              <tr key={ev.nextFloatingBoxId}>
+                <td className="px-2 py-1 border">{ev.nextFloatingBoxId}</td>
+                <td className="px-2 py-1 border">{ev.bestDist}</td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
       <WlVecDialog
         wlVec={openVec}
         fixedBoxId={openVecFixedBoxId}
