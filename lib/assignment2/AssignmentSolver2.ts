@@ -47,7 +47,7 @@ export class AssignmentSolver2 {
   acceptedFixedBoxIds: Set<FixedBoxId> = new Set()
   assignment: Map<FloatingBoxId, FixedBoxId> = new Map()
 
-  lastDistanceEvaluation: {
+  lastAcceptedEvaluation: {
     floatingBoxId: FloatingBoxId
     originalWipGraph: BpcGraph
     partialFloatingGraph: BpcGraph
@@ -56,6 +56,10 @@ export class AssignmentSolver2 {
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
     wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
   } | null = null
+
+  lastComputedEvaluations: Array<
+    ReturnType<AssignmentSolver2["evaluateFloatingBoxAssignment"]>
+  > = []
 
   constructor(
     public floatingGraph: BpcGraph,
@@ -144,7 +148,7 @@ export class AssignmentSolver2 {
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
-    const lastDistanceEvaluation: typeof this.lastDistanceEvaluation = {
+    const lastDistanceEvaluation: typeof this.lastAcceptedEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
       partialFloatingGraph,
@@ -221,8 +225,10 @@ export class AssignmentSolver2 {
     let bestEvalResult: ReturnType<
       AssignmentSolver2["evaluateFloatingBoxAssignment"]
     > | null = null
+    this.lastComputedEvaluations = []
     for (const floatingBoxId of remainingFloatingBoxIds) {
       const evalResult = this.evaluateFloatingBoxAssignment(floatingBoxId)
+      this.lastComputedEvaluations.push(evalResult)
       if (evalResult.bestDist < bestEvalDist) {
         bestEvalDist = evalResult.bestDist
         bestEvalResult = evalResult
@@ -247,7 +253,7 @@ export class AssignmentSolver2 {
     this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
     this.acceptedFixedBoxIds.add(bestFixedBoxId)
     this.wipGraph = bestNewWipGraph!
-    this.lastDistanceEvaluation = evalResult.lastDistanceEvaluation
+    this.lastAcceptedEvaluation = evalResult.lastDistanceEvaluation
   }
 
   getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {

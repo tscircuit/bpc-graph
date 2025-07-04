@@ -153,7 +153,7 @@ export default () => {
             <th className="px-2 py-1 border">Floating Box ID</th>
             <th className="px-2 py-1 border">Fixed Box ID</th>
             <th className="px-2 py-1 border">
-              Distance (base={solver?.lastDistanceEvaluation?.currentDist})
+              Distance (base={solver?.lastAcceptedEvaluation?.currentDist})
             </th>
             <th className="px-2 py-1 border">
               WL Vec{" "}
@@ -161,7 +161,7 @@ export default () => {
                 onClick={() => {
                   if (!solver) return
                   const vec = getWlFeatureVecs(
-                    solver.lastDistanceEvaluation!.originalWipGraph!,
+                    solver.lastAcceptedEvaluation!.originalWipGraph!,
                   )
                   setOpenVec(vec)
                 }}
@@ -183,12 +183,12 @@ export default () => {
           </tr>
         </thead>
         <tbody>
-          {solver?.lastDistanceEvaluation &&
-            Array.from(solver.lastDistanceEvaluation.distances.entries()).map(
+          {solver?.lastAcceptedEvaluation &&
+            Array.from(solver.lastAcceptedEvaluation.distances.entries()).map(
               ([fixedBoxId, distance]) => (
                 <tr key={fixedBoxId}>
                   <td className="px-2 py-1 border">
-                    {solver.lastDistanceEvaluation?.floatingBoxId}
+                    {solver.lastAcceptedEvaluation?.floatingBoxId}
                   </td>
                   <td className="px-2 py-1 border">{fixedBoxId}</td>
                   <td className="px-2 py-1 border">{distance}</td>
@@ -196,7 +196,7 @@ export default () => {
                     className="px-2 py-1 border text-blue-500 cursor-pointer"
                     onClick={() => {
                       const vec =
-                        solver?.lastDistanceEvaluation?.wlVecs.get(
+                        solver?.lastAcceptedEvaluation?.wlVecs.get(
                           fixedBoxId,
                         ) ?? null
                       setOpenVecFixedBoxId(fixedBoxId)
@@ -215,7 +215,7 @@ export default () => {
         fixedBoxId={openVecFixedBoxId}
         targetFloatingVec={targetFloatingVec}
         wipGraphWithAddedFixedBoxId={
-          solver?.lastDistanceEvaluation?.wipGraphsWithAddedFixedBoxId.get(
+          solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxId.get(
             openVecFixedBoxId!,
           ) ?? null
         }
