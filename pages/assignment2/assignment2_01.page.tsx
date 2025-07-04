@@ -48,11 +48,15 @@ export const WlVecDialog = ({
   const graphics = useMemo(() => {
     if (!wipGraphWithAddedFixedBoxId) return null
     const leftGraphics = floatingPartialGraph
-      ? getGraphicsForBpcGraph(floatingPartialGraph!)
+      ? getGraphicsForBpcGraph(floatingPartialGraph!, {
+          title: "Floating Partial",
+        })
       : {
           rects: [],
         }
-    const rightGraphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+    const rightGraphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!, {
+      title: "WIP Graph with fixed box assignment",
+    })
 
     // Highlight the added fixed box
     if (fixedBoxId) {
