@@ -7,7 +7,9 @@ import {
   getGraphicsForBpcGraph,
   getWlDotProduct,
   type BpcGraph,
+  type FloatingBpcGraph,
 } from "lib/index"
+import { stackGraphicsHorizontally } from "graphics-debug"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
@@ -15,16 +17,18 @@ const fixedGraph = corpus.design018
 export const WlVecDialog = ({
   wlVec,
   fixedBoxId,
+  floatingBoxId,
   targetFloatingVec,
   wipGraphWithAddedFixedBoxId,
-  reassignedGraph,
+  floatingPartialGraph,
   onClose,
 }: {
   fixedBoxId?: string | null
+  floatingBoxId?: string | null
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
   wipGraphWithAddedFixedBoxId: BpcGraph | null
-  reassignedGraph: BpcGraph | null
+  floatingPartialGraph?: FloatingBpcGraph | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
@@ -43,17 +47,28 @@ export const WlVecDialog = ({
 
   const graphics = useMemo(() => {
     if (!wipGraphWithAddedFixedBoxId) return null
-    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+    const leftGraphics = floatingPartialGraph
+      ? getGraphicsForBpcGraph(floatingPartialGraph!)
+      : {
+          rects: [],
+        }
+    const rightGraphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
 
     // Highlight the added fixed box
     if (fixedBoxId) {
-      const rect = graphics.rects?.find((r) => r.label === fixedBoxId)
-      if (rect) {
-        rect.fill = `rgba(255, 0, 0, 0.5)`
+      const leftRect = leftGraphics.rects?.find(
+        (r) => r.label === floatingBoxId,
+      )
+      if (leftRect) {
+        leftRect.fill = `rgba(255, 0, 0, 0.5)`
+      }
+      const rightRect = rightGraphics.rects?.find((r) => r.label === fixedBoxId)
+      if (rightRect) {
+        rightRect.fill = `rgba(255, 0, 0, 0.5)`
       }
     }
 
-    return graphics
+    return stackGraphicsHorizontally([leftGraphics, rightGraphics])
   }, [wipGraphWithAddedFixedBoxId])
 
   return (
@@ -250,14 +265,11 @@ export default () => {
       <WlVecDialog
         wlVec={openVec}
         fixedBoxId={openVecFixedBoxId}
+        floatingBoxId={solver?.lastAcceptedEvaluation?.floatingBoxId}
         targetFloatingVec={targetFloatingVec}
+        floatingPartialGraph={solver?.getPartialFloatingGraph()}
         wipGraphWithAddedFixedBoxId={
           solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxId.get(
-            openVecFixedBoxId!,
-          ) ?? null
-        }
-        reassignedGraph={
-          solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxIdWithReassignedNetworks.get(
             openVecFixedBoxId!,
           ) ?? null
         }

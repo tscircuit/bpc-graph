@@ -23,7 +23,6 @@ import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { convertFlatBpcToGraphics } from "lib/debug/convertFlatBpcToGraphics"
 import { getTotalNetworkLength } from "lib/graph-utils/getTotalNetworkLength"
 import { computeGraphNetworkBagOfAnglesMap } from "lib/network-bag-of-angles-assignment/computeGraphNetworkBagOfAnglesMap"
-import { reassignGraphNetworksUsingBagOfAngles } from "lib/network-bag-of-angles-assignment/reassignGraphNetworksUsingBagOfAngles"
 import { computeNetworkMappingFromBagsOfAngles } from "lib/network-bag-of-angles-assignment/computeNetworkMappingFromBagsOfAngles"
 import { matchPins } from "./matchPins"
 
@@ -63,10 +62,6 @@ export class AssignmentSolver2 {
     wlDistances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
     wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
-    wipGraphsWithAddedFixedBoxIdWithReassignedNetworks: Map<
-      FixedBoxId,
-      BpcGraph
-    >
   } | null = null
 
   fixedToFloatingNetworkMap: Map<NetworkId, NetworkId>
@@ -200,7 +195,6 @@ export class AssignmentSolver2 {
       wlDistances: new Map(),
       wlVecs: new Map(),
       wipGraphsWithAddedFixedBoxId: new Map(),
-      wipGraphsWithAddedFixedBoxIdWithReassignedNetworks: new Map(),
     }
 
     let bestDist = currentWlDist
