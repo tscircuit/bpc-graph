@@ -168,6 +168,7 @@ export class AssignmentSolver2 {
     }
 
     let bestDist = currentWlDist
+    let bestTotalNetworkLength = Infinity
     // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
     const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
@@ -200,6 +201,7 @@ export class AssignmentSolver2 {
 
       if (dist < bestDist) {
         bestDist = dist
+        bestTotalNetworkLength = totalNetworkLength
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
         bestFixedBoxId = fixedBoxId
       }
@@ -209,6 +211,7 @@ export class AssignmentSolver2 {
       bestFixedBoxId,
       bestNewWipGraph,
       bestDist,
+      bestTotalNetworkLength,
       lastDistanceEvaluation,
       nextFloatingBoxId,
       partialFloatingGraph,
@@ -226,6 +229,7 @@ export class AssignmentSolver2 {
     if (this.iterations === 1) {
       const nextFloatingBoxId = this.getNextFloatingBoxId()
       const evalResult = this.evaluateFloatingBoxAssignment(nextFloatingBoxId!)
+      this.lastComputedEvaluations = [evalResult]
       this.acceptEvaluationResult(evalResult)
       return
     }

@@ -159,6 +159,7 @@ export default () => {
             <th className="px-2 py-1 border">
               WL Distance (base={solver?.lastAcceptedEvaluation?.currentWlDist})
             </th>
+            <th className="px-2 py-1 border">Total Network Length</th>
             <th className="px-2 py-1 border">
               WL Vec{" "}
               <span
@@ -196,6 +197,9 @@ export default () => {
                   </td>
                   <td className="px-2 py-1 border">{fixedBoxId}</td>
                   <td className="px-2 py-1 border">{distance}</td>
+                  <td className="px-2 py-1 border">
+                    {solver.lastAcceptedEvaluation?.totalNetworkLength}
+                  </td>
                   <td
                     className="px-2 py-1 border text-blue-500 cursor-pointer"
                     onClick={() => {
@@ -221,6 +225,7 @@ export default () => {
           <tr>
             <th className="px-2 py-1 border">Floating Box ID</th>
             <th className="px-2 py-1 border">Best WL Distance</th>
+            <th className="px-2 py-1 border">Total Network Length</th>
           </tr>
         </thead>
         <tbody>
@@ -231,6 +236,9 @@ export default () => {
               <tr key={ev.nextFloatingBoxId}>
                 <td className="px-2 py-1 border">{ev.nextFloatingBoxId}</td>
                 <td className="px-2 py-1 border">{ev.bestDist}</td>
+                <td className="px-2 py-1 border">
+                  {ev.bestTotalNetworkLength}
+                </td>
               </tr>
             ))}
         </tbody>
