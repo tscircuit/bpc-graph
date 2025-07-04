@@ -23,7 +23,7 @@ export const computeNetworkMappingFromBagsOfAngles = (
     const [, angles1] = bag1Entries[i]!
     for (let j = 0; j < n2; j++) {
       const [, angles2] = bag2Entries[j]!
-      distanceMatrix[i][j] = computeBagOfAnglesDistance(angles1, angles2)
+      distanceMatrix[i]![j] = computeBagOfAnglesDistance(angles1, angles2)
     }
   }
 
