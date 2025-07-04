@@ -1,10 +1,7 @@
 import { stackGraphicsHorizontally, type GraphicsObject } from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
-import type { BpcFixedBox, BpcGraph } from "lib/types"
-import {
-  getBpcGraphWlDistance,
-  getWlFeatureVecs,
-} from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
+import type { BpcGraph } from "lib/types"
+import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { hashStringToNumber } from "lib/graph-utils/hashStringToNumber"
 
@@ -91,58 +88,70 @@ export class AssignmentSolver2 {
 
   step() {
     if (this.solved) return
-    if (this.iterations > 1000) {
-      throw new Error("Too many iterations")
+    const wlDegrees = this.floatingGraph.boxes.length
+
+    // Include as little information in the initial colors such that the graph will be isomorphic
+    const limitInitialColorsToLabels = ["component_center", "netlabel_center"]
+
+    const floatingWlVecs = getWlFeatureVecs(this.floatingGraph, wlDegrees, {
+      limitInitialColorsToLabels,
+    })
+    const fixedWlVecs = getWlFeatureVecs(this.fixedGraph, wlDegrees, {
+      limitInitialColorsToLabels,
+    })
+
+    // Create maps from WL color to box IDs
+    const floatingBoxesByWlColor = new Map<string, FloatingBoxId[]>()
+    const fixedBoxesByWlColor = new Map<string, FixedBoxId[]>()
+
+    // Group floating boxes by their WL colors
+    for (let i = 0; i < this.floatingGraph.boxes.length; i++) {
+      const boxId = this.floatingGraph.boxes[i]!.boxId
+      const wlColor = floatingWlVecs.colors[i]!
+      if (!floatingBoxesByWlColor.has(wlColor)) {
+        floatingBoxesByWlColor.set(wlColor, [])
+      }
+      floatingBoxesByWlColor.get(wlColor)!.push(boxId)
     }
-    this.iterations++
 
-    const nextFloatingBoxId = this.getNextFloatingBoxId()
-
-    if (!nextFloatingBoxId) {
-      this.solved = true
-      return
+    // Group fixed boxes by their WL colors
+    for (let i = 0; i < this.fixedGraph.boxes.length; i++) {
+      const boxId = this.fixedGraph.boxes[i]!.boxId
+      const wlColor = fixedWlVecs.colors[i]!
+      if (!fixedBoxesByWlColor.has(wlColor)) {
+        fixedBoxesByWlColor.set(wlColor, [])
+      }
+      fixedBoxesByWlColor.get(wlColor)!.push(boxId)
     }
 
-    const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
-    let bestFixedBoxId: FixedBoxId | null = null
-    let bestNewWipGraph: BpcGraph | null = null
+    // Create assignments by matching boxes with the same WL color
+    for (const [wlColor, floatingBoxIds] of floatingBoxesByWlColor) {
+      const fixedBoxIds = fixedBoxesByWlColor.get(wlColor)
 
-    this.lastDistanceEvaluation = {
-      floatingBoxId: nextFloatingBoxId,
-      originalWipGraph: this.wipGraph,
-      currentDist,
-      distances: new Map(),
-      wlVecs: new Map(),
-    }
+      if (!fixedBoxIds || fixedBoxIds.length !== floatingBoxIds.length) {
+        throw new Error(
+          `WL color ${wlColor} has mismatched counts: ${floatingBoxIds.length} floating vs ${fixedBoxIds?.length || 0} fixed`,
+        )
+      }
 
-    let bestDist = currentDist
-    for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
-      if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
-      const wipGraphWithAddedFixedBoxId =
-        this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
-      const dist = getBpcGraphWlDistance(
-        this.floatingGraph,
-        wipGraphWithAddedFixedBoxId,
-      )
-      const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
-      this.lastDistanceEvaluation.wlVecs.set(fixedBoxId, debug_wlVec)
-      this.lastDistanceEvaluation.distances.set(fixedBoxId, dist)
-      if (dist < bestDist) {
-        bestDist = dist
-        bestNewWipGraph = wipGraphWithAddedFixedBoxId
-        bestFixedBoxId = fixedBoxId
+      // For boxes with the same WL color, we can assign them arbitrarily
+      // (since they're structurally equivalent)
+      for (let i = 0; i < floatingBoxIds.length; i++) {
+        const floatingBoxId = floatingBoxIds[i]!
+        const fixedBoxId = fixedBoxIds[i]!
+        this.assignment.set(floatingBoxId, fixedBoxId)
+        this.acceptedFloatingBoxIds.add(floatingBoxId)
+        this.acceptedFixedBoxIds.add(fixedBoxId)
       }
     }
 
-    if (bestFixedBoxId === null) {
-      this.rejectedFloatingBoxIds.add(nextFloatingBoxId!)
-      return
+    // Build the complete WIP graph with all assignments
+    this.wipGraph = {
+      boxes: [...this.fixedGraph.boxes],
+      pins: [...this.fixedGraph.pins],
     }
 
-    this.acceptedFloatingBoxIds.add(nextFloatingBoxId!)
-    this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
-    this.acceptedFixedBoxIds.add(bestFixedBoxId)
-    this.wipGraph = bestNewWipGraph!
+    this.solved = true
   }
 
   getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {

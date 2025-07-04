@@ -7,7 +7,10 @@ export const wlFeatureVec = (
   adjMatrix: number[][],
   K: number,
   opts: { nodeInitialColors?: string[] } = {},
-): Array<Record<string, number>> => {
+): {
+  colors: string[]
+  counts: Array<Record<string, number>>
+} => {
   const n = adjMatrix.length
   if (adjMatrix.some((row) => row.length !== n)) {
     throw new Error("adjMatrix must be square")
@@ -45,5 +48,5 @@ export const wlFeatureVec = (
     countsArr.push(getCounts(colors))
   }
 
-  return countsArr
+  return { colors, counts: countsArr }
 }

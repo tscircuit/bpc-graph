@@ -106,8 +106,8 @@ test("adjacencyMatrixVisual01", () => {
         10,
       )
 
-      const wlVec1 = wlFeatureVec(adjacencyMatrix1, 2)
-      const wlVec2 = wlFeatureVec(adjacencyMatrix2, 2)
+      const { counts: wlVec1 } = wlFeatureVec(adjacencyMatrix1, 2)
+      const { counts: wlVec2 } = wlFeatureVec(adjacencyMatrix2, 2)
 
       const wlDotProduct = getWlDotProduct(wlVec1, wlVec2)
 

@@ -127,10 +127,10 @@ export default () => {
               <span
                 onClick={() => {
                   if (!solver) return
-                  const vec = getWlFeatureVecs(
+                  const { counts } = getWlFeatureVecs(
                     solver.lastDistanceEvaluation!.originalWipGraph!,
                   )
-                  setOpenVec(vec)
+                  setOpenVec(counts)
                 }}
                 className="cursor-pointer text-blue-500"
               >
@@ -140,8 +140,8 @@ export default () => {
                 className="text-blue-500 ml-1 cursor-pointer"
                 onClick={() => {
                   if (!solver) return
-                  const vec = getWlFeatureVecs(solver.floatingGraph)
-                  setOpenVec(vec)
+                  const { counts } = getWlFeatureVecs(solver.floatingGraph)
+                  setOpenVec(counts)
                 }}
               >
                 floating target
@@ -176,7 +176,7 @@ export default () => {
       </table>
       <WlVecDialog
         wlVec={openVec}
-        targetFloatingVec={targetFloatingVec}
+        targetFloatingVec={targetFloatingVec.counts}
         onClose={closeDialog}
       />
     </div>
