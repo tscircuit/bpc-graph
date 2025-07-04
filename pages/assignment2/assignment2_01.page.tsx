@@ -3,6 +3,7 @@ import corpus from "@tscircuit/schematic-corpus"
 import { AssignmentSolver2 } from "lib/assignment2/AssignmentSolver2"
 import { useMemo, useState } from "react"
 import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
+import { getWlDotProduct } from "lib/index"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
@@ -17,6 +18,18 @@ const WlVecDialog = ({
   onClose: () => void
 }) => {
   if (!wlVec) return null
+
+  const degreeDists: Array<{ degree: number; dist: number }> = []
+  if (targetFloatingVec) {
+    for (let i = 0; i < 3; i++) {
+      const dist = getWlDotProduct(
+        wlVec.slice(0, i + 1),
+        targetFloatingVec.slice(0, i + 1),
+      )
+      degreeDists.push({ degree: i, dist })
+    }
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white p-4 rounded-lg max-h-[80vh] overflow-auto">
@@ -26,6 +39,23 @@ const WlVecDialog = ({
         >
           Close
         </button>
+        <table className="border-collapse mb-4">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 border">Degree</th>
+              <th className="px-2 py-1 border">Distance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {degreeDists.map(({ degree, dist }) => (
+              <tr key={degree}>
+                <td className="px-2 py-1 border">{degree}</td>
+                <td className="px-2 py-1 border">{dist.toFixed(4)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
         <table className="border-collapse">
           <thead>
             <tr>
