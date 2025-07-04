@@ -1,4 +1,32 @@
-export const getWlDotProduct = (
+export const wlVecWeightedJaccardSimilarity = (
+  wlFeatureVec1: Array<Record<string, number>>,
+  wlFeatureVec2: Array<Record<string, number>>,
+): number => {
+  let total = 0
+  const len = Math.min(wlFeatureVec1.length, wlFeatureVec2.length)
+
+  for (let i = 0; i < len; i++) {
+    const rec1 = wlFeatureVec1[i]!
+    const rec2 = wlFeatureVec2[i]!
+
+    const allKeys = new Set([...Object.keys(rec1), ...Object.keys(rec2)])
+
+    let sumMin = 0
+    let sumMax = 0
+    for (const k of allKeys) {
+      const v1 = rec1[k] ?? 0
+      const v2 = rec2[k] ?? 0
+      sumMin += Math.min(v1, v2)
+      sumMax += Math.max(v1, v2)
+    }
+
+    total += sumMax === 0 ? 0 : sumMin / sumMax // 0 ≤ score ≤ 1
+  }
+
+  return total
+}
+
+export const wlVecCosineSimilarity = (
   wlFeatureVec1: Array<Record<string, number>>,
   wlFeatureVec2: Array<Record<string, number>>,
 ): number => {
@@ -28,3 +56,5 @@ export const getWlDotProduct = (
   }
   return total
 }
+
+export const getWlDotProduct = wlVecWeightedJaccardSimilarity

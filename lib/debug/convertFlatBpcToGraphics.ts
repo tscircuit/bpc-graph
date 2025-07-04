@@ -41,7 +41,6 @@ export const convertFlatBpcToGraphics = (
       gfx.lines.push({
         points: [pa, pb],
         strokeColor: "rgba(0,0,0,0.3)",
-        strokeWidth: 1,
       })
     }
   }
@@ -69,3 +68,5 @@ export const convertFlatBpcToGraphics = (
 
   return gfx
 }
+
+export const getGraphicsForFlatBpcGraph = convertFlatBpcToGraphics

@@ -3,32 +3,56 @@ import corpus from "@tscircuit/schematic-corpus"
 import { AssignmentSolver2 } from "lib/assignment2/AssignmentSolver2"
 import { useMemo, useState } from "react"
 import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
-import { getWlDotProduct } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  getWlDotProduct,
+  type BpcGraph,
+} from "lib/index"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
 
 const WlVecDialog = ({
   wlVec,
+  fixedBoxId,
   targetFloatingVec,
+  wipGraphWithAddedFixedBoxId,
   onClose,
 }: {
+  fixedBoxId?: string | null
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
+  wipGraphWithAddedFixedBoxId: BpcGraph | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
 
-  const degreeDists: Array<{ degree: number; dist: number }> = []
+  const degreeDists: Array<{ degree: number; dotProd: number; dist: number }> =
+    []
   if (targetFloatingVec) {
     for (let i = 0; i < 3; i++) {
-      const dist = getWlDotProduct(
+      const dotProd = getWlDotProduct(
         wlVec.slice(0, i + 1),
         targetFloatingVec.slice(0, i + 1),
       )
-      degreeDists.push({ degree: i, dist })
+      degreeDists.push({ degree: i, dotProd, dist: i + 1 - dotProd })
     }
   }
+
+  const graphics = useMemo(() => {
+    if (!wipGraphWithAddedFixedBoxId) return null
+    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+
+    // Highlight the added fixed box
+    if (fixedBoxId) {
+      const rect = graphics.rects?.find((r) => r.label === fixedBoxId)
+      if (rect) {
+        rect.fill = `rgba(255, 0, 0, 0.5)`
+      }
+    }
+
+    return graphics
+  }, [wipGraphWithAddedFixedBoxId])
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -39,17 +63,20 @@ const WlVecDialog = ({
         >
           Close
         </button>
+        {graphics && <InteractiveGraphics graphics={graphics} />}
         <table className="border-collapse mb-4">
           <thead>
             <tr>
               <th className="px-2 py-1 border">Degree</th>
-              <th className="px-2 py-1 border">Distance</th>
+              <th className="px-2 py-1 border">Dot Product Result</th>
+              <th className="px-2 py-1 border">WL Distance</th>
             </tr>
           </thead>
           <tbody>
-            {degreeDists.map(({ degree, dist }) => (
+            {degreeDists.map(({ degree, dotProd, dist }) => (
               <tr key={degree}>
                 <td className="px-2 py-1 border">{degree}</td>
+                <td className="px-2 py-1 border">{dotProd.toFixed(4)}</td>
                 <td className="px-2 py-1 border">{dist.toFixed(4)}</td>
               </tr>
             ))}
@@ -100,7 +127,13 @@ export default () => {
   const [openVec, setOpenVec] = useState<Array<Record<string, number>> | null>(
     null,
   )
-  const closeDialog = () => setOpenVec(null)
+  const [openVecFixedBoxId, setOpenVecFixedBoxId] = useState<string | null>(
+    null,
+  )
+  const closeDialog = () => {
+    setOpenVec(null)
+    setOpenVecFixedBoxId(null)
+  }
 
   return (
     <div>
@@ -114,15 +147,15 @@ export default () => {
         Step
       </button>
       <InteractiveGraphics graphics={solver?.visualize()!} />
-      <table>
+      <table className="border-collapse">
         <thead>
           <tr>
-            <th>Floating Box ID</th>
-            <th>Fixed Box ID</th>
-            <th>
+            <th className="px-2 py-1 border">Floating Box ID</th>
+            <th className="px-2 py-1 border">Fixed Box ID</th>
+            <th className="px-2 py-1 border">
               Distance (base={solver?.lastDistanceEvaluation?.currentDist})
             </th>
-            <th>
+            <th className="px-2 py-1 border">
               WL Vec{" "}
               <span
                 onClick={() => {
@@ -154,16 +187,19 @@ export default () => {
             Array.from(solver.lastDistanceEvaluation.distances.entries()).map(
               ([fixedBoxId, distance]) => (
                 <tr key={fixedBoxId}>
-                  <td>{solver.lastDistanceEvaluation?.floatingBoxId}</td>
-                  <td>{fixedBoxId}</td>
-                  <td>{distance}</td>
+                  <td className="px-2 py-1 border">
+                    {solver.lastDistanceEvaluation?.floatingBoxId}
+                  </td>
+                  <td className="px-2 py-1 border">{fixedBoxId}</td>
+                  <td className="px-2 py-1 border">{distance}</td>
                   <td
-                    className="text-blue-500 cursor-pointer"
+                    className="px-2 py-1 border text-blue-500 cursor-pointer"
                     onClick={() => {
                       const vec =
                         solver?.lastDistanceEvaluation?.wlVecs.get(
                           fixedBoxId,
                         ) ?? null
+                      setOpenVecFixedBoxId(fixedBoxId)
                       setOpenVec(vec)
                     }}
                   >
@@ -176,7 +212,13 @@ export default () => {
       </table>
       <WlVecDialog
         wlVec={openVec}
+        fixedBoxId={openVecFixedBoxId}
         targetFloatingVec={targetFloatingVec}
+        wipGraphWithAddedFixedBoxId={
+          solver?.lastDistanceEvaluation?.wipGraphsWithAddedFixedBoxId.get(
+            openVecFixedBoxId!,
+          ) ?? null
+        }
         onClose={closeDialog}
       />
     </div>
