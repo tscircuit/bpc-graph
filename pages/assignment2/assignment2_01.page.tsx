@@ -12,17 +12,19 @@ import {
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
 
-const WlVecDialog = ({
+export const WlVecDialog = ({
   wlVec,
   fixedBoxId,
   targetFloatingVec,
   wipGraphWithAddedFixedBoxId,
+  reassignedGraph,
   onClose,
 }: {
   fixedBoxId?: string | null
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
   wipGraphWithAddedFixedBoxId: BpcGraph | null
+  reassignedGraph: BpcGraph | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
@@ -41,7 +43,7 @@ const WlVecDialog = ({
 
   const graphics = useMemo(() => {
     if (!wipGraphWithAddedFixedBoxId) return null
-    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+    const graphics = getGraphicsForBpcGraph(reassignedGraph!)
 
     // Highlight the added fixed box
     if (fixedBoxId) {
@@ -198,7 +200,9 @@ export default () => {
                   <td className="px-2 py-1 border">{fixedBoxId}</td>
                   <td className="px-2 py-1 border">{distance}</td>
                   <td className="px-2 py-1 border">
-                    {solver.lastAcceptedEvaluation?.totalNetworkLength}
+                    {solver.lastAcceptedEvaluation?.networkLengths.get(
+                      fixedBoxId,
+                    )}
                   </td>
                   <td
                     className="px-2 py-1 border text-blue-500 cursor-pointer"
@@ -249,6 +253,11 @@ export default () => {
         targetFloatingVec={targetFloatingVec}
         wipGraphWithAddedFixedBoxId={
           solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxId.get(
+            openVecFixedBoxId!,
+          ) ?? null
+        }
+        reassignedGraph={
+          solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxIdWithReassignedNetworks.get(
             openVecFixedBoxId!,
           ) ?? null
         }

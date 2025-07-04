@@ -21,6 +21,8 @@ import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotPr
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { convertFlatBpcToGraphics } from "lib/debug/convertFlatBpcToGraphics"
 import { getTotalNetworkLength } from "lib/graph-utils/getTotalNetworkLength"
+import { computeGraphNetworkBagOfAnglesMap } from "lib/network-bag-of-angles-assignment/computeGraphNetworkBagOfAnglesMap"
+import { reassignGraphNetworksUsingBagOfAngles } from "lib/network-bag-of-angles-assignment/reassignGraphNetworksUsingBagOfAngles"
 
 type FloatingBoxId = string
 type FixedBoxId = string
@@ -54,11 +56,14 @@ export class AssignmentSolver2 {
     originalWipGraph: BpcGraph
     partialFloatingGraph: BpcGraph
     currentWlDist: number
-    totalNetworkLength: number
     networkLengths: Map<FixedBoxId, number>
     wlDistances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
     wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
+    wipGraphsWithAddedFixedBoxIdWithReassignedNetworks: Map<
+      FixedBoxId,
+      BpcGraph
+    >
   } | null = null
 
   lastComputedEvaluations: Array<
@@ -155,17 +160,20 @@ export class AssignmentSolver2 {
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
-    const lastDistanceEvaluation: typeof this.lastAcceptedEvaluation = {
+    const dEval: typeof this.lastAcceptedEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
       partialFloatingGraph,
       currentWlDist: currentWlDist,
-      totalNetworkLength: 0,
       networkLengths: new Map(),
       wlDistances: new Map(),
       wlVecs: new Map(),
       wipGraphsWithAddedFixedBoxId: new Map(),
+      wipGraphsWithAddedFixedBoxIdWithReassignedNetworks: new Map(),
     }
+
+    const partialFloatingBagOfAnglesMap =
+      computeGraphNetworkBagOfAnglesMap(partialFloatingGraph)
 
     let bestDist = currentWlDist
     let bestTotalNetworkLength = Infinity
@@ -181,23 +189,28 @@ export class AssignmentSolver2 {
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
 
-      const { totalNetworkLength } = getTotalNetworkLength(
-        wipGraphWithAddedFixedBoxId as FixedBpcGraph,
-      )
+      const reassignedGraph = reassignGraphNetworksUsingBagOfAngles(
+        wipGraphWithAddedFixedBoxId,
+        partialFloatingBagOfAnglesMap,
+      ).reassignedGraph as FixedBpcGraph
+      const { totalNetworkLength } = getTotalNetworkLength(reassignedGraph)
 
       // const dist = getWlDotProduct(floatingBoxWlVec, debug_wlVec)
 
       // console.log(dist, dist2)
 
-      lastDistanceEvaluation.wipGraphsWithAddedFixedBoxId.set(
+      dEval.wipGraphsWithAddedFixedBoxId.set(
         fixedBoxId,
         wipGraphWithAddedFixedBoxId,
       )
 
-      lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
-      lastDistanceEvaluation!.wlDistances.set(fixedBoxId, dist)
-      lastDistanceEvaluation!.networkLengths.set(fixedBoxId, totalNetworkLength)
-      lastDistanceEvaluation!.totalNetworkLength = totalNetworkLength
+      dEval!.wlVecs.set(fixedBoxId, debug_wlVec)
+      dEval!.wlDistances.set(fixedBoxId, dist)
+      dEval!.networkLengths.set(fixedBoxId, totalNetworkLength)
+      dEval!.wipGraphsWithAddedFixedBoxIdWithReassignedNetworks.set(
+        fixedBoxId,
+        reassignedGraph,
+      )
 
       if (dist < bestDist) {
         bestDist = dist
@@ -212,7 +225,7 @@ export class AssignmentSolver2 {
       bestNewWipGraph,
       bestDist,
       bestTotalNetworkLength,
-      lastDistanceEvaluation,
+      lastDistanceEvaluation: dEval,
       nextFloatingBoxId,
       partialFloatingGraph,
       floatingBoxWlVec,
