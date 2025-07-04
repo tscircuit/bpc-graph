@@ -22,8 +22,10 @@ export class AssignmentSolver2 {
   wipGraph: BpcGraph
 
   iterations = 0
+  solved = false
 
-  rejectedFloatingBoxIds: FloatingBoxId[] = []
+  acceptedFloatingBoxIds: Set<FloatingBoxId> = new Set()
+  rejectedFloatingBoxIds: Set<FloatingBoxId> = new Set()
   assignment: Map<FloatingBoxId, FixedBoxId> = new Map()
 
   constructor(
@@ -36,8 +38,50 @@ export class AssignmentSolver2 {
     }
   }
 
+  /**
+   * Returns the floating box id that should be assigned next.
+   *
+   * Currently this picks the boxes with the most pins first- but this
+   * could be improved by picking the next box that is most relevant to the
+   * network (e.g. a box that should be connected to the wipGraph)
+   */
+  getNextFloatingBoxId() {
+    const remainingFloatingBoxIds = this.floatingGraph.boxes
+      .map((b) => b.boxId)
+      .filter(
+        (b) =>
+          !this.acceptedFloatingBoxIds.has(b) &&
+          !this.rejectedFloatingBoxIds.has(b),
+      )
+
+    if (!remainingFloatingBoxIds.length) {
+      throw new Error("No remaining floating box ids")
+    }
+
+    // Pick the floating box with the most pins
+    let bestFloatingBoxId = remainingFloatingBoxIds[0]
+    let bestFloatingBoxPinCount = 0
+    for (const floatingBoxId of remainingFloatingBoxIds) {
+      const floatingBoxPins = this.floatingGraph.pins.filter(
+        (p) => p.boxId === floatingBoxId,
+      )
+      if (floatingBoxPins.length > bestFloatingBoxPinCount) {
+        bestFloatingBoxId = floatingBoxId
+        bestFloatingBoxPinCount = floatingBoxPins.length
+      }
+    }
+
+    return bestFloatingBoxId
+  }
+
   step() {
+    if (this.solved) return
+    if (this.iterations > 1000) {
+      throw new Error("Too many iterations")
+    }
     this.iterations++
+
+    const nextFloatingBoxId = this.getNextFloatingBoxId()
   }
 
   visualize(): GraphicsObject {
