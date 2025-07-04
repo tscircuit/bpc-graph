@@ -30,7 +30,9 @@ export default () => {
           <tr>
             <th>Floating Box ID</th>
             <th>Fixed Box ID</th>
-            <th>Distance</th>
+            <th>
+              Distance (base={solver?.lastDistanceEvaluation?.currentDist})
+            </th>
           </tr>
         </thead>
         <tbody>
