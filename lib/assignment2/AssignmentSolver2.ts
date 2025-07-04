@@ -4,7 +4,12 @@ import {
   type GraphicsObject,
 } from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
-import type { BpcFixedBox, BpcGraph } from "lib/types"
+import type {
+  BpcFixedBox,
+  BpcFloatingBox,
+  BpcGraph,
+  FloatingBpcGraph,
+} from "lib/types"
 import {
   getBpcGraphWlDistance,
   getWlFeatureVecs,
@@ -45,6 +50,7 @@ export class AssignmentSolver2 {
   lastDistanceEvaluation: {
     floatingBoxId: FloatingBoxId
     originalWipGraph: BpcGraph
+    partialFloatingGraph: BpcGraph
     currentDist: number
     distances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
@@ -97,6 +103,30 @@ export class AssignmentSolver2 {
     return bestFloatingBoxId
   }
 
+  /**
+   * The floating graph, but with only the boxes that have been accepted so far
+   */
+  getPartialFloatingGraph(nextFloatingBoxId?: FloatingBoxId) {
+    const g: FloatingBpcGraph = {
+      pins: [],
+      boxes: [],
+    }
+
+    for (const box of this.floatingGraph.boxes) {
+      if (
+        this.acceptedFloatingBoxIds.has(box.boxId) ||
+        box.boxId === nextFloatingBoxId
+      ) {
+        g.boxes.push(box as BpcFloatingBox)
+        g.pins.push(
+          ...this.floatingGraph.pins.filter((p) => p.boxId === box.boxId),
+        )
+      }
+    }
+
+    return g
+  }
+
   step() {
     if (this.solved) return
     if (this.iterations > 1000) {
@@ -111,6 +141,8 @@ export class AssignmentSolver2 {
       return
     }
 
+    const partialFloatingGraph = this.getPartialFloatingGraph(nextFloatingBoxId)
+
     const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
@@ -118,6 +150,7 @@ export class AssignmentSolver2 {
     this.lastDistanceEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
+      partialFloatingGraph,
       currentDist,
       distances: new Map(),
       wlVecs: new Map(),
@@ -125,13 +158,14 @@ export class AssignmentSolver2 {
     }
 
     let bestDist = Infinity // currentDist
-    const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
+    // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
+    const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
       if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
       const wipGraphWithAddedFixedBoxId =
         this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
       const dist = getBpcGraphWlDistance(
-        this.floatingGraph,
+        partialFloatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
@@ -188,6 +222,12 @@ export class AssignmentSolver2 {
     const fixedGraphics = getGraphicsForBpcGraph(this.fixedGraph, {
       title: "Fixed",
     })
+    const floatingPartialGraphics = getGraphicsForBpcGraph(
+      this.getPartialFloatingGraph(),
+      {
+        title: "Partial Floating",
+      },
+    )
 
     // ------------------------------------------------------------------
     // 1.  Build colour table – one colour per (floating → fixed) mapping
@@ -226,6 +266,12 @@ export class AssignmentSolver2 {
       const fixedId = this.assignment.get(floatId)
       if (fixedId) decorateRect(rect, floatId, fixedId)
     }
+    for (const rect of floatingPartialGraphics.rects ?? []) {
+      const floatId = rect.label
+      if (!floatId) continue
+      const fixedId = this.assignment.get(floatId)
+      if (fixedId) decorateRect(rect, floatId, fixedId)
+    }
 
     // ------------------------------------------------------------------
     // 4.  Update wip & fixed-graph rects (labels are fixed ids)
@@ -255,7 +301,11 @@ export class AssignmentSolver2 {
     })
 
     const graphics = stackGraphicsHorizontally([
-      stackGraphicsVertically([floatingGraphics, floatingFlatGraphics]),
+      stackGraphicsVertically([
+        floatingGraphics,
+        floatingFlatGraphics,
+        floatingPartialGraphics,
+      ]),
       stackGraphicsVertically([wipGraphics, wipFlatGraphics]),
       stackGraphicsVertically([fixedGraphics, fixedFlatGraphics]),
     ])
