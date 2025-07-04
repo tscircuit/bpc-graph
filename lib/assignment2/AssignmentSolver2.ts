@@ -178,6 +178,9 @@ export class AssignmentSolver2 {
 
     const partialFloatingBagOfAnglesMap =
       computeGraphNetworkBagOfAnglesMap(partialFloatingGraph)
+    const floatingBagOfAnglesMap = computeGraphNetworkBagOfAnglesMap(
+      this.floatingGraph,
+    )
 
     let bestDist = currentWlDist
     let bestTotalNetworkLength = Infinity
@@ -195,7 +198,7 @@ export class AssignmentSolver2 {
 
       const reassignedGraph = reassignGraphNetworksUsingBagOfAngles(
         wipGraphWithAddedFixedBoxId,
-        partialFloatingBagOfAnglesMap,
+        floatingBagOfAnglesMap,
       ).reassignedGraph as FixedBpcGraph
       const { totalNetworkLength } = getTotalNetworkLength(reassignedGraph)
 
