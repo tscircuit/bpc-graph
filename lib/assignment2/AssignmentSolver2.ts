@@ -4,7 +4,12 @@ import {
   type GraphicsObject,
 } from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
-import type { BpcFixedBox, BpcGraph } from "lib/types"
+import type {
+  BpcFixedBox,
+  BpcFloatingBox,
+  BpcGraph,
+  FloatingBpcGraph,
+} from "lib/types"
 import {
   getBpcGraphWlDistance,
   getWlFeatureVecs,
@@ -42,14 +47,19 @@ export class AssignmentSolver2 {
   acceptedFixedBoxIds: Set<FixedBoxId> = new Set()
   assignment: Map<FloatingBoxId, FixedBoxId> = new Map()
 
-  lastDistanceEvaluation: {
+  lastAcceptedEvaluation: {
     floatingBoxId: FloatingBoxId
     originalWipGraph: BpcGraph
+    partialFloatingGraph: BpcGraph
     currentDist: number
     distances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
     wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
   } | null = null
+
+  lastComputedEvaluations: Array<
+    ReturnType<AssignmentSolver2["evaluateFloatingBoxAssignment"]>
+  > = []
 
   constructor(
     public floatingGraph: BpcGraph,
@@ -97,41 +107,69 @@ export class AssignmentSolver2 {
     return bestFloatingBoxId
   }
 
-  step() {
-    if (this.solved) return
-    if (this.iterations > 1000) {
-      throw new Error("Too many iterations")
+  getRemainingFloatingBoxIds() {
+    return this.floatingGraph.boxes
+      .map((b) => b.boxId)
+      .filter(
+        (b) =>
+          !this.acceptedFloatingBoxIds.has(b) &&
+          !this.rejectedFloatingBoxIds.has(b),
+      )
+  }
+
+  /**
+   * The floating graph, but with only the boxes that have been accepted so far
+   */
+  getPartialFloatingGraph(nextFloatingBoxId?: FloatingBoxId) {
+    const g: FloatingBpcGraph = {
+      pins: [],
+      boxes: [],
     }
-    this.iterations++
 
-    const nextFloatingBoxId = this.getNextFloatingBoxId()
-
-    if (!nextFloatingBoxId) {
-      this.solved = true
-      return
+    for (const box of this.floatingGraph.boxes) {
+      if (
+        this.acceptedFloatingBoxIds.has(box.boxId) ||
+        box.boxId === nextFloatingBoxId
+      ) {
+        g.boxes.push(box as BpcFloatingBox)
+        g.pins.push(
+          ...this.floatingGraph.pins.filter((p) => p.boxId === box.boxId),
+        )
+      }
     }
 
-    const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
+    return g
+  }
+
+  evaluateFloatingBoxAssignment(nextFloatingBoxId: FloatingBoxId) {
+    const partialFloatingGraph = this.getPartialFloatingGraph(nextFloatingBoxId)
+
+    const currentDist = getBpcGraphWlDistance(
+      partialFloatingGraph,
+      this.wipGraph,
+    )
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
-    this.lastDistanceEvaluation = {
+    const lastDistanceEvaluation: typeof this.lastAcceptedEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
+      partialFloatingGraph,
       currentDist,
       distances: new Map(),
       wlVecs: new Map(),
       wipGraphsWithAddedFixedBoxId: new Map(),
     }
 
-    let bestDist = Infinity // currentDist
-    const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
+    let bestDist = currentDist
+    // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
+    const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
       if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
       const wipGraphWithAddedFixedBoxId =
         this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
       const dist = getBpcGraphWlDistance(
-        this.floatingGraph,
+        partialFloatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
@@ -140,13 +178,13 @@ export class AssignmentSolver2 {
 
       // console.log(dist, dist2)
 
-      this.lastDistanceEvaluation!.wipGraphsWithAddedFixedBoxId.set(
+      lastDistanceEvaluation.wipGraphsWithAddedFixedBoxId.set(
         fixedBoxId,
         wipGraphWithAddedFixedBoxId,
       )
 
-      this.lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
-      this.lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
+      lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
+      lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
         bestDist = dist
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
@@ -154,11 +192,61 @@ export class AssignmentSolver2 {
       }
     }
 
-    console.log({
-      currentDist,
+    return {
+      bestFixedBoxId,
+      bestNewWipGraph,
       bestDist,
-    })
+      lastDistanceEvaluation,
+      nextFloatingBoxId,
+      partialFloatingGraph,
+      floatingBoxWlVec,
+    }
+  }
 
+  step() {
+    if (this.solved) return
+    if (this.iterations > 1000) {
+      throw new Error("Too many iterations")
+    }
+    this.iterations++
+
+    if (this.iterations === 1) {
+      const nextFloatingBoxId = this.getNextFloatingBoxId()
+      const evalResult = this.evaluateFloatingBoxAssignment(nextFloatingBoxId!)
+      this.acceptEvaluationResult(evalResult)
+      return
+    }
+
+    const remainingFloatingBoxIds = this.getRemainingFloatingBoxIds()
+
+    if (remainingFloatingBoxIds.length === 0) {
+      this.solved = true
+      return
+    }
+
+    let bestEvalDist = Infinity
+    let bestEvalResult: ReturnType<
+      AssignmentSolver2["evaluateFloatingBoxAssignment"]
+    > | null = null
+    this.lastComputedEvaluations = []
+    for (const floatingBoxId of remainingFloatingBoxIds) {
+      const evalResult = this.evaluateFloatingBoxAssignment(floatingBoxId)
+      this.lastComputedEvaluations.push(evalResult)
+      if (evalResult.bestDist < bestEvalDist) {
+        bestEvalDist = evalResult.bestDist
+        bestEvalResult = evalResult
+      }
+    }
+
+    if (bestEvalResult) {
+      this.acceptEvaluationResult(bestEvalResult)
+    }
+  }
+
+  acceptEvaluationResult(
+    evalResult: ReturnType<AssignmentSolver2["evaluateFloatingBoxAssignment"]>,
+  ) {
+    const { bestFixedBoxId, bestNewWipGraph, nextFloatingBoxId } = evalResult
     if (bestFixedBoxId === null) {
       this.rejectedFloatingBoxIds.add(nextFloatingBoxId!)
       return
@@ -168,6 +256,7 @@ export class AssignmentSolver2 {
     this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
     this.acceptedFixedBoxIds.add(bestFixedBoxId)
     this.wipGraph = bestNewWipGraph!
+    this.lastAcceptedEvaluation = evalResult.lastDistanceEvaluation
   }
 
   getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {
@@ -188,6 +277,12 @@ export class AssignmentSolver2 {
     const fixedGraphics = getGraphicsForBpcGraph(this.fixedGraph, {
       title: "Fixed",
     })
+    const floatingPartialGraphics = getGraphicsForBpcGraph(
+      this.getPartialFloatingGraph(),
+      {
+        title: "Partial Floating",
+      },
+    )
 
     // ------------------------------------------------------------------
     // 1.  Build colour table – one colour per (floating → fixed) mapping
@@ -226,6 +321,12 @@ export class AssignmentSolver2 {
       const fixedId = this.assignment.get(floatId)
       if (fixedId) decorateRect(rect, floatId, fixedId)
     }
+    for (const rect of floatingPartialGraphics.rects ?? []) {
+      const floatId = rect.label
+      if (!floatId) continue
+      const fixedId = this.assignment.get(floatId)
+      if (fixedId) decorateRect(rect, floatId, fixedId)
+    }
 
     // ------------------------------------------------------------------
     // 4.  Update wip & fixed-graph rects (labels are fixed ids)
@@ -255,7 +356,11 @@ export class AssignmentSolver2 {
     })
 
     const graphics = stackGraphicsHorizontally([
-      stackGraphicsVertically([floatingGraphics, floatingFlatGraphics]),
+      stackGraphicsVertically([
+        floatingGraphics,
+        floatingFlatGraphics,
+        floatingPartialGraphics,
+      ]),
       stackGraphicsVertically([wipGraphics, wipFlatGraphics]),
       stackGraphicsVertically([fixedGraphics, fixedFlatGraphics]),
     ])
