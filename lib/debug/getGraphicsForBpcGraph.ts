@@ -81,7 +81,6 @@ export const getGraphicsForBpcGraph = (
         const { position: pos2, pin: pin2 } = pinsInNetworkWithPosition[j]!
         graphics.lines.push({
           points: [pos1, pos2],
-          strokeWidth: 1,
           strokeColor: opts?.grayNetworks
             ? "rgba(0, 0, 0, 0.05)"
             : networkColor,
