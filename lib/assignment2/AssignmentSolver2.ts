@@ -1,6 +1,9 @@
 import { stackGraphicsHorizontally, type GraphicsObject } from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
-import type { BpcGraph } from "lib/types"
+import type { BpcFixedBox, BpcGraph } from "lib/types"
+import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
+import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
+import { hashStringToNumber } from "lib/graph-utils/hashStringToNumber"
 
 type FloatingBoxId = string
 type FixedBoxId = string
@@ -82,19 +85,80 @@ export class AssignmentSolver2 {
     this.iterations++
 
     const nextFloatingBoxId = this.getNextFloatingBoxId()
+
+    if (!nextFloatingBoxId) {
+      this.solved = true
+      return
+    }
+
+    const currentDist = getBpcGraphWlDistance(this.floatingGraph, this.wipGraph)
+    let bestFixedBoxId: FixedBoxId | null = null
+    let bestNewWipGraph: BpcGraph | null = null
+
+    let bestDist = currentDist
+    for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
+      const wipGraphWithAddedFixedBoxId =
+        this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
+      const dist = getBpcGraphWlDistance(
+        this.floatingGraph,
+        wipGraphWithAddedFixedBoxId,
+      )
+      if (dist < bestDist) {
+        bestDist = dist
+        bestNewWipGraph = wipGraphWithAddedFixedBoxId
+        bestFixedBoxId = fixedBoxId
+      }
+    }
+
+    if (bestFixedBoxId === null) {
+      this.rejectedFloatingBoxIds.add(nextFloatingBoxId!)
+      return
+    }
+
+    this.acceptedFloatingBoxIds.add(nextFloatingBoxId!)
+    this.assignment.set(nextFloatingBoxId!, bestFixedBoxId)
+    this.wipGraph = bestNewWipGraph!
+  }
+
+  getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {
+    const g = structuredClone(this.wipGraph)
+    const boxToAdd = this.fixedGraph.boxes.find((b) => b.boxId === fid)!
+    g.boxes.push(boxToAdd as any)
+    g.pins.push(...this.fixedGraph.pins.filter((p) => p.boxId === fid))
+    return g
   }
 
   visualize(): GraphicsObject {
-    return stackGraphicsHorizontally([
-      getGraphicsForBpcGraph(this.floatingGraph, {
-        title: "Floating",
-      }),
-      getGraphicsForBpcGraph(this.wipGraph, {
-        title: "WIP",
-      }),
-      getGraphicsForBpcGraph(this.fixedGraph, {
-        title: "Fixed",
-      }),
+    const floatingGraphics = getGraphicsForBpcGraph(this.floatingGraph, {
+      title: "Floating",
+    })
+    const wipGraphics = getGraphicsForBpcGraph(this.wipGraph, {
+      title: "WIP",
+    })
+    const fixedGraphics = getGraphicsForBpcGraph(this.fixedGraph, {
+      title: "Fixed",
+    })
+
+    // Anywhere in the floatingGraphics where the rect.label matches an assignment,
+    // change the fill to correspond with the assignment and the text to
+    // show the assignment, same with the wipGraphics and fixedGraphics but
+    // be mindful that the labels represents the fixed box id, not the floating
+    // box id
+    for (const rect of floatingGraphics.rects) {
+      // const color = getColorByIndex(
+      //   hashStringToNumber(rect.label!) % 100,
+      //   100,
+      //   0.5
+      // )
+      // rect.fill = color
+    }
+
+    const graphics = stackGraphicsHorizontally([
+      floatingGraphics,
+      wipGraphics,
+      fixedGraphics,
     ])
+
+    return graphics
   }
 }
