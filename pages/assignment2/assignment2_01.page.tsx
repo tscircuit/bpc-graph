@@ -147,6 +147,10 @@ export default () => {
         Step
       </button>
       <InteractiveGraphics graphics={solver?.visualize()!} />
+      <h2 className="text-lg">
+        Last-accepted evaluation (decided to assign floating box id{" "}
+        {solver?.lastAcceptedEvaluation?.floatingBoxId})
+      </h2>
       <table className="border-collapse">
         <thead>
           <tr>
@@ -211,6 +215,7 @@ export default () => {
         </tbody>
       </table>
       {/* ── Last-computed evaluations ─────────────────────────────────── */}
+      <h2 className="text-lg mt-4">Last-computed evaluations</h2>
       <table className="border-collapse mt-4">
         <thead>
           <tr>
@@ -220,7 +225,7 @@ export default () => {
         </thead>
         <tbody>
           {solver?.lastComputedEvaluations
-            ?.slice()                               // copy so we can sort
+            ?.slice() // copy so we can sort
             .sort((a, b) => a.bestDist - b.bestDist) // ascending distance
             .map((ev) => (
               <tr key={ev.nextFloatingBoxId}>
