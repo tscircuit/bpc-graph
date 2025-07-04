@@ -37,6 +37,7 @@ export class AssignmentSolver2 {
 
   lastDistanceEvaluation: {
     floatingBoxId: FloatingBoxId
+    originalWipGraph: BpcGraph
     currentDist: number
     distances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
@@ -108,6 +109,7 @@ export class AssignmentSolver2 {
 
     this.lastDistanceEvaluation = {
       floatingBoxId: nextFloatingBoxId,
+      originalWipGraph: this.wipGraph,
       currentDist,
       distances: new Map(),
       wlVecs: new Map(),

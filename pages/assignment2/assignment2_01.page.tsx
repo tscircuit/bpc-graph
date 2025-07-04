@@ -1,7 +1,7 @@
 import { InteractiveGraphics } from "graphics-debug/react"
 import corpus from "@tscircuit/schematic-corpus"
 import { AssignmentSolver2 } from "lib/assignment2/AssignmentSolver2"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
 const floatingGraph = corpus.design001
@@ -9,9 +9,11 @@ const fixedGraph = corpus.design018
 
 const WlVecDialog = ({
   wlVec,
+  targetFloatingVec,
   onClose,
 }: {
   wlVec: Array<Record<string, number>> | null
+  targetFloatingVec: Array<Record<string, number>> | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
@@ -30,6 +32,7 @@ const WlVecDialog = ({
               <th className="px-2 py-1 border">Index</th>
               <th className="px-2 py-1 border">Key</th>
               <th className="px-2 py-1 border">Count</th>
+              <th className="px-2 py-1 border">Target Floating Count</th>
             </tr>
           </thead>
           <tbody>
@@ -41,6 +44,9 @@ const WlVecDialog = ({
                     {key}
                   </td>
                   <td className="px-2 py-1 border">{count}</td>
+                  <td className="px-2 py-1 border">
+                    {targetFloatingVec?.[idx]?.[key]}
+                  </td>
                 </tr>
               )),
             )}
@@ -57,6 +63,9 @@ export default () => {
     const solver = new AssignmentSolver2(floatingGraph!, fixedGraph!)
     return solver
   })
+  const targetFloatingVec = useMemo(() => {
+    return getWlFeatureVecs(floatingGraph!)
+  }, [floatingGraph])
 
   const [openVec, setOpenVec] = useState<Array<Record<string, number>> | null>(
     null,
@@ -88,12 +97,24 @@ export default () => {
               <span
                 onClick={() => {
                   if (!solver) return
-                  const vec = getWlFeatureVecs(solver.wipGraph)
+                  const vec = getWlFeatureVecs(
+                    solver.lastDistanceEvaluation!.originalWipGraph!,
+                  )
                   setOpenVec(vec)
                 }}
                 className="cursor-pointer text-blue-500"
               >
                 base
+              </span>
+              <span
+                className="text-blue-500 ml-1 cursor-pointer"
+                onClick={() => {
+                  if (!solver) return
+                  const vec = getWlFeatureVecs(solver.floatingGraph)
+                  setOpenVec(vec)
+                }}
+              >
+                floating target
               </span>
             </th>
           </tr>
@@ -123,7 +144,11 @@ export default () => {
             )}
         </tbody>
       </table>
-      <WlVecDialog wlVec={openVec} onClose={closeDialog} />
+      <WlVecDialog
+        wlVec={openVec}
+        targetFloatingVec={targetFloatingVec}
+        onClose={closeDialog}
+      />
     </div>
   )
 }
