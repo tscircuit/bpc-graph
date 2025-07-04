@@ -2,9 +2,54 @@ import { InteractiveGraphics } from "graphics-debug/react"
 import corpus from "@tscircuit/schematic-corpus"
 import { AssignmentSolver2 } from "lib/assignment2/AssignmentSolver2"
 import { useState } from "react"
+import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
+
+const WlVecDialog = ({
+  wlVec,
+  onClose,
+}: {
+  wlVec: Array<Record<string, number>> | null
+  onClose: () => void
+}) => {
+  if (!wlVec) return null
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white p-4 rounded-lg max-h-[80vh] overflow-auto">
+        <button
+          className="mb-4 px-2 py-1 bg-red-500 text-white rounded"
+          onClick={onClose}
+        >
+          Close
+        </button>
+        <table className="border-collapse">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 border">Index</th>
+              <th className="px-2 py-1 border">Key</th>
+              <th className="px-2 py-1 border">Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {wlVec.flatMap((rec, idx) =>
+              Object.entries(rec).map(([key, count]) => (
+                <tr key={`${idx}-${key}`}>
+                  <td className="px-2 py-1 border">{idx}</td>
+                  <td className="px-2 max-w-[320px] break-words py-1 border">
+                    {key}
+                  </td>
+                  <td className="px-2 py-1 border">{count}</td>
+                </tr>
+              )),
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
 
 export default () => {
   const [stepCount, setStepCount] = useState(0)
@@ -12,6 +57,11 @@ export default () => {
     const solver = new AssignmentSolver2(floatingGraph!, fixedGraph!)
     return solver
   })
+
+  const [openVec, setOpenVec] = useState<Array<Record<string, number>> | null>(
+    null,
+  )
+  const closeDialog = () => setOpenVec(null)
 
   return (
     <div>
@@ -37,7 +87,9 @@ export default () => {
               WL Vec{" "}
               <span
                 onClick={() => {
-                  // TODO
+                  if (!solver) return
+                  const vec = getWlFeatureVecs(solver.wipGraph)
+                  setOpenVec(vec)
                 }}
                 className="cursor-pointer text-blue-500"
               >
@@ -57,7 +109,11 @@ export default () => {
                   <td
                     className="text-blue-500 cursor-pointer"
                     onClick={() => {
-                      // TODO
+                      const vec =
+                        solver?.lastDistanceEvaluation?.wlVecs.get(
+                          fixedBoxId,
+                        ) ?? null
+                      setOpenVec(vec)
                     }}
                   >
                     WL Vec
@@ -67,6 +123,7 @@ export default () => {
             )}
         </tbody>
       </table>
+      <WlVecDialog wlVec={openVec} onClose={closeDialog} />
     </div>
   )
 }
