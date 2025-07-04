@@ -58,7 +58,7 @@ export default function BagOfAnglesDebugger() {
   /* ─────────────────────────── state ────────────────────────────── */
   const designIds = Object.keys(corpus) as Array<keyof typeof corpus>
   const [srcId, setSrcId] = useState("design001")
-  const [tgtId, setTgtId] = useState("design018")
+  const [tgtId, setTgtId] = useState("design010")
   const [mapping, setMapping] = useState<Map<NetworkId, NetworkId> | null>(null)
   const [distance, setDistance] = useState<number | null>(null)
   const [reassigned, setReassigned] = useState<BpcGraph | null>(null)
