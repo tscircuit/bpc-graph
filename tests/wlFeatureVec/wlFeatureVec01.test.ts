@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test"
-import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
+import {
+  wlVecWeightedJaccardSimilarity,
+  wlVecCosineSimilarity,
+} from "lib/adjacency-matrix-network-similarity/wlDotProduct"
 
 // This is really a reproduction of an assignment issue, but helps
 // for establishing a regression test for getWlDotProduct
@@ -25,9 +28,9 @@ test("wlFeatureVec01 - bigmatch", () => {
     },
   ]
 
-  const dist = getWlDotProduct(v1, v2)
+  const dist = wlVecWeightedJaccardSimilarity(v1, v2)
 
-  expect(dist).toMatchInlineSnapshot(`0.7106690545187014`)
+  expect(dist).toMatchInlineSnapshot(`0.3333333333333333`)
 })
 
 test("wlFeatureVec01 - smallmatch", () => {
@@ -50,7 +53,7 @@ test("wlFeatureVec01 - smallmatch", () => {
     },
   ]
 
-  const dist = getWlDotProduct(v1, v2)
+  const dist = wlVecWeightedJaccardSimilarity(v1, v2)
 
-  expect(dist).toMatchInlineSnapshot(`0.9238697708743119`)
+  expect(dist).toMatchInlineSnapshot(`0.16666666666666666`)
 })
