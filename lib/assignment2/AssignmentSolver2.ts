@@ -1,7 +1,10 @@
 import { stackGraphicsHorizontally, type GraphicsObject } from "graphics-debug"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import type { BpcFixedBox, BpcGraph } from "lib/types"
-import { getBpcGraphWlDistance } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
+import {
+  getBpcGraphWlDistance,
+  getWlFeatureVecs,
+} from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import { hashStringToNumber } from "lib/graph-utils/hashStringToNumber"
 
@@ -36,6 +39,7 @@ export class AssignmentSolver2 {
     floatingBoxId: FloatingBoxId
     currentDist: number
     distances: Map<FixedBoxId, number>
+    wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
   } | null = null
 
   constructor(
@@ -106,6 +110,7 @@ export class AssignmentSolver2 {
       floatingBoxId: nextFloatingBoxId,
       currentDist,
       distances: new Map(),
+      wlVecs: new Map(),
     }
 
     let bestDist = currentDist
@@ -117,6 +122,8 @@ export class AssignmentSolver2 {
         this.floatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
+      const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
+      this.lastDistanceEvaluation.wlVecs.set(fixedBoxId, debug_wlVec)
       this.lastDistanceEvaluation.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
         bestDist = dist

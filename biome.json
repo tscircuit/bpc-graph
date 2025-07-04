@@ -31,7 +31,9 @@
         "useLiteralKeys": "off"
       },
       "a11y": {
-        "useButtonType": "off"
+        "useButtonType": "off",
+        "useKeyWithClickEvents": "off",
+        "noStaticElementInteractions": "off"
       },
       "style": {
         "useSingleVarDeclarator": "error",

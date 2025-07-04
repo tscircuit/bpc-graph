@@ -33,6 +33,17 @@ export default () => {
             <th>
               Distance (base={solver?.lastDistanceEvaluation?.currentDist})
             </th>
+            <th>
+              WL Vec{" "}
+              <span
+                onClick={() => {
+                  // TODO
+                }}
+                className="cursor-pointer text-blue-500"
+              >
+                base
+              </span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -43,6 +54,14 @@ export default () => {
                   <td>{solver.lastDistanceEvaluation?.floatingBoxId}</td>
                   <td>{fixedBoxId}</td>
                   <td>{distance}</td>
+                  <td
+                    className="text-blue-500 cursor-pointer"
+                    onClick={() => {
+                      // TODO
+                    }}
+                  >
+                    WL Vec
+                  </td>
                 </tr>
               ),
             )}
