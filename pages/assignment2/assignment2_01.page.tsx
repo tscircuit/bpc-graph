@@ -43,7 +43,7 @@ export const WlVecDialog = ({
 
   const graphics = useMemo(() => {
     if (!wipGraphWithAddedFixedBoxId) return null
-    const graphics = getGraphicsForBpcGraph(reassignedGraph!)
+    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
 
     // Highlight the added fixed box
     if (fixedBoxId) {

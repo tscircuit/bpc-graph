@@ -2,7 +2,7 @@
  * Smallest angular separation (radians) between two directions on the unit circle.
  * Always in [0, π].
  */
-const circularDistance = (a: number, b: number): number => {
+export const circularDistance = (a: number, b: number): number => {
   const TAU = 2 * Math.PI // 360 °
   const raw = Math.abs(a - b) % TAU
   return Math.min(raw, TAU - raw)
