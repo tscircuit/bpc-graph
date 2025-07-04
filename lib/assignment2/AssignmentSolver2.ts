@@ -48,6 +48,7 @@ export class AssignmentSolver2 {
     currentDist: number
     distances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
+    wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
   } | null = null
 
   constructor(
@@ -120,6 +121,7 @@ export class AssignmentSolver2 {
       currentDist,
       distances: new Map(),
       wlVecs: new Map(),
+      wipGraphsWithAddedFixedBoxId: new Map(),
     }
 
     let bestDist = Infinity // currentDist
@@ -138,8 +140,13 @@ export class AssignmentSolver2 {
 
       // console.log(dist, dist2)
 
-      this.lastDistanceEvaluation.wlVecs.set(fixedBoxId, debug_wlVec)
-      this.lastDistanceEvaluation.distances.set(fixedBoxId, dist)
+      this.lastDistanceEvaluation!.wipGraphsWithAddedFixedBoxId.set(
+        fixedBoxId,
+        wipGraphWithAddedFixedBoxId,
+      )
+
+      this.lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
+      this.lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
       if (dist < bestDist) {
         bestDist = dist
         bestNewWipGraph = wipGraphWithAddedFixedBoxId

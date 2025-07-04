@@ -3,7 +3,11 @@ import corpus from "@tscircuit/schematic-corpus"
 import { AssignmentSolver2 } from "lib/assignment2/AssignmentSolver2"
 import { useMemo, useState } from "react"
 import { getWlFeatureVecs } from "lib/adjacency-matrix-network-similarity/getBpcGraphWlDistance"
-import { getWlDotProduct } from "lib/index"
+import {
+  getGraphicsForBpcGraph,
+  getWlDotProduct,
+  type BpcGraph,
+} from "lib/index"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
@@ -11,10 +15,12 @@ const fixedGraph = corpus.design018
 const WlVecDialog = ({
   wlVec,
   targetFloatingVec,
+  wipGraphWithAddedFixedBoxId,
   onClose,
 }: {
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
+  wipGraphWithAddedFixedBoxId: BpcGraph | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
@@ -40,6 +46,11 @@ const WlVecDialog = ({
         >
           Close
         </button>
+        {wipGraphWithAddedFixedBoxId && (
+          <InteractiveGraphics
+            graphics={getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId)}
+          />
+        )}
         <table className="border-collapse mb-4">
           <thead>
             <tr>
@@ -103,7 +114,13 @@ export default () => {
   const [openVec, setOpenVec] = useState<Array<Record<string, number>> | null>(
     null,
   )
-  const closeDialog = () => setOpenVec(null)
+  const [openVecFixedBoxId, setOpenVecFixedBoxId] = useState<string | null>(
+    null,
+  )
+  const closeDialog = () => {
+    setOpenVec(null)
+    setOpenVecFixedBoxId(null)
+  }
 
   return (
     <div>
@@ -167,6 +184,7 @@ export default () => {
                         solver?.lastDistanceEvaluation?.wlVecs.get(
                           fixedBoxId,
                         ) ?? null
+                      setOpenVecFixedBoxId(fixedBoxId)
                       setOpenVec(vec)
                     }}
                   >
@@ -180,6 +198,11 @@ export default () => {
       <WlVecDialog
         wlVec={openVec}
         targetFloatingVec={targetFloatingVec}
+        wipGraphWithAddedFixedBoxId={
+          solver?.lastDistanceEvaluation?.wipGraphsWithAddedFixedBoxId.get(
+            openVecFixedBoxId!,
+          ) ?? null
+        }
         onClose={closeDialog}
       />
     </div>
