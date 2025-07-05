@@ -14,15 +14,18 @@ import { AssignmentSolver2 } from "./AssignmentSolver2"
  * Returns boxAssignment and networkAssignment, but does not return nodeAssignment.
  */
 export const getApproximateAssignments2 = (
-  g1: BpcGraph,
-  g2: BpcGraph,
+  floatingGraph: BpcGraph,
+  fixedGraph: BpcGraph,
 ): {
-  boxAssignment: Record<FloatingBoxId, FixedBoxId>
-  networkAssignment: Record<FloatingNetworkId, FixedNetworkId>
-  pinAssignment: Record<FloatingBoxId, Record<FloatingPinId, FixedPinId>>
+  floatingToFixedBoxAssignment: Record<FloatingBoxId, FixedBoxId>
+  floatingToFixedNetworkAssignment: Record<FloatingNetworkId, FixedNetworkId>
+  floatingToFixedPinAssignment: Record<
+    FloatingBoxId,
+    Record<FloatingPinId, FixedPinId>
+  >
 } => {
   // AssignmentSolver2 expects floatingGraph, fixedGraph
-  const solver = new AssignmentSolver2(g1, g2)
+  const solver = new AssignmentSolver2(floatingGraph, fixedGraph)
 
   // Run the solver until solved or max iterations
   while (!solver.solved && solver.iterations < 1000) {
@@ -46,5 +49,9 @@ export const getApproximateAssignments2 = (
 
   const pinAssignment = solver.getPinAssignment()
 
-  return { boxAssignment, networkAssignment, pinAssignment }
+  return {
+    floatingToFixedBoxAssignment: boxAssignment,
+    floatingToFixedNetworkAssignment: networkAssignment,
+    floatingToFixedPinAssignment: pinAssignment,
+  }
 }

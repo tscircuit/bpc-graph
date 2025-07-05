@@ -3,7 +3,16 @@ import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similar
 import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
 import { matchPins } from "lib/assignment2/matchPins"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
-import type { BpcGraph, BpcPin, FixedBpcGraph, MixedBpcGraph } from "lib/types"
+import type {
+  BpcGraph,
+  BpcPin,
+  FixedBpcGraph,
+  MixedBpcGraph,
+  FloatingBoxId,
+  FixedBoxId,
+  FloatingPinId,
+  FixedPinId,
+} from "lib/types"
 
 /**
  * This method adapts a source BPC graph to a target BPC graph such that the
@@ -20,8 +29,8 @@ import type { BpcGraph, BpcPin, FixedBpcGraph, MixedBpcGraph } from "lib/types"
  * - Return the adapted BPC graph, the net assignment, and the box assignment
  */
 export const netAdaptBpcGraph = (
-  sourceBpcGraph: FixedBpcGraph,
-  targetBpcGraph: MixedBpcGraph,
+  fixedGraph: FixedBpcGraph,
+  floatingGraph: MixedBpcGraph,
 ): {
   adaptedBpcGraph: MixedBpcGraph
 } => {
@@ -30,65 +39,83 @@ export const netAdaptBpcGraph = (
   //   targetBpcGraph,
   // )
   const approxAssignmentsResult = getApproximateAssignments2(
-    sourceBpcGraph,
-    targetBpcGraph,
+    floatingGraph,
+    fixedGraph,
   )
 
-  const sourceFlatBpcGraph = convertToFlatBpcGraph(sourceBpcGraph)
-  const sourceAdjMatrixResult =
-    getAdjacencyMatrixFromFlatBpcGraph(sourceFlatBpcGraph)
+  const fixedFlatBpcGraph = convertToFlatBpcGraph(fixedGraph)
+  const fixedAdjMatrixResult =
+    getAdjacencyMatrixFromFlatBpcGraph(fixedFlatBpcGraph)
 
-  const targetFlatBpcGraph = convertToFlatBpcGraph(targetBpcGraph)
-  const targetAdjMatrixResult =
-    getAdjacencyMatrixFromFlatBpcGraph(targetFlatBpcGraph)
+  const floatingFlatBpcGraph = convertToFlatBpcGraph(floatingGraph)
+  const floatingAdjMatrixResult =
+    getAdjacencyMatrixFromFlatBpcGraph(floatingFlatBpcGraph)
 
   // Create a combined assignment that includes both boxes and pins
-  const combinedNodeAssignment: Record<string, string> = {
-    ...approxAssignmentsResult.boxAssignment,
+  const floatingToFixedNodeAssignment: Record<
+    FloatingBoxId | `${FloatingBoxId}-${FloatingPinId}`,
+    FixedBoxId | `${FixedBoxId}-${FixedPinId}`
+  > = {
+    ...approxAssignmentsResult.floatingToFixedBoxAssignment,
   }
   for (const [floatingBoxId, pinAssignment] of Object.entries(
-    approxAssignmentsResult.pinAssignment,
+    approxAssignmentsResult.floatingToFixedPinAssignment,
   )) {
     for (const [floatingPinId, fixedPinId] of Object.entries(pinAssignment)) {
-      combinedNodeAssignment[`${floatingBoxId}-${floatingPinId}`] =
-        `${fixedPinId}`
+      const fixedBoxId =
+        approxAssignmentsResult.floatingToFixedBoxAssignment[floatingBoxId]
+      floatingToFixedNodeAssignment[`${floatingBoxId}-${floatingPinId}`] =
+        `${fixedBoxId}-${fixedPinId}`
     }
   }
 
   const editOpsResult = getEditOperationsForMatrix({
-    nodeAssignment: combinedNodeAssignment,
-    sourceAdjMatrix: sourceAdjMatrixResult.matrix,
-    targetAdjMatrix: targetAdjMatrixResult.matrix,
-    sourceMatrixMapping: sourceAdjMatrixResult.mapping,
-    targetMatrixMapping: targetAdjMatrixResult.mapping,
+    floatingToFixedNodeAssignment,
+    fixedAdjMatrix: fixedAdjMatrixResult.matrix,
+    floatingAdjMatrix: floatingAdjMatrixResult.matrix,
+    fixedMatrixMapping: fixedAdjMatrixResult.mapping,
+    floatingMatrixMapping: floatingAdjMatrixResult.mapping,
   })
 
-  const adaptedBpcGraph: MixedBpcGraph = structuredClone(sourceBpcGraph)
+  const newFixedToFloatingNodeAssignment: Record<
+    FixedBoxId | `${FixedBoxId}-${FixedPinId}`,
+    FloatingBoxId | `${FloatingBoxId}-${FloatingPinId}`
+  > = {}
 
-  /* ---------- rename pins first (still using original source ids) ---------- */
-  for (const pin of adaptedBpcGraph.pins) {
-    const sourcePinNodeId = `${pin.boxId}-${pin.pinId}`
-    const targetPinNodeId = editOpsResult.newNodeAssignment[sourcePinNodeId]
-    if (!targetPinNodeId) continue // unmapped → will be handled later
-
-    const [tBoxId, tPinId] = targetPinNodeId.split("-")
-    const tgtPin = targetBpcGraph.pins.find(
-      (p) => p.boxId === tBoxId && p.pinId === tPinId,
-    )
-    if (!tgtPin) continue // safety guard
-
-    pin.boxId = tgtPin.boxId
-    pin.pinId = tgtPin.pinId
-    pin.networkId = tgtPin.networkId
-    pin.color = tgtPin.color
-    pin.offset = tgtPin.offset
+  for (const [floatingNodeId, fixedNodeId] of Object.entries(
+    editOpsResult.newFloatingToFixedNodeAssignment,
+  )) {
+    newFixedToFloatingNodeAssignment[fixedNodeId] = floatingNodeId
   }
 
-  /* ---------- now rename boxes (only when a mapping exists) ---------- */
+  // Initially the adaptedBpcGraph has all fixed ids
+  const adaptedBpcGraph: MixedBpcGraph = structuredClone(fixedGraph)
+
+  /* ---------- rename pins first (use floating ids) ---------- */
+  for (const pin of adaptedBpcGraph.pins) {
+    const fixedPinNodeId = `${pin.boxId}-${pin.pinId}`
+    const floatingPinNodeId = newFixedToFloatingNodeAssignment[fixedPinNodeId]
+    if (!floatingPinNodeId) continue // unmapped → will be handled later
+
+    const [tBoxId, tPinId] = floatingPinNodeId.split("-")
+    const floatingPin = floatingGraph.pins.find(
+      (p) => p.boxId === tBoxId && p.pinId === tPinId,
+    )
+    if (!floatingPin) continue // safety guard
+
+    pin.boxId = floatingPin.boxId
+    pin.pinId = floatingPin.pinId
+    pin.networkId = floatingPin.networkId
+    pin.color = floatingPin.color
+    pin.offset = floatingPin.offset
+  }
+
   for (const box of adaptedBpcGraph.boxes) {
-    const mappedId = editOpsResult.newNodeAssignment[box.boxId]
-    if (mappedId !== undefined) {
-      box.boxId = mappedId
+    const floatingBoxId = newFixedToFloatingNodeAssignment[box.boxId]
+    if (floatingBoxId) {
+      box.boxId = floatingBoxId
+    } else {
+      // box is unmapped → will be handled later
     }
   }
 
@@ -96,28 +123,28 @@ export const netAdaptBpcGraph = (
     switch (op.type) {
       case "create_node": {
         if (op.isBox) {
-          const targetBox = targetBpcGraph.boxes.find(
-            (b) => b.boxId === op.targetNodeId,
+          const targetBox = floatingGraph.boxes.find(
+            (b) => b.boxId === op.floatingNodeId,
           )
           if (!targetBox) {
-            throw new Error(`Target box ${op.targetNodeId} not found`)
+            throw new Error(`Target box ${op.floatingNodeId} not found`)
           }
           adaptedBpcGraph.boxes.push({
-            boxId: op.targetNodeId,
+            boxId: op.floatingNodeId,
             kind: "floating",
           })
         } else {
-          const splitResult = op.targetNodeId.split("-")
+          const splitResult = op.floatingNodeId.split("-")
           if (splitResult.length !== 2) {
-            throw new Error(`Invalid pin node ID format: ${op.targetNodeId}`)
+            throw new Error(`Invalid pin node ID format: ${op.floatingNodeId}`)
           }
           const targetBoxId = splitResult[0]!
           const targetPinId = splitResult[1]!
-          const targetPin = targetBpcGraph.pins.find(
+          const targetPin = floatingGraph.pins.find(
             (p) => p.boxId === targetBoxId && p.pinId === targetPinId,
           )
           if (!targetPin) {
-            throw new Error(`Target pin ${op.targetNodeId} not found`)
+            throw new Error(`Target pin ${op.floatingNodeId} not found`)
           }
 
           // Check if the box exists in the adapted graph, if not create it
@@ -125,7 +152,7 @@ export const netAdaptBpcGraph = (
             (box) => box.boxId === targetBoxId,
           )
           if (!boxExists) {
-            const targetBox = targetBpcGraph.boxes.find(
+            const targetBox = floatingGraph.boxes.find(
               (b) => b.boxId === targetBoxId,
             )
             if (!targetBox) {
@@ -176,6 +203,8 @@ export const netAdaptBpcGraph = (
       }
     }
   }
+
+  console.log(adaptedBpcGraph)
 
   return {
     adaptedBpcGraph: adaptedBpcGraph,

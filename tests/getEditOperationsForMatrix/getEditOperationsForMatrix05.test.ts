@@ -27,11 +27,11 @@ test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
   }
 
   const { operations } = getEditOperationsForMatrix({
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    sourceMatrixMapping,
-    targetMatrixMapping,
-    nodeAssignment: boxAssignment,
+    fixedAdjMatrix: sourceAdjMatrix,
+    floatingAdjMatrix: targetAdjMatrix,
+    fixedMatrixMapping: sourceMatrixMapping,
+    floatingMatrixMapping: targetMatrixMapping,
+    floatingToFixedNodeAssignment: boxAssignment,
   })
 
   expect(operations).toEqual([

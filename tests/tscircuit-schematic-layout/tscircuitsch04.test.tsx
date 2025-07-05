@@ -36,7 +36,9 @@ test("tscircuitsch04", async () => {
   const circuitSvg = await convertCircuitJsonToSchematicSvg(
     circuitJsonWithImpliedNetLabels,
   )
-  const ogBpcGraph = convertCircuitJsonToBpc(circuitJsonWithImpliedNetLabels)
+  const ogBpcGraph = convertCircuitJsonToBpc(circuitJsonWithImpliedNetLabels, {
+    useReadableIds: true,
+  })
 
   // Use the debugLayout utility from tests/fixtures/debugLayout.ts
   const {
@@ -54,33 +56,43 @@ test("tscircuitsch04", async () => {
     {
       "boxes": [
         {
-          "boxId": "schematic_component_0",
+          "boxId": "R1",
           "center": {
             "x": 0,
             "y": 0,
           },
-          "kind": "floating",
+          "kind": "fixed",
         },
         {
-          "boxId": "schematic_component_1",
+          "boxId": "C1",
           "center": {
-            "x": -1.2,
+            "x": 1.2,
             "y": 0,
           },
-          "kind": "floating",
+          "kind": "fixed",
         },
         {
-          "boxId": "schematic_net_label_0",
+          "boxAttributes": {
+            "is_net_label": true,
+            "source_net_id": "source_net_0",
+            "source_trace_id": undefined,
+          },
+          "boxId": "NL_VCC0",
           "center": {
-            "x": 0.6,
+            "x": -0.6,
             "y": 0.78,
           },
           "kind": "fixed",
         },
         {
-          "boxId": "schematic_net_label_1",
+          "boxAttributes": {
+            "is_net_label": true,
+            "source_net_id": "source_net_1",
+            "source_trace_id": undefined,
+          },
+          "boxId": "NL_GND0",
           "center": {
-            "x": -1.8,
+            "x": 1.8,
             "y": -0.78,
           },
           "kind": "fixed",
@@ -88,104 +100,104 @@ test("tscircuitsch04", async () => {
       ],
       "pins": [
         {
-          "boxId": "schematic_component_0",
+          "boxId": "R1",
           "color": "component_center",
           "networkId": "center_schematic_component_0",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": 0,
           },
-          "pinId": "schematic_component_0_center",
+          "pinId": "R1_center",
         },
         {
-          "boxId": "schematic_component_0",
+          "boxId": "R1",
           "color": "vcc",
-          "networkId": "unnamedsubcircuit1719_connectivity_net0",
-          "offset": {
-            "x": 0.5512907000000002,
-            "y": 0.0002732499999993365,
-          },
-          "pinId": "schematic_port_0",
-        },
-        {
-          "boxId": "schematic_component_0",
-          "color": "normal",
-          "networkId": "unnamedsubcircuit1719_connectivity_net1",
+          "networkId": "unnamedsubcircuit7_connectivity_net0",
           "offset": {
             "x": -0.5512907000000002,
-            "y": -0.0002732499999993365,
+            "y": 0.0002732499999993365,
           },
-          "pinId": "schematic_port_1",
+          "pinId": "R1_pin1",
         },
         {
-          "boxId": "schematic_component_1",
+          "boxId": "R1",
+          "color": "normal",
+          "networkId": "unnamedsubcircuit7_connectivity_net2",
+          "offset": {
+            "x": 0.5512907000000002,
+            "y": -0.0002732499999993365,
+          },
+          "pinId": "R1_pin2",
+        },
+        {
+          "boxId": "C1",
           "color": "component_center",
           "networkId": "center_schematic_component_1",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": 0,
           },
-          "pinId": "schematic_component_1_center",
+          "pinId": "C1_center",
         },
         {
-          "boxId": "schematic_component_1",
+          "boxId": "C1",
           "color": "normal",
-          "networkId": "unnamedsubcircuit1719_connectivity_net1",
-          "offset": {
-            "x": 0.5512093000000002,
-            "y": -0.00027334999999961695,
-          },
-          "pinId": "schematic_port_2",
-        },
-        {
-          "boxId": "schematic_component_1",
-          "color": "gnd",
-          "networkId": "unnamedsubcircuit1719_connectivity_net2",
+          "networkId": "unnamedsubcircuit7_connectivity_net2",
           "offset": {
             "x": -0.5512093000000002,
+            "y": -0.00027334999999961695,
+          },
+          "pinId": "C1_pin1",
+        },
+        {
+          "boxId": "C1",
+          "color": "gnd",
+          "networkId": "unnamedsubcircuit7_connectivity_net1",
+          "offset": {
+            "x": 0.5512093000000002,
             "y": 0.00027334999999961695,
           },
-          "pinId": "schematic_port_3",
+          "pinId": "C1_pin2",
         },
         {
-          "boxId": "schematic_net_label_0",
+          "boxId": "NL_VCC0",
           "color": "vcc",
-          "networkId": "unnamedsubcircuit1719_connectivity_net0",
+          "networkId": "unnamedsubcircuit7_connectivity_net0",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": -0.18000000000000005,
           },
-          "pinId": "schematic_net_label_0_pin",
+          "pinId": "NL_VCC0_pin",
         },
         {
-          "boxId": "schematic_net_label_0",
+          "boxId": "NL_VCC0",
           "color": "netlabel_center",
-          "networkId": "schematic_net_label_0_center",
+          "networkId": "NL_VCC0_center",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": 0,
           },
-          "pinId": "schematic_net_label_0_center",
+          "pinId": "NL_VCC0_center",
         },
         {
-          "boxId": "schematic_net_label_1",
+          "boxId": "NL_GND0",
           "color": "gnd",
-          "networkId": "unnamedsubcircuit1719_connectivity_net2",
+          "networkId": "unnamedsubcircuit7_connectivity_net1",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": 0.18000000000000005,
           },
-          "pinId": "schematic_net_label_1_pin",
+          "pinId": "NL_GND0_pin",
         },
         {
-          "boxId": "schematic_net_label_1",
+          "boxId": "NL_GND0",
           "color": "netlabel_center",
-          "networkId": "schematic_net_label_1_center",
+          "networkId": "NL_GND0_center",
           "offset": {
-            "x": -0,
+            "x": 0,
             "y": 0,
           },
-          "pinId": "schematic_net_label_1_center",
+          "pinId": "NL_GND0_center",
         },
       ],
     }

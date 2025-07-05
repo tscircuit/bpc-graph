@@ -32,10 +32,8 @@ export const testNetAdapt = (
   // (Assume GraphicsObject is in scope)
 
   // Get box assignments between source and target
-  const { boxAssignment } = getApproximateAssignments2(
-    source as MixedBpcGraph,
-    target as MixedBpcGraph,
-  )
+  const { floatingToFixedBoxAssignment: boxAssignment } =
+    getApproximateAssignments2(source as MixedBpcGraph, target as MixedBpcGraph)
 
   const assignedBoxIds1 = Object.keys(boxAssignment)
   const boxIdToNum = new Map<string, number>()

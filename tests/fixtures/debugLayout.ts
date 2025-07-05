@@ -9,6 +9,7 @@ import { matchGraph } from "lib/match-graph/matchGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
+import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const debugLayout = (g: BpcGraph) => {
   // 1. Partition the graph
@@ -32,14 +33,14 @@ export const debugLayout = (g: BpcGraph) => {
   // 4. Net-adapt each canonical partition to its best corpus match
   const adaptedGraphs = canonicalPartitions.map((part) => {
     const {
-      graph: corpusSource,
+      graph: fixedCorpusGraph,
       graphName,
       distance,
     } = matchGraph(part.g, corpus as any)
-    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
+    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph)
     return {
-      matchedCorpusGraph: corpusSource,
-      matchedCorpusGraphGraphics: getGraphicsForBpcGraph(corpusSource, {
+      matchedCorpusGraph: fixedCorpusGraph,
+      matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
         title: `Matched ${graphName} (d=${distance.toFixed(2)})`,
       }),
       adaptedBpcGraph,

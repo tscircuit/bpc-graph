@@ -29,7 +29,9 @@ export default function Assignment2Page() {
         generateImplicitNetLabels(circuitJson),
       )
       setFloatingGraph(
-        convertCircuitJsonToBpc(circuitJsonWithImpliedNetLabels) as any,
+        convertCircuitJsonToBpc(circuitJsonWithImpliedNetLabels, {
+          useReadableIds: true,
+        }) as any,
       )
     }
     run()

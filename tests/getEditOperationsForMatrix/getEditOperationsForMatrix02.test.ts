@@ -29,11 +29,11 @@ test("getEditOperationsForMatrix02", () => {
   }
 
   const result = getEditOperationsForMatrix({
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    sourceMatrixMapping,
-    targetMatrixMapping,
-    nodeAssignment: boxAssignment,
+    fixedAdjMatrix: sourceAdjMatrix,
+    floatingAdjMatrix: targetAdjMatrix,
+    fixedMatrixMapping: sourceMatrixMapping,
+    floatingMatrixMapping: targetMatrixMapping,
+    floatingToFixedNodeAssignment: boxAssignment,
   })
 
   // The expected operation is to delete the node at index 2

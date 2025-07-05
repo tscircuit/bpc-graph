@@ -13,7 +13,7 @@ export type EditOperation =
       type: "create_node"
       newRowAndColumnIndex: number
       nodeId: string
-      targetNodeId: string
+      floatingNodeId: string
       isBox: boolean
     }
   // Added in step 3
@@ -42,39 +42,48 @@ export type EditOperation =
     }
 
 export const getEditOperationsForMatrix = (params: {
-  // Square Adjacency Matrix for Source Graph
-  sourceAdjMatrix: number[][]
+  // Square Adjacency Matrix for Fixed/Source Graph
+  fixedAdjMatrix: number[][]
 
-  // Square Adjacency Matrix for Target Graph
-  targetAdjMatrix: number[][]
+  // Square Adjacency Matrix for Floating/Target Graph
+  floatingAdjMatrix: number[][]
 
   // { [SourceNodeId]: SourceColumnIndex/SourceRowIndex in AdjMatrix }
-  sourceMatrixMapping: Map<string, number>
+  fixedMatrixMapping: Map<string, number>
 
   // { [TargetNodeId]: TargetColumnIndex/TargetRowIndex in AdjMatrix }
-  targetMatrixMapping: Map<string, number>
+  floatingMatrixMapping: Map<string, number>
 
   // { [SourceNodeId]: TargetNodeId }
-  nodeAssignment: Assignment<string, string>
+  floatingToFixedNodeAssignment: Assignment<string, string>
 }): {
   operations: EditOperation[]
   newSourceAdjMatrix: number[][]
   newSourceMatrixMapping: Map<string, number>
-  newNodeAssignment: Assignment<string, string>
+  newFloatingToFixedNodeAssignment: Assignment<string, string>
 } => {
   const {
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    nodeAssignment,
-    sourceMatrixMapping,
-    targetMatrixMapping,
+    fixedAdjMatrix,
+    floatingAdjMatrix,
+    floatingToFixedNodeAssignment,
+    fixedMatrixMapping,
+    floatingMatrixMapping,
   } = params
+
+  const fixedToFloatingNodeAssignment: Record<string, string> = {}
+  for (const [floatingNodeId, fixedNodeId] of Object.entries(
+    floatingToFixedNodeAssignment,
+  )) {
+    fixedToFloatingNodeAssignment[fixedNodeId] = floatingNodeId
+  }
 
   const operations: EditOperation[] = []
 
-  let currentSourceAdjMatrix = structuredClone(sourceAdjMatrix)
-  let currentNodeAssignment = structuredClone(nodeAssignment)
-  let currentSourceMatrixMapping = structuredClone(sourceMatrixMapping)
+  let currentFixedAdjMatrix = structuredClone(fixedAdjMatrix)
+  let newFloatingToFixedNodeAssignment = structuredClone(
+    floatingToFixedNodeAssignment,
+  )
+  let currentFixedMatrixMapping = structuredClone(fixedMatrixMapping)
 
   // Step 1: If the source matrix is larger than the target matrix,
   // we just need to remove rows/columns in the source matrix that are not
@@ -115,19 +124,19 @@ export const getEditOperationsForMatrix = (params: {
   /* ---------- STEP 1 – DELETE NODES NOT ASSIGNED TO A TARGET BOX ---------- */
   {
     // Source boxes that have NO mapping to any target box
-    const unmappedSourceBoxIds = [...currentSourceMatrixMapping.keys()].filter(
-      (boxId) => !(boxId in currentNodeAssignment),
+    const unmappedFixedBoxIds = [...currentFixedMatrixMapping.keys()].filter(
+      (boxId) => !(boxId in fixedToFloatingNodeAssignment),
     )
 
     // Nothing to do
-    if (unmappedSourceBoxIds.length === 0) {
+    if (unmappedFixedBoxIds.length === 0) {
       /* no-op */
     } else {
       // Build list of { boxId, index } and sort descending so index shifting is safe
-      const deletions = unmappedSourceBoxIds
+      const deletions = unmappedFixedBoxIds
         .map((boxId) => ({
           boxId,
-          index: currentSourceMatrixMapping.get(boxId)!,
+          index: currentFixedMatrixMapping.get(boxId)!,
         }))
         .sort((a, b) => b.index - a.index)
 
@@ -140,17 +149,17 @@ export const getEditOperationsForMatrix = (params: {
         })
 
         // Remove the row
-        currentSourceAdjMatrix.splice(index, 1)
+        currentFixedAdjMatrix.splice(index, 1)
         // Remove the column from each remaining row
-        for (const row of currentSourceAdjMatrix) {
+        for (const row of currentFixedAdjMatrix) {
           row.splice(index, 1)
         }
 
         // Update source→matrix mapping
-        currentSourceMatrixMapping.delete(boxId)
-        for (const [otherBoxId, otherIdx] of currentSourceMatrixMapping) {
+        currentFixedMatrixMapping.delete(boxId)
+        for (const [otherBoxId, otherIdx] of currentFixedMatrixMapping) {
           if (otherIdx > index) {
-            currentSourceMatrixMapping.set(otherBoxId, otherIdx - 1)
+            currentFixedMatrixMapping.set(otherBoxId, otherIdx - 1)
           }
         }
       }
@@ -218,13 +227,16 @@ export const getEditOperationsForMatrix = (params: {
   /* ---------- STEP 2 – CREATE NODES FOR UNMAPPED TARGET BOXES ---------- */
   {
     // We only need to create nodes when the target matrix is bigger
-    const sizeDiff = targetAdjMatrix.length - currentSourceAdjMatrix.length
+    const sizeDiff = floatingAdjMatrix.length - currentFixedAdjMatrix.length
+    console.log({ sizeDiff })
     if (sizeDiff <= 0) {
       /* nothing to create */
     } else {
       // Identify target-side boxes that no source box is currently mapped to
-      const mappedTargetBoxIds = new Set(Object.values(currentNodeAssignment))
-      const unmappedTargetBoxIds = [...targetMatrixMapping.keys()].filter(
+      const mappedTargetBoxIds = new Set(
+        Object.values(newFloatingToFixedNodeAssignment),
+      )
+      const unmappedTargetBoxIds = [...floatingMatrixMapping.keys()].filter(
         (tBoxId) => !mappedTargetBoxIds.has(tBoxId),
       )
 
@@ -236,31 +248,37 @@ export const getEditOperationsForMatrix = (params: {
         const isBox = targetNodeId.split("-").length === 1
 
         // Generate a unique synthetic source-box id
-        const newSourceNodeId = `newly-inserted-${isBox ? "box" : "pin"}-${++newNodeCounter}`
+        let newFixedNodeId: string
+        if (isBox) {
+          newFixedNodeId = `newly_inserted_${isBox ? "box" : "pin"}_${++newNodeCounter}`
+        } else {
+          const fixedBoxId = targetNodeId.split("-")[0]!
+          newFixedNodeId = `${fixedBoxId}-newly_inserted_pin_${++newNodeCounter}`
+        }
 
         // We will append the new node at the end of the current matrix
-        const insertIndex = currentSourceAdjMatrix.length
+        const insertIndex = currentFixedAdjMatrix.length
 
         // Extend every existing row with a 0 (new column)
-        for (const row of currentSourceAdjMatrix) {
+        for (const row of currentFixedAdjMatrix) {
           row.push(0)
         }
 
         // Create a new row filled with 0s and add a self-loop (1 on the diagonal)
         const newRow = new Array(insertIndex + 1).fill(0)
         newRow[insertIndex] = 1
-        currentSourceAdjMatrix.push(newRow)
+        currentFixedAdjMatrix.push(newRow)
 
         // Update mappings and assignments
-        currentSourceMatrixMapping.set(newSourceNodeId, insertIndex)
-        currentNodeAssignment[newSourceNodeId] = targetNodeId
+        currentFixedMatrixMapping.set(newFixedNodeId, insertIndex)
+        newFloatingToFixedNodeAssignment[newFixedNodeId] = targetNodeId
 
         // Record the create_node operation
         operations.push({
           type: "create_node",
           newRowAndColumnIndex: insertIndex,
-          nodeId: newSourceNodeId,
-          targetNodeId,
+          nodeId: newFixedNodeId,
+          floatingNodeId: targetNodeId,
           isBox,
         })
       }
@@ -320,40 +338,45 @@ export const getEditOperationsForMatrix = (params: {
     /* --------------------------------------------------------- */
     /*  Build reverse mapping  (targetBoxId → sourceBoxId)       */
     /* --------------------------------------------------------- */
-    const targetToSource = new Map<string, string>()
-    for (const [srcBoxId, tgtBoxId] of Object.entries(currentNodeAssignment)) {
-      targetToSource.set(tgtBoxId, srcBoxId)
+    const floatingToFixedNodeAssignment = new Map<string, string>()
+    for (const [fixedNodeId, floatingNodeId] of Object.entries(
+      newFloatingToFixedNodeAssignment,
+    )) {
+      floatingToFixedNodeAssignment.set(floatingNodeId, fixedNodeId)
     }
 
     /* --------------------------------------------------------- */
     /*  Iterate over the desired ordering (target indices)       */
     /* --------------------------------------------------------- */
-    for (const [targetBoxId, desiredIdx] of targetMatrixMapping.entries()) {
-      const srcBoxId = targetToSource.get(targetBoxId)
-      if (!srcBoxId) continue // no source box mapped → will be handled later
-      const currentIdx = currentSourceMatrixMapping.get(srcBoxId)
+    for (const [
+      floatingNodeId,
+      desiredIdx,
+    ] of floatingMatrixMapping.entries()) {
+      const fixedNodeId = floatingToFixedNodeAssignment.get(floatingNodeId)
+      if (!fixedNodeId) continue // no source box mapped → will be handled later
+      const currentIdx = currentFixedMatrixMapping.get(fixedNodeId)
       if (currentIdx === undefined || currentIdx === desiredIdx) continue
 
       /* Who is sitting at the spot we want to occupy? */
-      const srcBoxIdAtDesiredIdx = [
-        ...currentSourceMatrixMapping.entries(),
+      const fixedNodeIdAtDesiredIdx = [
+        ...currentFixedMatrixMapping.entries(),
       ].find(([, idx]) => idx === desiredIdx)?.[0]
 
-      if (srcBoxIdAtDesiredIdx === undefined) continue // should not happen
+      if (fixedNodeIdAtDesiredIdx === undefined) continue // should not happen
 
       /* -------- perform swap in matrix & bookkeeping -------- */
-      swapRowsAndColumns(currentSourceAdjMatrix, currentIdx, desiredIdx)
+      swapRowsAndColumns(currentFixedAdjMatrix, currentIdx, desiredIdx)
 
-      currentSourceMatrixMapping.set(srcBoxId, desiredIdx)
-      currentSourceMatrixMapping.set(srcBoxIdAtDesiredIdx, currentIdx)
+      currentFixedMatrixMapping.set(fixedNodeId, desiredIdx)
+      currentFixedMatrixMapping.set(fixedNodeIdAtDesiredIdx, currentIdx)
 
       // Always record the lower index first to keep a stable ordering
       const index1 = Math.min(currentIdx, desiredIdx)
       const index2 = Math.max(currentIdx, desiredIdx)
       const sourceBoxId1 =
-        index1 === currentIdx ? srcBoxId : srcBoxIdAtDesiredIdx
+        index1 === currentIdx ? fixedNodeId : fixedNodeIdAtDesiredIdx
       const sourceBoxId2 =
-        index1 === currentIdx ? srcBoxIdAtDesiredIdx : srcBoxId
+        index1 === currentIdx ? fixedNodeIdAtDesiredIdx : fixedNodeId
 
       operations.push({
         type: "swap_indices",
@@ -365,6 +388,7 @@ export const getEditOperationsForMatrix = (params: {
     }
   }
 
+  console.log("By step 3 operations length:", operations.length)
   // Step 4: Disconnect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   /**
    * Example:
@@ -408,21 +432,21 @@ export const getEditOperationsForMatrix = (params: {
   /* ---------- STEP 4 – DISCONNECT EDGES PRESENT IN SOURCE BUT NOT TARGET ---------- */
   {
     // Build reverse lookup: matrix-index -> sourceBoxId
-    const indexToSourceBoxId = new Map<number, string>()
-    for (const [srcBoxId, idx] of currentSourceMatrixMapping) {
-      indexToSourceBoxId.set(idx, srcBoxId)
+    const indexToFixedNodeId = new Map<number, string>()
+    for (const [srcBoxId, idx] of currentFixedMatrixMapping) {
+      indexToFixedNodeId.set(idx, srcBoxId)
     }
 
-    const n = currentSourceAdjMatrix.length // after Steps 1-3 this must equal targetAdjMatrix.length
+    const n = currentFixedAdjMatrix.length // after Steps 1-3 this must equal targetAdjMatrix.length
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
-        const sourceVal = currentSourceAdjMatrix[i]![j]
-        const targetVal = targetAdjMatrix[i]![j]
+        const sourceVal = currentFixedAdjMatrix[i]![j]
+        const targetVal = floatingAdjMatrix[i]![j]
 
         // Edge exists in source but not in target → must be disconnected
         if (sourceVal === 1 && targetVal === 0) {
-          const sourceBoxId1 = indexToSourceBoxId.get(i)!
-          const sourceBoxId2 = indexToSourceBoxId.get(j)!
+          const sourceBoxId1 = indexToFixedNodeId.get(i)!
+          const sourceBoxId2 = indexToFixedNodeId.get(j)!
 
           operations.push({
             type: "disconnect_nodes",
@@ -433,8 +457,8 @@ export const getEditOperationsForMatrix = (params: {
           })
 
           // Mutate the working matrix so later steps see the change
-          currentSourceAdjMatrix[i]![j] = 0
-          currentSourceAdjMatrix[j]![i] = 0
+          currentFixedAdjMatrix[i]![j] = 0
+          currentFixedAdjMatrix[j]![i] = 0
         }
       }
     }
@@ -447,15 +471,15 @@ export const getEditOperationsForMatrix = (params: {
   {
     // reverse lookup  (matrix index → sourceBoxId)
     const indexToSourceBoxId = new Map<number, string>()
-    for (const [srcBoxId, idx] of currentSourceMatrixMapping) {
+    for (const [srcBoxId, idx] of currentFixedMatrixMapping) {
       indexToSourceBoxId.set(idx, srcBoxId)
     }
 
-    const n = currentSourceAdjMatrix.length
+    const n = currentFixedAdjMatrix.length
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
-        const sourceVal = currentSourceAdjMatrix[i]![j]
-        const targetVal = targetAdjMatrix[i]![j]
+        const sourceVal = currentFixedAdjMatrix[i]![j]
+        const targetVal = floatingAdjMatrix[i]![j]
 
         // Edge exists in target but not in source → must be connected
         if (sourceVal === 0 && targetVal === 1) {
@@ -471,8 +495,8 @@ export const getEditOperationsForMatrix = (params: {
           })
 
           // update working matrix so later logic (future extensions / callers) is consistent
-          currentSourceAdjMatrix[i]![j] = 1
-          currentSourceAdjMatrix[j]![i] = 1
+          currentFixedAdjMatrix[i]![j] = 1
+          currentFixedAdjMatrix[j]![i] = 1
         }
       }
     }
@@ -502,10 +526,12 @@ export const getEditOperationsForMatrix = (params: {
   //   }
   // }
 
+  console.log("final operations length", operations.length)
+
   return {
-    newSourceAdjMatrix: currentSourceAdjMatrix,
-    newSourceMatrixMapping: currentSourceMatrixMapping,
-    newNodeAssignment: currentNodeAssignment,
+    newSourceAdjMatrix: currentFixedAdjMatrix,
+    newSourceMatrixMapping: currentFixedMatrixMapping,
+    newFloatingToFixedNodeAssignment,
     operations,
   }
 }

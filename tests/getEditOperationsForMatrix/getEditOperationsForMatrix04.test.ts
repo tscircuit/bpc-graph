@@ -27,11 +27,11 @@ test("getEditOperationsForMatrix04 – disconnect nodes (Step 4)", () => {
   }
 
   const { operations } = getEditOperationsForMatrix({
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    sourceMatrixMapping,
-    targetMatrixMapping,
-    nodeAssignment: boxAssignment,
+    fixedAdjMatrix: sourceAdjMatrix,
+    floatingAdjMatrix: targetAdjMatrix,
+    fixedMatrixMapping: sourceMatrixMapping,
+    floatingMatrixMapping: targetMatrixMapping,
+    floatingToFixedNodeAssignment: boxAssignment,
   })
 
   /* Only one operation should be needed: disconnect the off-diagonal link */

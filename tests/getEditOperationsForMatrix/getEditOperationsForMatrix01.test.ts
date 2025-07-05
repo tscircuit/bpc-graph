@@ -28,11 +28,11 @@ test("getEditOperationsForMatrix01", () => {
   }
 
   const result = getEditOperationsForMatrix({
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    sourceMatrixMapping,
-    targetMatrixMapping,
-    nodeAssignment: boxAssignment,
+    fixedAdjMatrix: sourceAdjMatrix,
+    floatingAdjMatrix: targetAdjMatrix,
+    fixedMatrixMapping: sourceMatrixMapping,
+    floatingMatrixMapping: targetMatrixMapping,
+    floatingToFixedNodeAssignment: boxAssignment,
   })
 
   // The expected operation is to create a new node at index 2
@@ -41,7 +41,7 @@ test("getEditOperationsForMatrix01", () => {
       type: "create_node",
       newRowAndColumnIndex: 2,
       nodeId: expect.any(String),
-      targetNodeId: "targetBox3",
+      floatingNodeId: "targetBox3",
       isBox: true,
     },
   ])

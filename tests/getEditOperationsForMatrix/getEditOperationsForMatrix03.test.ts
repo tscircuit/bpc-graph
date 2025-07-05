@@ -32,11 +32,11 @@ test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
   }
 
   const { operations } = getEditOperationsForMatrix({
-    sourceAdjMatrix,
-    targetAdjMatrix,
-    sourceMatrixMapping,
-    targetMatrixMapping,
-    nodeAssignment: boxAssignment,
+    fixedAdjMatrix: sourceAdjMatrix,
+    floatingAdjMatrix: targetAdjMatrix,
+    fixedMatrixMapping: sourceMatrixMapping,
+    floatingMatrixMapping: targetMatrixMapping,
+    floatingToFixedNodeAssignment: boxAssignment,
   })
 
   // Expect a single swap_indices operation exchanging rows/columns 1 and 2
