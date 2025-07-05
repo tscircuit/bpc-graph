@@ -78,3 +78,10 @@ export interface FlatBpcGraphNode {
 }
 
 export * from "./force-types"
+
+export type FloatingBoxId = string
+export type FixedBoxId = string
+export type FloatingPinId = string
+export type FixedPinId = string
+export type FloatingNetworkId = string
+export type FixedNetworkId = string

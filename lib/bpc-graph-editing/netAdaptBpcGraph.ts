@@ -1,12 +1,9 @@
 import { getAdjacencyMatrixFromFlatBpcGraph } from "lib/adjacency-matrix-network-similarity/getAdjacencyMatrixFromFlatBpcGraph"
-import {
-  getApproximateAssignments,
-  type Assignment,
-} from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
+import { matchPins } from "lib/assignment2/matchPins"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
-import type { BpcGraph, FixedBpcGraph, MixedBpcGraph } from "lib/types"
+import type { BpcGraph, BpcPin, FixedBpcGraph, MixedBpcGraph } from "lib/types"
 
 /**
  * This method adapts a source BPC graph to a target BPC graph such that the
@@ -45,8 +42,21 @@ export const netAdaptBpcGraph = (
   const targetAdjMatrixResult =
     getAdjacencyMatrixFromFlatBpcGraph(targetFlatBpcGraph)
 
+  // Create a combined assignment that includes both boxes and pins
+  const combinedNodeAssignment: Record<string, string> = {
+    ...approxAssignmentsResult.boxAssignment,
+  }
+  for (const [floatingBoxId, pinAssignment] of Object.entries(
+    approxAssignmentsResult.pinAssignment,
+  )) {
+    for (const [floatingPinId, fixedPinId] of Object.entries(pinAssignment)) {
+      combinedNodeAssignment[`${floatingBoxId}-${floatingPinId}`] =
+        `${fixedPinId}`
+    }
+  }
+
   const editOpsResult = getEditOperationsForMatrix({
-    nodeAssignment: approxAssignmentsResult.boxAssignment,
+    nodeAssignment: combinedNodeAssignment,
     sourceAdjMatrix: sourceAdjMatrixResult.matrix,
     targetAdjMatrix: targetAdjMatrixResult.matrix,
     sourceMatrixMapping: sourceAdjMatrixResult.mapping,

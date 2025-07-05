@@ -92,7 +92,7 @@ test("tscircuitsch04", async () => {
           "color": "component_center",
           "networkId": "center_schematic_component_0",
           "offset": {
-            "x": 0,
+            "x": -0,
             "y": 0,
           },
           "pinId": "schematic_component_0_center",
@@ -100,9 +100,9 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_component_0",
           "color": "vcc",
-          "networkId": "unnamedsubcircuit7_connectivity_net0",
+          "networkId": "unnamedsubcircuit1719_connectivity_net0",
           "offset": {
-            "x": -0.5512907,
+            "x": 0.5512907000000002,
             "y": 0.0002732499999993365,
           },
           "pinId": "schematic_port_0",
@@ -110,9 +110,9 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_component_0",
           "color": "normal",
-          "networkId": "unnamedsubcircuit7_connectivity_net2",
+          "networkId": "unnamedsubcircuit1719_connectivity_net1",
           "offset": {
-            "x": 0.5512907000000005,
+            "x": -0.5512907000000002,
             "y": -0.0002732499999993365,
           },
           "pinId": "schematic_port_1",
@@ -122,7 +122,7 @@ test("tscircuitsch04", async () => {
           "color": "component_center",
           "networkId": "center_schematic_component_1",
           "offset": {
-            "x": 0,
+            "x": -0,
             "y": 0,
           },
           "pinId": "schematic_component_1_center",
@@ -130,9 +130,9 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_component_1",
           "color": "normal",
-          "networkId": "unnamedsubcircuit7_connectivity_net2",
+          "networkId": "unnamedsubcircuit1719_connectivity_net1",
           "offset": {
-            "x": -0.5512093000000005,
+            "x": 0.5512093000000002,
             "y": -0.00027334999999961695,
           },
           "pinId": "schematic_port_2",
@@ -140,9 +140,9 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_component_1",
           "color": "gnd",
-          "networkId": "unnamedsubcircuit7_connectivity_net1",
+          "networkId": "unnamedsubcircuit1719_connectivity_net2",
           "offset": {
-            "x": 0.5512093,
+            "x": -0.5512093000000002,
             "y": 0.00027334999999961695,
           },
           "pinId": "schematic_port_3",
@@ -150,10 +150,10 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_net_label_0",
           "color": "vcc",
-          "networkId": "unnamedsubcircuit7_connectivity_net0",
+          "networkId": "unnamedsubcircuit1719_connectivity_net0",
           "offset": {
-            "x": 0.27,
-            "y": 0,
+            "x": -0,
+            "y": -0.18000000000000005,
           },
           "pinId": "schematic_net_label_0_pin",
         },
@@ -162,7 +162,7 @@ test("tscircuitsch04", async () => {
           "color": "netlabel_center",
           "networkId": "schematic_net_label_0_center",
           "offset": {
-            "x": 0,
+            "x": -0,
             "y": 0,
           },
           "pinId": "schematic_net_label_0_center",
@@ -170,10 +170,10 @@ test("tscircuitsch04", async () => {
         {
           "boxId": "schematic_net_label_1",
           "color": "gnd",
-          "networkId": "unnamedsubcircuit7_connectivity_net1",
+          "networkId": "unnamedsubcircuit1719_connectivity_net2",
           "offset": {
-            "x": -0.27,
-            "y": 0,
+            "x": -0,
+            "y": 0.18000000000000005,
           },
           "pinId": "schematic_net_label_1_pin",
         },
@@ -182,7 +182,7 @@ test("tscircuitsch04", async () => {
           "color": "netlabel_center",
           "networkId": "schematic_net_label_1_center",
           "offset": {
-            "x": 0,
+            "x": -0,
             "y": 0,
           },
           "pinId": "schematic_net_label_1_center",
