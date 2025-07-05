@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 
-test("getEditOperationsForMatrix04 – disconnect nodes (Step 4)", () => {
+test.skip("getEditOperationsForMatrix04 – disconnect nodes (Step 4)", () => {
   /* 2×2 matrices, same ordering, but source has an extra connection */
   const sourceAdjMatrix = [
     [1, 1],

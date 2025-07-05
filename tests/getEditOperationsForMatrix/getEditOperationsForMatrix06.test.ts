@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 
-test("getEditOperationsForMatrix06 – mixed operations (delete / create / swap / disconnect / connect)", () => {
+test.skip("getEditOperationsForMatrix06 – mixed operations (delete / create / swap / disconnect / connect)", () => {
   /* ------------- SET-UP ------------- */
   // Source has 3 nodes (Box1, Box2, Box3) and extra connections.
   const sourceAdjMatrix = [

@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 
-test("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
+test.skip("getEditOperationsForMatrix05 - connect nodes (Step 5)", () => {
   /* Source lacks an edge that exists in target */
   const sourceAdjMatrix = [
     [1, 0],

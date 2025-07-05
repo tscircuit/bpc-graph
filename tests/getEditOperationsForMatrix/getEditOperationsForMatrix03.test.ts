@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 
-test("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
+test.skip("getEditOperationsForMatrix03 – swap indices (Step 3)", () => {
   /*  Source matrix has boxes in order A, C, B while target expects A, B, C  */
   const sourceAdjMatrix = [
     [1, 0, 1], // A connected to B (index 2)

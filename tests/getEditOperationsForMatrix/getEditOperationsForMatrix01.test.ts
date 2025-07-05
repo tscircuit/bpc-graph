@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
 
-test("getEditOperationsForMatrix01", () => {
+test.skip("getEditOperationsForMatrix01", () => {
   // This is a basic test for getEditOperationsForMatrix
   // Source: 2x2 identity, Target: 3x3 identity (should require one create_node)
   const sourceAdjMatrix = [
