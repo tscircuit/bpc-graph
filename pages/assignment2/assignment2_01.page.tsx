@@ -7,22 +7,28 @@ import {
   getGraphicsForBpcGraph,
   getWlDotProduct,
   type BpcGraph,
+  type FloatingBpcGraph,
 } from "lib/index"
+import { stackGraphicsHorizontally } from "graphics-debug"
 
 const floatingGraph = corpus.design001
 const fixedGraph = corpus.design018
 
-const WlVecDialog = ({
+export const WlVecDialog = ({
   wlVec,
   fixedBoxId,
+  floatingBoxId,
   targetFloatingVec,
   wipGraphWithAddedFixedBoxId,
+  floatingPartialGraph,
   onClose,
 }: {
   fixedBoxId?: string | null
+  floatingBoxId?: string | null
   wlVec: Array<Record<string, number>> | null
   targetFloatingVec: Array<Record<string, number>> | null
   wipGraphWithAddedFixedBoxId: BpcGraph | null
+  floatingPartialGraph?: FloatingBpcGraph | null
   onClose: () => void
 }) => {
   if (!wlVec) return null
@@ -41,17 +47,32 @@ const WlVecDialog = ({
 
   const graphics = useMemo(() => {
     if (!wipGraphWithAddedFixedBoxId) return null
-    const graphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!)
+    const leftGraphics = floatingPartialGraph
+      ? getGraphicsForBpcGraph(floatingPartialGraph!, {
+          title: "Floating Partial",
+        })
+      : {
+          rects: [],
+        }
+    const rightGraphics = getGraphicsForBpcGraph(wipGraphWithAddedFixedBoxId!, {
+      title: "WIP Graph with fixed box assignment",
+    })
 
     // Highlight the added fixed box
     if (fixedBoxId) {
-      const rect = graphics.rects?.find((r) => r.label === fixedBoxId)
-      if (rect) {
-        rect.fill = `rgba(255, 0, 0, 0.5)`
+      const leftRect = leftGraphics.rects?.find(
+        (r) => r.label === floatingBoxId,
+      )
+      if (leftRect) {
+        leftRect.fill = `rgba(255, 0, 0, 0.5)`
+      }
+      const rightRect = rightGraphics.rects?.find((r) => r.label === fixedBoxId)
+      if (rightRect) {
+        rightRect.fill = `rgba(255, 0, 0, 0.5)`
       }
     }
 
-    return graphics
+    return stackGraphicsHorizontally([leftGraphics, rightGraphics])
   }, [wipGraphWithAddedFixedBoxId])
 
   return (
@@ -157,8 +178,9 @@ export default () => {
             <th className="px-2 py-1 border">Floating Box ID</th>
             <th className="px-2 py-1 border">Fixed Box ID</th>
             <th className="px-2 py-1 border">
-              Distance (base={solver?.lastAcceptedEvaluation?.currentDist})
+              WL Distance (base={solver?.lastAcceptedEvaluation?.currentWlDist})
             </th>
+            <th className="px-2 py-1 border">Total Network Length</th>
             <th className="px-2 py-1 border">
               WL Vec{" "}
               <span
@@ -188,7 +210,7 @@ export default () => {
         </thead>
         <tbody>
           {solver?.lastAcceptedEvaluation &&
-            Array.from(solver.lastAcceptedEvaluation.distances.entries()).map(
+            Array.from(solver.lastAcceptedEvaluation.wlDistances.entries()).map(
               ([fixedBoxId, distance]) => (
                 <tr key={fixedBoxId}>
                   <td className="px-2 py-1 border">
@@ -196,6 +218,11 @@ export default () => {
                   </td>
                   <td className="px-2 py-1 border">{fixedBoxId}</td>
                   <td className="px-2 py-1 border">{distance}</td>
+                  <td className="px-2 py-1 border">
+                    {solver.lastAcceptedEvaluation?.networkLengths.get(
+                      fixedBoxId,
+                    )}
+                  </td>
                   <td
                     className="px-2 py-1 border text-blue-500 cursor-pointer"
                     onClick={() => {
@@ -220,7 +247,8 @@ export default () => {
         <thead>
           <tr>
             <th className="px-2 py-1 border">Floating Box ID</th>
-            <th className="px-2 py-1 border">Best Distance</th>
+            <th className="px-2 py-1 border">Best WL Distance</th>
+            <th className="px-2 py-1 border">Total Network Length</th>
           </tr>
         </thead>
         <tbody>
@@ -231,6 +259,9 @@ export default () => {
               <tr key={ev.nextFloatingBoxId}>
                 <td className="px-2 py-1 border">{ev.nextFloatingBoxId}</td>
                 <td className="px-2 py-1 border">{ev.bestDist}</td>
+                <td className="px-2 py-1 border">
+                  {ev.bestTotalNetworkLength}
+                </td>
               </tr>
             ))}
         </tbody>
@@ -238,7 +269,9 @@ export default () => {
       <WlVecDialog
         wlVec={openVec}
         fixedBoxId={openVecFixedBoxId}
+        floatingBoxId={solver?.lastAcceptedEvaluation?.floatingBoxId}
         targetFloatingVec={targetFloatingVec}
+        floatingPartialGraph={solver?.getPartialFloatingGraph()}
         wipGraphWithAddedFixedBoxId={
           solver?.lastAcceptedEvaluation?.wipGraphsWithAddedFixedBoxId.get(
             openVecFixedBoxId!,

@@ -191,24 +191,24 @@ netlabel_center
 schematic_net_label_1_center" data-x="6.650224999999999" data-y="0.98" cx="696.1677905066971" cy="54.233221459393846" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
   </g>
   <g>
-    <circle data-type="point" data-label="schematic_net_label_2_pin
-normal
-unnamedsubcircuit7_connectivity_net0" data-x="5.760224999999999" data-y="-0.2" cx="609.0081304130493" cy="169.7932202352413" r="3" fill="blue" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="schematic_net_label_2_center
-netlabel_center
-schematic_net_label_2_center" data-x="6.030225" data-y="-0.2" cx="635.449825048201" cy="169.7932202352413" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
-  </g>
-  <g>
     <circle data-type="point" data-label="schematic_net_label_3_pin
 normal
-unnamedsubcircuit7_connectivity_net1" data-x="5.940225" data-y="0" cx="626.6359268364838" cy="150.2067797647587" r="3" fill="blue" />
+unnamedsubcircuit7_connectivity_net1" data-x="5.760224999999999" data-y="-0.2" cx="609.0081304130493" cy="169.7932202352413" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_3_center
 netlabel_center
-schematic_net_label_3_center" data-x="6.210224999999999" data-y="0" cx="653.0776214716353" cy="150.2067797647587" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+schematic_net_label_3_center" data-x="6.030225" data-y="-0.2" cx="635.449825048201" cy="169.7932202352413" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_pin
+normal
+unnamedsubcircuit7_connectivity_net0" data-x="5.940225" data-y="0" cx="626.6359268364838" cy="150.2067797647587" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_center
+netlabel_center
+schematic_net_label_2_center" data-x="6.210224999999999" data-y="0" cx="653.0776214716353" cy="150.2067797647587" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
   </g>
   <g>
     <polyline data-points="0.6000000000000001,0.30000000000000004 0.6000000000000001,0.30000000000000004" data-type="line" data-label="" points="103.65593152906851,120.82711905903476 103.65593152906851,120.82711905903476" fill="none" stroke="hsl(40, 100%, 50%, 0.5)" stroke-width="1" />
@@ -238,10 +238,10 @@ schematic_net_label_3_center" data-x="6.210224999999999" data-y="0" cx="653.0776
     <polyline data-points="3.2249999999999996,0.4 4.625,-1" data-type="line" data-label="" points="360.7279627041529,111.03389882379344 497.8330459975313,248.1389821171718" fill="none" stroke="hsl(163.63636363636363, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="5.850225,0.30000000000000004 5.760224999999999,-0.2" data-type="line" data-label="" points="617.8220286247666,120.82711905903476 609.0081304130493,169.7932202352413" fill="none" stroke="hsl(40, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="5.850225,0.30000000000000004 5.940225,0" data-type="line" data-label="" points="617.8220286247666,120.82711905903476 626.6359268364838,150.2067797647587" fill="none" stroke="hsl(40, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="5.850225,0.09999999999999998 5.940225,0" data-type="line" data-label="" points="617.8220286247666,140.41355952951739 626.6359268364838,150.2067797647587" fill="none" stroke="hsl(80, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="5.850225,0.09999999999999998 5.760224999999999,-0.2" data-type="line" data-label="" points="617.8220286247666,140.41355952951739 609.0081304130493,169.7932202352413" fill="none" stroke="hsl(80, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
     <polyline data-points="5.850225,-0.10000000000000003 6.650224999999999,0.8" data-type="line" data-label="" points="617.8220286247666,160 696.1677905066971,71.8610178828282" fill="none" stroke="hsl(120, 100%, 50%, 0.5)" stroke-width="1" />
@@ -250,34 +250,34 @@ schematic_net_label_3_center" data-x="6.210224999999999" data-y="0" cx="653.0776
     <polyline data-points="5.850225,-0.30000000000000004 7.2502249999999995,-1" data-type="line" data-label="" points="617.8220286247666,179.58644047048264 754.927111918145,248.1389821171718" fill="none" stroke="hsl(160, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_component_0" data-x="0.30000000000000004" data-y="0" x="39.999999999999986" y="115.9305089414141" width="68.55254164668919" height="68.55254164668918" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_component_0" data-x="0.30000000000000004" data-y="0" x="39.999999999999986" y="115.9305089414141" width="68.55254164668919" height="68.55254164668918" fill="hsl(0, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_0" data-x="2" data-y="-1.0899999999999999" x="235.8644047048262" y="243.24237199955115" width="9.793220235241307" height="27.421016658675626" fill="hsl(0, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_0" data-x="2" data-y="-1.0899999999999999" x="235.8644047048262" y="243.24237199955115" width="9.793220235241307" height="27.421016658675626" fill="hsl(216, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_1" data-x="2" data-y="0.89" x="235.8644047048262" y="49.33661134177318" width="9.793220235241307" height="27.421016658675683" fill="hsl(72, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_1" data-x="2" data-y="0.89" x="235.8644047048262" y="49.33661134177318" width="9.793220235241307" height="27.421016658675683" fill="hsl(288, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_2" data-x="0.7350000000000001" data-y="0.30000000000000004" x="98.75932141144786" y="115.9305089414141" width="36.23491487039284" height="9.793220235241307" fill="hsl(216, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_2" data-x="0.7350000000000001" data-y="0.30000000000000004" x="98.75932141144786" y="115.9305089414141" width="36.23491487039284" height="9.793220235241307" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_3" data-x="0.7350000000000001" data-y="0.09999999999999998" x="98.75932141144786" y="135.51694941189672" width="36.23491487039284" height="9.793220235241307" fill="hsl(288, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_3" data-x="0.7350000000000001" data-y="0.09999999999999998" x="98.75932141144786" y="135.51694941189672" width="36.23491487039284" height="9.793220235241307" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_component_0" data-x="2.925" data-y="0" x="297.07203117508436" y="106.1372887061728" width="68.55254164668924" height="88.13898211717179" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_component_0" data-x="2.925" data-y="0" x="297.07203117508436" y="106.1372887061728" width="68.55254164668924" height="88.13898211717179" fill="hsl(0, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_0" data-x="4.625" data-y="-1.0899999999999999" x="492.9364358799107" y="243.24237199955115" width="9.793220235241279" height="27.421016658675626" fill="hsl(0, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_0" data-x="4.625" data-y="-1.0899999999999999" x="492.9364358799107" y="243.24237199955115" width="9.793220235241279" height="27.421016658675626" fill="hsl(216, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_1" data-x="4.0249999999999995" data-y="0.89" x="434.1771144684627" y="49.33661134177318" width="9.793220235241279" height="27.421016658675683" fill="hsl(72, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_1" data-x="4.0249999999999995" data-y="0.89" x="434.1771144684627" y="49.33661134177318" width="9.793220235241279" height="27.421016658675683" fill="hsl(288, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_2" data-x="3.3149999999999995" data-y="-0.2" x="355.8313525865322" y="164.89661011762067" width="27.421016658675683" height="9.793220235241307" fill="hsl(216, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_2" data-x="3.3149999999999995" data-y="-0.2" x="355.8313525865322" y="164.89661011762067" width="27.421016658675683" height="9.793220235241307" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_3" data-x="3.4049999999999994" data-y="0" x="355.8313525865322" y="145.31016964713803" width="45.04881308211003" height="9.793220235241336" fill="hsl(288, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_3" data-x="3.4049999999999994" data-y="0" x="355.8313525865322" y="145.31016964713803" width="45.04881308211003" height="9.793220235241336" fill="hsl(144, 100%, 50%, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_net_label_4" data-x="3.4049999999999994" data-y="0.20000000000000007" x="355.8313525865322" y="125.72372917665541" width="45.04881308211003" height="9.793220235241307" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
@@ -292,11 +292,11 @@ schematic_net_label_3_center" data-x="6.210224999999999" data-y="0" cx="653.0776
     <rect data-type="rect" data-label="schematic_net_label_1" data-x="6.650224999999999" data-y="0.89" x="691.2711803890764" y="49.33661134177318" width="9.793220235241279" height="27.421016658675683" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_2" data-x="5.895225" data-y="-0.2" x="604.1115202954288" y="164.89661011762067" width="36.2349148703928" height="9.793220235241307" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+    <rect data-type="rect" data-label="schematic_net_label_3" data-x="5.895225" data-y="-0.2" x="604.1115202954288" y="164.89661011762067" width="36.2349148703928" height="9.793220235241307" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
   </g>
   <g>
-    <rect data-type="rect" data-label="schematic_net_label_3" data-x="6.075225" data-y="0" x="621.7393167188632" y="145.31016964713803" width="36.2349148703928" height="9.793220235241336" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
-  </g><text data-type="text" data-label="Target" data-x="-0.04999999999999999" data-y="1.03" x="39.999999999999986" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Target</text><text data-type="text" data-label="2" data-x="0.30000000000000004" data-y="0" x="74.27627082334457" y="150.2067797647587" fill="black" font-size="27.421016658675676" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="0" data-x="2" data-y="-1.0899999999999999" x="240.76101482244687" y="256.95288032888897" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">0</text><text data-type="text" data-label="1" data-x="2" data-y="0.89" x="240.76101482244687" y="63.04711967111102" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">1</text><text data-type="text" data-label="3" data-x="0.7350000000000001" data-y="0.30000000000000004" x="116.87677884664429" y="120.82711905903476" fill="black" font-size="9.205627021126833" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">3</text><text data-type="text" data-label="4" data-x="0.7350000000000001" data-y="0.09999999999999998" x="116.87677884664429" y="140.41355952951739" fill="black" font-size="9.205627021126833" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">4</text><text data-type="text" data-label="Source" data-x="2.5749999999999997" data-y="1.03" x="297.07203117508436" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Source</text><text data-type="text" data-label="2" data-x="2.925" data-y="0" x="331.348301998429" y="150.2067797647587" fill="black" font-size="31.338304752772203" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="0" data-x="4.625" data-y="-1.0899999999999999" x="497.8330459975313" y="256.95288032888897" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">0</text><text data-type="text" data-label="1" data-x="4.0249999999999995" data-y="0.89" x="439.07372458608336" y="63.04711967111102" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">1</text><text data-type="text" data-label="3" data-x="3.3149999999999995" data-y="-0.2" x="369.5418609158701" y="169.7932202352413" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">3</text><text data-type="text" data-label="4" data-x="3.4049999999999994" data-y="0" x="378.35575912758725" y="150.2067797647587" fill="black" font-size="10.968406663470267" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">4</text><text data-type="text" data-label="Net Adapted (floating assigned)" data-x="5.200225" data-y="1.03" x="554.1660970956981" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Net Adapted (floating assigned)</text>
+    <rect data-type="rect" data-label="schematic_net_label_2" data-x="6.075225" data-y="0" x="621.7393167188632" y="145.31016964713803" width="36.2349148703928" height="9.793220235241336" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.010211145833333332" />
+  </g><text data-type="text" data-label="Target" data-x="-0.04999999999999999" data-y="1.03" x="39.999999999999986" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Target</text><text data-type="text" data-label="0" data-x="0.30000000000000004" data-y="0" x="74.27627082334457" y="150.2067797647587" fill="black" font-size="27.421016658675676" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">0</text><text data-type="text" data-label="3" data-x="2" data-y="-1.0899999999999999" x="240.76101482244687" y="256.95288032888897" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">3</text><text data-type="text" data-label="4" data-x="2" data-y="0.89" x="240.76101482244687" y="63.04711967111102" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">4</text><text data-type="text" data-label="2" data-x="0.7350000000000001" data-y="0.30000000000000004" x="116.87677884664429" y="120.82711905903476" fill="black" font-size="9.205627021126833" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="2" data-x="0.7350000000000001" data-y="0.09999999999999998" x="116.87677884664429" y="140.41355952951739" fill="black" font-size="9.205627021126833" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="Source" data-x="2.5749999999999997" data-y="1.03" x="297.07203117508436" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Source</text><text data-type="text" data-label="0" data-x="2.925" data-y="0" x="331.348301998429" y="150.2067797647587" fill="black" font-size="31.338304752772203" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">0</text><text data-type="text" data-label="3" data-x="4.625" data-y="-1.0899999999999999" x="497.8330459975313" y="256.95288032888897" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">3</text><text data-type="text" data-label="4" data-x="4.0249999999999995" data-y="0.89" x="439.07372458608336" y="63.04711967111102" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">4</text><text data-type="text" data-label="2" data-x="3.3149999999999995" data-y="-0.2" x="369.5418609158701" y="169.7932202352413" fill="black" font-size="7.442847378783395" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="2" data-x="3.4049999999999994" data-y="0" x="378.35575912758725" y="150.2067797647587" fill="black" font-size="10.968406663470267" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">2</text><text data-type="text" data-label="Net Adapted (floating assigned)" data-x="5.200225" data-y="1.03" x="554.1660970956981" y="49.33661134177318" fill="black" font-size="11.066338865822681" font-family="sans-serif" text-anchor="start" dominant-baseline="text-after-edge">Net Adapted (floating assigned)</text>
   <g id="crosshair" style="display: none">
     <line id="crosshair-h" y1="0" y2="320" stroke="#666" stroke-width="0.5" />
     <line id="crosshair-v" x1="0" x2="800" stroke="#666" stroke-width="0.5" /><text id="coordinates" font-family="monospace" font-size="12" fill="#666"></text>

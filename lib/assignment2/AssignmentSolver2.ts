@@ -8,7 +8,9 @@ import type {
   BpcFixedBox,
   BpcFloatingBox,
   BpcGraph,
+  FixedBpcGraph,
   FloatingBpcGraph,
+  NetworkId,
 } from "lib/types"
 import {
   getBpcGraphWlDistance,
@@ -19,6 +21,10 @@ import { hashStringToNumber } from "lib/graph-utils/hashStringToNumber"
 import { getWlDotProduct } from "lib/adjacency-matrix-network-similarity/wlDotProduct"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import { convertFlatBpcToGraphics } from "lib/debug/convertFlatBpcToGraphics"
+import { getTotalNetworkLength } from "lib/graph-utils/getTotalNetworkLength"
+import { computeGraphNetworkBagOfAnglesMap } from "lib/network-bag-of-angles-assignment/computeGraphNetworkBagOfAnglesMap"
+import { computeNetworkMappingFromBagsOfAngles } from "lib/network-bag-of-angles-assignment/computeNetworkMappingFromBagsOfAngles"
+import { matchPins } from "./matchPins"
 
 type FloatingBoxId = string
 type FixedBoxId = string
@@ -51,11 +57,15 @@ export class AssignmentSolver2 {
     floatingBoxId: FloatingBoxId
     originalWipGraph: BpcGraph
     partialFloatingGraph: BpcGraph
-    currentDist: number
-    distances: Map<FixedBoxId, number>
+    currentWlDist: number
+    networkLengths: Map<FixedBoxId, number>
+    wlDistances: Map<FixedBoxId, number>
     wlVecs: Map<FixedBoxId, Array<Record<string, number>>>
     wipGraphsWithAddedFixedBoxId: Map<FixedBoxId, BpcGraph>
   } | null = null
+
+  fixedToFloatingNetworkMap: Map<NetworkId, NetworkId>
+  floatingToFixedNetworkMap: Map<NetworkId, NetworkId>
 
   lastComputedEvaluations: Array<
     ReturnType<AssignmentSolver2["evaluateFloatingBoxAssignment"]>
@@ -69,6 +79,27 @@ export class AssignmentSolver2 {
       pins: [],
       boxes: [],
     }
+    this.fixedToFloatingNetworkMap = this.computeFixedToFloatingNetworkMap()
+    this.floatingToFixedNetworkMap = new Map(
+      Array.from(this.fixedToFloatingNetworkMap.entries()).map(
+        ([k, v]) => [v, k] as [NetworkId, NetworkId],
+      ),
+    )
+  }
+
+  computeFixedToFloatingNetworkMap() {
+    const floatingBagOfAnglesMap = computeGraphNetworkBagOfAnglesMap(
+      this.floatingGraph,
+    )
+    const fixedBagOfAnglesMap = computeGraphNetworkBagOfAnglesMap(
+      this.fixedGraph,
+    )
+    const { networkMapping } = computeNetworkMappingFromBagsOfAngles(
+      fixedBagOfAnglesMap,
+      floatingBagOfAnglesMap,
+    )
+
+    return networkMapping
   }
 
   /**
@@ -115,6 +146,8 @@ export class AssignmentSolver2 {
           !this.acceptedFloatingBoxIds.has(b) &&
           !this.rejectedFloatingBoxIds.has(b),
       )
+    // Just for testing to increase resilience
+    // .sort((a, b) => Math.random() - 0.5)
   }
 
   /**
@@ -144,49 +177,66 @@ export class AssignmentSolver2 {
   evaluateFloatingBoxAssignment(nextFloatingBoxId: FloatingBoxId) {
     const partialFloatingGraph = this.getPartialFloatingGraph(nextFloatingBoxId)
 
-    const currentDist = getBpcGraphWlDistance(
+    const currentWlDist = getBpcGraphWlDistance(
       partialFloatingGraph,
       this.wipGraph,
     )
     let bestFixedBoxId: FixedBoxId | null = null
     let bestNewWipGraph: BpcGraph | null = null
 
-    const lastDistanceEvaluation: typeof this.lastAcceptedEvaluation = {
+    const dEval: typeof this.lastAcceptedEvaluation = {
       floatingBoxId: nextFloatingBoxId,
       originalWipGraph: this.wipGraph,
       partialFloatingGraph,
-      currentDist,
-      distances: new Map(),
+      currentWlDist: currentWlDist,
+      networkLengths: new Map(),
+      wlDistances: new Map(),
       wlVecs: new Map(),
       wipGraphsWithAddedFixedBoxId: new Map(),
     }
 
-    let bestDist = currentDist
+    let bestDist = currentWlDist
+    let bestWlDist = currentWlDist
+    let bestTotalNetworkLength = Infinity
     // const floatingBoxWlVec = getWlFeatureVecs(this.floatingGraph)
     const floatingBoxWlVec = getWlFeatureVecs(partialFloatingGraph)
     for (const fixedBoxId of this.fixedGraph.boxes.map((b) => b.boxId)) {
       if (this.acceptedFixedBoxIds.has(fixedBoxId)) continue
       const wipGraphWithAddedFixedBoxId =
-        this.getWipGraphWithAddedFixedBoxId(fixedBoxId)
-      const dist = getBpcGraphWlDistance(
+        this.getWipGraphWithAddedFixedBoxIdForFloatingAssignment(
+          fixedBoxId,
+          nextFloatingBoxId,
+        )
+      const wlDist = getBpcGraphWlDistance(
         partialFloatingGraph,
         wipGraphWithAddedFixedBoxId,
       )
       const debug_wlVec = getWlFeatureVecs(wipGraphWithAddedFixedBoxId)
 
+      const { totalNetworkLength } = getTotalNetworkLength(
+        wipGraphWithAddedFixedBoxId as FixedBpcGraph,
+      )
+
       // const dist = getWlDotProduct(floatingBoxWlVec, debug_wlVec)
 
       // console.log(dist, dist2)
 
-      lastDistanceEvaluation.wipGraphsWithAddedFixedBoxId.set(
+      dEval.wipGraphsWithAddedFixedBoxId.set(
         fixedBoxId,
         wipGraphWithAddedFixedBoxId,
       )
 
-      lastDistanceEvaluation!.wlVecs.set(fixedBoxId, debug_wlVec)
-      lastDistanceEvaluation!.distances.set(fixedBoxId, dist)
+      dEval!.wlVecs.set(fixedBoxId, debug_wlVec)
+      dEval!.wlDistances.set(fixedBoxId, wlDist)
+      dEval!.networkLengths.set(fixedBoxId, totalNetworkLength)
+
+      // TODO figure out how to normalize the network length [0,1]
+      const dist = wlDist + totalNetworkLength / 100
+
       if (dist < bestDist) {
         bestDist = dist
+        bestWlDist = wlDist
+        bestTotalNetworkLength = totalNetworkLength
         bestNewWipGraph = wipGraphWithAddedFixedBoxId
         bestFixedBoxId = fixedBoxId
       }
@@ -196,7 +246,9 @@ export class AssignmentSolver2 {
       bestFixedBoxId,
       bestNewWipGraph,
       bestDist,
-      lastDistanceEvaluation,
+      bestWlDist,
+      bestTotalNetworkLength,
+      lastDistanceEvaluation: dEval,
       nextFloatingBoxId,
       partialFloatingGraph,
       floatingBoxWlVec,
@@ -213,6 +265,7 @@ export class AssignmentSolver2 {
     if (this.iterations === 1) {
       const nextFloatingBoxId = this.getNextFloatingBoxId()
       const evalResult = this.evaluateFloatingBoxAssignment(nextFloatingBoxId!)
+      this.lastComputedEvaluations = [evalResult]
       this.acceptEvaluationResult(evalResult)
       return
     }
@@ -259,11 +312,35 @@ export class AssignmentSolver2 {
     this.lastAcceptedEvaluation = evalResult.lastDistanceEvaluation
   }
 
-  getWipGraphWithAddedFixedBoxId(fid: FixedBoxId): BpcGraph {
+  getWipGraphWithAddedFixedBoxIdForFloatingAssignment(
+    fixedBoxId: FixedBoxId,
+    floatingBoxId: FloatingBoxId,
+  ): BpcGraph {
     const g = structuredClone(this.wipGraph)
-    const boxToAdd = this.fixedGraph.boxes.find((b) => b.boxId === fid)!
+    const boxToAdd = this.fixedGraph.boxes.find((b) => b.boxId === fixedBoxId)!
     g.boxes.push(boxToAdd as any)
-    g.pins.push(...this.fixedGraph.pins.filter((p) => p.boxId === fid))
+
+    const floatingBoxPins = this.floatingGraph.pins.filter(
+      (p) => p.boxId === floatingBoxId,
+    )
+    const fixedBoxPins = this.fixedGraph.pins.filter(
+      (p) => p.boxId === fixedBoxId,
+    )
+
+    // Do color/angle matching. After we've matched the pins, we can transfer
+    // convert the network ids to the floating network ids (wip graphs use
+    // floating network ids)
+    const { matchedPins } = matchPins(floatingBoxPins, fixedBoxPins)
+
+    g.pins.push(
+      ...matchedPins.map((p) => {
+        const [floatingPin, fixedPin] = p
+        return {
+          ...fixedPin,
+          networkId: this.floatingToFixedNetworkMap.get(floatingPin.networkId)!,
+        }
+      }),
+    )
     return g
   }
 

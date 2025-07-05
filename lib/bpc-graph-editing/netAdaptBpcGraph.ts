@@ -4,6 +4,7 @@ import {
   type Assignment,
 } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
 import { getEditOperationsForMatrix } from "lib/adjacency-matrix-network-similarity/getEditOperationsForMatrix"
+import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
 import { convertToFlatBpcGraph } from "lib/flat-bpc/convertToFlatBpcGraph"
 import type { BpcGraph, FixedBpcGraph, MixedBpcGraph } from "lib/types"
 
@@ -27,7 +28,11 @@ export const netAdaptBpcGraph = (
 ): {
   adaptedBpcGraph: MixedBpcGraph
 } => {
-  const approxAssignmentsResult = getApproximateAssignments(
+  // const approxAssignmentsResult = getApproximateAssignments(
+  //   sourceBpcGraph,
+  //   targetBpcGraph,
+  // )
+  const approxAssignmentsResult = getApproximateAssignments2(
     sourceBpcGraph,
     targetBpcGraph,
   )
