@@ -4,6 +4,7 @@ import {
   type GraphicsObject,
 } from "graphics-debug"
 import { getApproximateAssignments } from "lib/adjacency-matrix-network-similarity/getApproximateAssignments"
+import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
 import { assignFloatingBoxPositions } from "lib/bpc-graph-editing/assignFloatingBoxPositions"
 import { getColorByIndex } from "lib/graph-utils/getColorByIndex"
 import {
@@ -31,7 +32,7 @@ export const testNetAdapt = (
   // (Assume GraphicsObject is in scope)
 
   // Get box assignments between source and target
-  const { boxAssignment } = getApproximateAssignments(
+  const { boxAssignment } = getApproximateAssignments2(
     source as MixedBpcGraph,
     target as MixedBpcGraph,
   )
