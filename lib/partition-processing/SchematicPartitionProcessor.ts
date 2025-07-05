@@ -203,11 +203,30 @@ export class SchematicPartitionProcessor {
         wipPartitions.push(partition)
       }
     }
+
+    // Degenerate case: No boxes with more than 4 pins so no partitions could
+    // be created, return original graph as entire partitions
+    if (wipPartitions.length === 0) {
+      wipPartitions.push(this.createWipPartitionFromEntireGraph())
+      this.solved = true
+    }
+
     debug(`splitBoxIds = ${Array.from(splitBoxIds).join(", ")}`)
     debug(
       `wipPartitions = ${wipPartitions.map((p) => p.partitionId).join(", ")}`,
     )
     return { wipPartitions, splitBoxIds, addedPins }
+  }
+
+  createWipPartitionFromEntireGraph() {
+    return {
+      partitionId: "entire-graph",
+      filledSingletonSlots: new Set(),
+      pins: this.initialGraph.pins.map((p) => ({
+        boxId: p.boxId,
+        pinId: p.pinId,
+      })),
+    } as WipPartition
   }
 
   step() {
