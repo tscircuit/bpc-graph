@@ -139,17 +139,15 @@ export class AssignmentSolver2 {
   }
 
   getRemainingFloatingBoxIds() {
-    return (
-      this.floatingGraph.boxes
-        .map((b) => b.boxId)
-        .filter(
-          (b) =>
-            !this.acceptedFloatingBoxIds.has(b) &&
-            !this.rejectedFloatingBoxIds.has(b),
-        )
-        // Just for testing to increase resilience
-        .sort((a, b) => Math.random() - 0.5)
-    )
+    return this.floatingGraph.boxes
+      .map((b) => b.boxId)
+      .filter(
+        (b) =>
+          !this.acceptedFloatingBoxIds.has(b) &&
+          !this.rejectedFloatingBoxIds.has(b),
+      )
+    // Just for testing to increase resilience
+    // .sort((a, b) => Math.random() - 0.5)
   }
 
   /**
