@@ -46,6 +46,13 @@ export default () => (
     matchedCorpusGraphGraphics,
   } = debugLayout(ogBpcGraph)
 
+  expect(laidOutGraph).toMatchInlineSnapshot(`
+    {
+      "boxes": [],
+      "pins": [],
+    }
+  `)
+
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
     "tscircuitsch04-input-circuit",
