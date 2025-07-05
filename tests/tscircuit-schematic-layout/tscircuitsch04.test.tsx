@@ -7,6 +7,11 @@ import {
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getGraphicsForBpcGraph } from "lib/index"
 import { debugLayout } from "tests/fixtures/debugLayout"
+import {
+  getSvgFromGraphicsObject,
+  stackGraphicsHorizontally,
+  stackGraphicsVertically,
+} from "graphics-debug"
 
 export const tscircuitCode = `
 export default () => (
