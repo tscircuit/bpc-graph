@@ -10,7 +10,6 @@ export const netAdaptBpcGraph2 = (
 
   const adaptedBpcGraph = structuredClone(floatingGraph)
 
-  console.log(floatingToFixedPinAssignment)
   for (const floatingPin of adaptedBpcGraph.pins) {
     if (floatingToFixedPinAssignment[floatingPin.boxId]?.[floatingPin.pinId]) {
       const fixedPinId =

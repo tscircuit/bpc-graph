@@ -151,29 +151,14 @@ component_center
 center_schematic_component_0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="gray" />
   </g>
   <g>
-    <circle data-type="point" data-label="schematic_port_0
+    <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit196_connectivity_net1" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="orange" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="schematic_port_1
-normal
-unnamedsubcircuit196_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="schematic_component_0_center
-component_center
-center_schematic_component_0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="gray" />
+unnamedsubcircuit7_connectivity_net2" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
 unnamedsubcircuit7_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
-  </g>
-  <g>
-    <circle data-type="point" data-label="schematic_port_1
-normal
-unnamedsubcircuit7_connectivity_net1" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
@@ -186,9 +171,24 @@ gnd
 unnamedsubcircuit7_connectivity_net3" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="purple" />
   </g>
   <g>
+    <circle data-type="point" data-label="schematic_net_label_2_pin
+normal
+unnamedsubcircuit7_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_pin
+normal
+unnamedsubcircuit7_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_center
+netlabel_center
+schematic_net_label_2_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
     <circle data-type="point" data-label="schematic_net_label_1_pin
-gnd
-unnamedsubcircuit196_connectivity_net3" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="purple" />
+vcc
+unnamedsubcircuit7_connectivity_net2" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_1_center
@@ -197,13 +197,28 @@ schematic_net_label_1_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" 
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_0_pin
-vcc
-unnamedsubcircuit196_connectivity_net1" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="orange" />
+gnd
+unnamedsubcircuit7_connectivity_net3" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_net_label_0_center
 netlabel_center
 schematic_net_label_0_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_pin
+normal
+unnamedsubcircuit7_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_pin
+normal
+unnamedsubcircuit7_connectivity_net0" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="blue" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="schematic_net_label_2_center
+netlabel_center
+schematic_net_label_2_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" fill="hsl(338.4, 100%, 50%, 1)" />
   </g>
   <g>
     <polyline data-points="0.6000000000000001,0.30000000000000004 0.6000000000000001,0.30000000000000004" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(40, 100%, 50%, 0.5)" stroke-width="1" />
@@ -245,10 +260,25 @@ schematic_net_label_0_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" 
     <polyline data-points="5.885742181331117,-0.3696374491195644 5.885468831331117,-0.9999999999999998" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(216, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(0, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
-    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(32.72727272727273, 100%, 50%, 0.5)" stroke-width="1" />
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(51.42857142857143, 100%, 50%, 0.5)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(102.85714285714286, 100%, 50%, 0.5)" stroke-width="1" />
+  </g>
+  <g>
+    <polyline data-points="NaN,NaN NaN,NaN" data-type="line" data-label="" points="NaN,NaN NaN,NaN" fill="none" stroke="hsl(205.71428571428572, 100%, 50%, 0.5)" stroke-width="1" />
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_component_0" data-x="0.30000000000000004" data-y="0" x="NaN" y="NaN" width="NaN" height="NaN" fill="hsl(0, 100%, 50%, 0.2)" stroke="black" stroke-width="0.004166666666666667" />
@@ -294,6 +324,9 @@ schematic_net_label_0_center" data-x="NaN" data-y="NaN" cx="NaN" cy="NaN" r="3" 
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_net_label_0" data-x="NaN" data-y="NaN" x="NaN" y="NaN" width="NaN" height="NaN" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004166666666666667" />
+  </g>
+  <g>
+    <rect data-type="rect" data-label="schematic_net_label_2" data-x="NaN" data-y="NaN" x="NaN" y="NaN" width="NaN" height="NaN" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004166666666666667" />
   </g>
   <g>
     <rect data-type="rect" data-label="schematic_net_label_3" data-x="NaN" data-y="NaN" x="NaN" y="NaN" width="NaN" height="NaN" fill="rgba(0, 0, 0, 0.2)" stroke="black" stroke-width="0.004166666666666667" />

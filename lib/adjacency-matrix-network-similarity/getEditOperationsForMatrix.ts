@@ -228,7 +228,6 @@ export const getEditOperationsForMatrix = (params: {
   {
     // We only need to create nodes when the target matrix is bigger
     const sizeDiff = floatingAdjMatrix.length - currentFixedAdjMatrix.length
-    console.log({ sizeDiff })
     if (sizeDiff <= 0) {
       /* nothing to create */
     } else {
@@ -388,7 +387,6 @@ export const getEditOperationsForMatrix = (params: {
     }
   }
 
-  console.log("By step 3 operations length:", operations.length)
   // Step 4: Disconnect nodes by comparing newSourceAdjMatrix and targetAdjMatrix
   /**
    * Example:
@@ -525,8 +523,6 @@ export const getEditOperationsForMatrix = (params: {
   //     }
   //   }
   // }
-
-  console.log("final operations length", operations.length)
 
   return {
     newSourceAdjMatrix: currentFixedAdjMatrix,

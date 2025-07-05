@@ -204,8 +204,6 @@ export const netAdaptBpcGraph = (
     }
   }
 
-  console.log(adaptedBpcGraph)
-
   return {
     adaptedBpcGraph: adaptedBpcGraph,
   }
