@@ -5,24 +5,10 @@ import {
   generateImplicitNetLabels,
 } from "circuit-json-to-bpc"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
-import {
-  getGraphicsForBpcGraph,
-  layoutSchematicGraph,
-  SchematicPartitionProcessor,
-} from "lib/index"
-import {
-  createGraphicsGrid,
-  getSvgFromGraphicsObject,
-  stackGraphicsHorizontally,
-  stackGraphicsVertically,
-  type GraphicsObject,
-} from "graphics-debug"
-import corpus from "@tscircuit/schematic-corpus"
+import { getGraphicsForBpcGraph } from "lib/index"
 import { debugLayout } from "tests/fixtures/debugLayout"
 
-test("tscircuitsch04", async () => {
-  /* ── run the schematic JSX through tscircuit ── */
-  const circuitJson = await runTscircuitCode(`
+export const tscircuitCode = `
 export default () => (
   <board width="10mm" height="10mm" routingDisabled>
     <resistor name="R1" schX={-2} resistance="1k" connections={{pin1: "net.VCC"}} />
@@ -30,7 +16,11 @@ export default () => (
     <trace from=".R1 > .pin2" to=".C1 > .pin1" />
   </board>
 )
-  `)
+  `
+
+test("tscircuitsch04", async () => {
+  /* ── run the schematic JSX through tscircuit ── */
+  const circuitJson = await runTscircuitCode(tscircuitCode)
 
   const circuitJsonWithImpliedNetLabels = circuitJson.concat(
     generateImplicitNetLabels(circuitJson),
