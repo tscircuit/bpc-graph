@@ -1,16 +1,23 @@
 import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
-import type { BpcGraph } from "lib/types"
+import type { BpcGraph, FloatingBoxId } from "lib/types"
 
 export const netAdaptBpcGraph2 = (
   floatingGraph: BpcGraph,
   fixedGraph: BpcGraph,
+  opts: {
+    floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
+  } = {},
 ) => {
+  const { floatingBoxIdsWithMutablePinOffsets = new Set() } = opts
   const { floatingToFixedBoxAssignment, floatingToFixedPinAssignment } =
     getApproximateAssignments2(floatingGraph, fixedGraph)
 
   const adaptedBpcGraph = structuredClone(floatingGraph)
 
   for (const floatingPin of adaptedBpcGraph.pins) {
+    if (!floatingBoxIdsWithMutablePinOffsets.has(floatingPin.boxId)) {
+      continue
+    }
     if (floatingToFixedPinAssignment[floatingPin.boxId]?.[floatingPin.pinId]) {
       const fixedPinId =
         floatingToFixedPinAssignment[floatingPin.boxId]?.[floatingPin.pinId]

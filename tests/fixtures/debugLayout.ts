@@ -1,5 +1,5 @@
 import type { GraphicsObject } from "graphics-debug"
-import type { BpcGraph, FixedBpcGraph } from "lib/types"
+import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
 import corpus from "@tscircuit/schematic-corpus"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
@@ -17,6 +17,14 @@ export const debugLayout = (g: BpcGraph) => {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
   })
+
+  const floatingBoxIdsWithMutablePinOffsets = new Set<FloatingBoxId>()
+  for (const box of g.boxes) {
+    const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
+    if (boxPins.some((bp) => bp.color === "netlabel_center")) {
+      floatingBoxIdsWithMutablePinOffsets.add(box.boxId)
+    }
+  }
 
   const partitionIterationGraphics: GraphicsObject[] = []
   while (!processor.solved && processor.iteration < 1000) {
@@ -37,7 +45,9 @@ export const debugLayout = (g: BpcGraph) => {
       graphName,
       distance,
     } = matchGraph(part.g, corpus as any)
-    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph)
+    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
+      floatingBoxIdsWithMutablePinOffsets,
+    })
     return {
       matchedCorpusGraph: fixedCorpusGraph,
       matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
