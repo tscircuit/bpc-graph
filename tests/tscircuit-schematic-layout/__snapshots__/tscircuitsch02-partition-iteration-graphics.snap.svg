@@ -8,27 +8,27 @@ center_schematic_component_0" data-x="0" data-y="0" cx="259.0565668428264" cy="6
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.1" data-y="0.30000000000000004" cx="283.1708749266001" cy="59.949109414758276" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.1" data-y="0.30000000000000004" cx="283.1708749266001" cy="59.949109414758276" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.1" data-y="0.09999999999999998" cx="283.1708749266001" cy="64.33352906635349" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.1" data-y="0.09999999999999998" cx="283.1708749266001" cy="64.33352906635349" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.1" data-y="-0.10000000000000003" cx="283.1708749266001" cy="68.71794871794873" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.1" data-y="-0.10000000000000003" cx="283.1708749266001" cy="68.71794871794873" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.1" data-y="-0.30000000000000004" cx="283.1708749266001" cy="73.10236836954395" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.1" data-y="-0.30000000000000004" cx="283.1708749266001" cy="73.10236836954395" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2" data-y="-1.18" cx="302.90076335877865" cy="92.39381483656294" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2" data-y="-1.18" cx="302.90076335877865" cy="92.39381483656294" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -38,7 +38,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2" data-y="-1.3599999
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2" data-y="0.98" cx="302.90076335877865" cy="45.04208259933451" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2" data-y="0.98" cx="302.90076335877865" cy="45.04208259933451" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -48,7 +48,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2" data-y="1.16" cx="
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="0.8700000000000001" data-y="0.30000000000000004" cx="278.1287923272656" cy="59.949109414758276" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="0.8700000000000001" data-y="0.30000000000000004" cx="278.1287923272656" cy="59.949109414758276" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -58,7 +58,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.1400000000000001" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="0.8700000000000001" data-y="0.09999999999999998" cx="278.1287923272656" cy="64.33352906635349" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="0.8700000000000001" data-y="0.09999999999999998" cx="278.1287923272656" cy="64.33352906635349" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -73,27 +73,27 @@ center_schematic_component_0" data-x="1.7599999999999996" data-y="-3.27499999999
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="2.8599999999999994" data-y="-2.9749999999999996" cx="321.75376786063805" cy="131.74398120963008" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="2.8599999999999994" data-y="-2.9749999999999996" cx="321.75376786063805" cy="131.74398120963008" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="2.8599999999999994" data-y="-3.1749999999999994" cx="321.75376786063805" cy="136.12840086122526" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="2.8599999999999994" data-y="-3.1749999999999994" cx="321.75376786063805" cy="136.12840086122526" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2.8599999999999994" data-y="-3.3749999999999996" cx="321.75376786063805" cy="140.5128205128205" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2.8599999999999994" data-y="-3.3749999999999996" cx="321.75376786063805" cy="140.5128205128205" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2.8599999999999994" data-y="-3.5749999999999993" cx="321.75376786063805" cy="144.89724016441573" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2.8599999999999994" data-y="-3.5749999999999993" cx="321.75376786063805" cy="144.89724016441573" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="3.76" data-y="-4.454999999999999" cx="341.4836562928166" cy="164.1886866314347" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="3.76" data-y="-4.454999999999999" cx="341.4836562928166" cy="164.1886866314347" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -103,7 +103,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="3.76" data-y="-4.635"
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="3.76" data-y="-2.2949999999999995" cx="341.4836562928166" cy="116.83695439420629" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="3.76" data-y="-2.2949999999999995" cx="341.4836562928166" cy="116.83695439420629" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -113,7 +113,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="3.76" data-y="-2.1149
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="2.63" data-y="-2.9749999999999996" cx="316.71168526130356" cy="131.74398120963008" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="2.63" data-y="-2.9749999999999996" cx="316.71168526130356" cy="131.74398120963008" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -123,7 +123,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="2.8999999999999995" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="2.63" data-y="-3.1749999999999994" cx="316.71168526130356" cy="136.12840086122526" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="2.63" data-y="-3.1749999999999994" cx="316.71168526130356" cy="136.12840086122526" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -138,27 +138,27 @@ center_schematic_component_0" data-x="0" data-y="-6.55" cx="259.0565668428264" c
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.1" data-y="-6.25" cx="283.1708749266001" cy="203.53885300450187" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.1" data-y="-6.25" cx="283.1708749266001" cy="203.53885300450187" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.1" data-y="-6.45" cx="283.1708749266001" cy="207.92327265609708" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.1" data-y="-6.45" cx="283.1708749266001" cy="207.92327265609708" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.1" data-y="-6.6499999999999995" cx="283.1708749266001" cy="212.3076923076923" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.1" data-y="-6.6499999999999995" cx="283.1708749266001" cy="212.3076923076923" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.1" data-y="-6.85" cx="283.1708749266001" cy="216.69211195928753" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.1" data-y="-6.85" cx="283.1708749266001" cy="216.69211195928753" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2" data-y="-7.7299999999999995" cx="302.90076335877865" cy="235.9835584263065" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2" data-y="-7.7299999999999995" cx="302.90076335877865" cy="235.9835584263065" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -168,7 +168,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2" data-y="-7.91" cx=
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2" data-y="-5.57" cx="302.90076335877865" cy="188.6318261890781" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2" data-y="-5.57" cx="302.90076335877865" cy="188.6318261890781" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -178,7 +178,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2" data-y="-5.39" cx=
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="0.8700000000000001" data-y="-6.25" cx="278.1287923272656" cy="203.53885300450187" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="0.8700000000000001" data-y="-6.25" cx="278.1287923272656" cy="203.53885300450187" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -188,7 +188,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.1400000000000001" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="0.8700000000000001" data-y="-6.45" cx="278.1287923272656" cy="207.92327265609708" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="0.8700000000000001" data-y="-6.45" cx="278.1287923272656" cy="207.92327265609708" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -203,27 +203,27 @@ center_schematic_component_0" data-x="1.7599999999999996" data-y="-9.825" cx="29
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="2.8599999999999994" data-y="-9.524999999999999" cx="321.75376786063805" cy="275.3337247993736" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="2.8599999999999994" data-y="-9.524999999999999" cx="321.75376786063805" cy="275.3337247993736" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="2.8599999999999994" data-y="-9.725" cx="321.75376786063805" cy="279.7181444509689" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="2.8599999999999994" data-y="-9.725" cx="321.75376786063805" cy="279.7181444509689" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2.8599999999999994" data-y="-9.924999999999999" cx="321.75376786063805" cy="284.1025641025641" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2.8599999999999994" data-y="-9.924999999999999" cx="321.75376786063805" cy="284.1025641025641" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2.8599999999999994" data-y="-10.125" cx="321.75376786063805" cy="288.4869837541593" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2.8599999999999994" data-y="-10.125" cx="321.75376786063805" cy="288.4869837541593" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="3.76" data-y="-11.004999999999999" cx="341.4836562928166" cy="307.77843022117827" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="3.76" data-y="-11.004999999999999" cx="341.4836562928166" cy="307.77843022117827" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -233,7 +233,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="3.76" data-y="-11.184
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="3.76" data-y="-8.844999999999999" cx="341.4836562928166" cy="260.4266979839499" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="3.76" data-y="-8.844999999999999" cx="341.4836562928166" cy="260.4266979839499" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -243,7 +243,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="3.76" data-y="-8.665"
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="2.63" data-y="-9.524999999999999" cx="316.71168526130356" cy="275.3337247993736" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="2.63" data-y="-9.524999999999999" cx="316.71168526130356" cy="275.3337247993736" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -253,7 +253,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="2.8999999999999995" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="2.63" data-y="-9.725" cx="316.71168526130356" cy="279.7181444509689" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="2.63" data-y="-9.725" cx="316.71168526130356" cy="279.7181444509689" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -268,27 +268,27 @@ center_schematic_component_0" data-x="0" data-y="-13.099999999999998" cx="259.05
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.1" data-y="-12.799999999999997" cx="283.1708749266001" cy="347.12859659424544" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.1" data-y="-12.799999999999997" cx="283.1708749266001" cy="347.12859659424544" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.1" data-y="-12.999999999999998" cx="283.1708749266001" cy="351.5130162458406" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.1" data-y="-12.999999999999998" cx="283.1708749266001" cy="351.5130162458406" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.1" data-y="-13.199999999999998" cx="283.1708749266001" cy="355.8974358974358" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.1" data-y="-13.199999999999998" cx="283.1708749266001" cy="355.8974358974358" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.1" data-y="-13.399999999999999" cx="283.1708749266001" cy="360.2818555490311" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.1" data-y="-13.399999999999999" cx="283.1708749266001" cy="360.2818555490311" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2" data-y="-14.279999999999998" cx="302.90076335877865" cy="379.5733020160501" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2" data-y="-14.279999999999998" cx="302.90076335877865" cy="379.5733020160501" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -298,7 +298,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2" data-y="-14.459999
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2" data-y="-12.119999999999997" cx="302.90076335877865" cy="332.2215697788216" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2" data-y="-12.119999999999997" cx="302.90076335877865" cy="332.2215697788216" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -308,7 +308,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2" data-y="-11.939999
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="0.8700000000000001" data-y="-12.799999999999997" cx="278.1287923272656" cy="347.12859659424544" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="0.8700000000000001" data-y="-12.799999999999997" cx="278.1287923272656" cy="347.12859659424544" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -318,7 +318,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.1400000000000001" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="0.8700000000000001" data-y="-12.999999999999998" cx="278.1287923272656" cy="351.5130162458406" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="0.8700000000000001" data-y="-12.999999999999998" cx="278.1287923272656" cy="351.5130162458406" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -333,27 +333,27 @@ center_schematic_component_0" data-x="0.78" data-y="-16.374999999999996" cx="276
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.8800000000000001" data-y="-16.074999999999996" cx="300.2701115678215" cy="418.92346838911715" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.8800000000000001" data-y="-16.074999999999996" cx="300.2701115678215" cy="418.92346838911715" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.8800000000000001" data-y="-16.274999999999995" cx="300.2701115678215" cy="423.3078880407123" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.8800000000000001" data-y="-16.274999999999995" cx="300.2701115678215" cy="423.3078880407123" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.8800000000000001" data-y="-16.474999999999998" cx="300.2701115678215" cy="427.6923076923076" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.8800000000000001" data-y="-16.474999999999998" cx="300.2701115678215" cy="427.6923076923076" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.8800000000000001" data-y="-16.674999999999997" cx="300.2701115678215" cy="432.0767273439028" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.8800000000000001" data-y="-16.674999999999997" cx="300.2701115678215" cy="432.0767273439028" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2.7800000000000002" data-y="-17.554999999999996" cx="320" cy="451.3681738109218" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2.7800000000000002" data-y="-17.554999999999996" cx="320" cy="451.3681738109218" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -363,7 +363,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2.7800000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2.7800000000000002" data-y="-15.394999999999996" cx="320" cy="404.01644157369344" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2.7800000000000002" data-y="-15.394999999999996" cx="320" cy="404.01644157369344" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -373,7 +373,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2.7800000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.6500000000000001" data-y="-16.074999999999996" cx="295.22802896848697" cy="418.92346838911715" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.6500000000000001" data-y="-16.074999999999996" cx="295.22802896848697" cy="418.92346838911715" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -383,7 +383,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.9200000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.6500000000000001" data-y="-16.274999999999995" cx="295.22802896848697" cy="423.3078880407123" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.6500000000000001" data-y="-16.274999999999995" cx="295.22802896848697" cy="423.3078880407123" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -398,27 +398,27 @@ center_schematic_component_0" data-x="0" data-y="-19.65" cx="259.0565668428264" 
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.1" data-y="-19.349999999999998" cx="283.1708749266001" cy="490.71834018398897" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.1" data-y="-19.349999999999998" cx="283.1708749266001" cy="490.71834018398897" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.1" data-y="-19.549999999999997" cx="283.1708749266001" cy="495.10275983558415" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.1" data-y="-19.549999999999997" cx="283.1708749266001" cy="495.10275983558415" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.1" data-y="-19.75" cx="283.1708749266001" cy="499.48717948717945" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.1" data-y="-19.75" cx="283.1708749266001" cy="499.48717948717945" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.1" data-y="-19.95" cx="283.1708749266001" cy="503.87159913877474" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.1" data-y="-19.95" cx="283.1708749266001" cy="503.87159913877474" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2" data-y="-20.83" cx="302.90076335877865" cy="523.1630456057936" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2" data-y="-20.83" cx="302.90076335877865" cy="523.1630456057936" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -428,7 +428,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2" data-y="-21.009999
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2" data-y="-18.669999999999998" cx="302.90076335877865" cy="475.81131336856527" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2" data-y="-18.669999999999998" cx="302.90076335877865" cy="475.81131336856527" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -438,7 +438,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2" data-y="-18.49" cx
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="0.8700000000000001" data-y="-19.349999999999998" cx="278.1287923272656" cy="490.71834018398897" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="0.8700000000000001" data-y="-19.349999999999998" cx="278.1287923272656" cy="490.71834018398897" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -448,7 +448,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.1400000000000001" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="0.8700000000000001" data-y="-19.549999999999997" cx="278.1287923272656" cy="495.10275983558415" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="0.8700000000000001" data-y="-19.549999999999997" cx="278.1287923272656" cy="495.10275983558415" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
@@ -463,27 +463,27 @@ center_schematic_component_0" data-x="0.78" data-y="-22.925" cx="276.15580348404
   <g>
     <circle data-type="point" data-label="schematic_port_0
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.8800000000000001" data-y="-22.625" cx="300.2701115678215" cy="562.5132119788608" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.8800000000000001" data-y="-22.625" cx="300.2701115678215" cy="562.5132119788608" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_1
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.8800000000000001" data-y="-22.825" cx="300.2701115678215" cy="566.8976316304561" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.8800000000000001" data-y="-22.825" cx="300.2701115678215" cy="566.8976316304561" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_2
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="1.8800000000000001" data-y="-23.025000000000002" cx="300.2701115678215" cy="571.2820512820514" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="1.8800000000000001" data-y="-23.025000000000002" cx="300.2701115678215" cy="571.2820512820514" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="schematic_port_3
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="1.8800000000000001" data-y="-23.225" cx="300.2701115678215" cy="575.6664709336466" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="1.8800000000000001" data-y="-23.225" cx="300.2701115678215" cy="575.6664709336466" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_pin
 gnd
-unnamedsubcircuit11_connectivity_net3" data-x="2.7800000000000002" data-y="-24.105" cx="320" cy="594.9579174006656" r="3" fill="purple" />
+unnamedsubcircuit315_connectivity_net3" data-x="2.7800000000000002" data-y="-24.105" cx="320" cy="594.9579174006656" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_3_center
@@ -493,7 +493,7 @@ netlabel_for_netlabel_for_schematic_port_3_center" data-x="2.7800000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_pin
 vcc
-unnamedsubcircuit11_connectivity_net2" data-x="2.7800000000000002" data-y="-21.945" cx="320" cy="547.6061851634371" r="3" fill="orange" />
+unnamedsubcircuit315_connectivity_net2" data-x="2.7800000000000002" data-y="-21.945" cx="320" cy="547.6061851634371" r="3" fill="orange" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_2_center
@@ -503,7 +503,7 @@ netlabel_for_netlabel_for_schematic_port_2_center" data-x="2.7800000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_pin
 normal
-unnamedsubcircuit11_connectivity_net0" data-x="1.6500000000000001" data-y="-22.625" cx="295.22802896848697" cy="562.5132119788608" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net0" data-x="1.6500000000000001" data-y="-22.625" cx="295.22802896848697" cy="562.5132119788608" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_0_center
@@ -513,7 +513,7 @@ netlabel_for_netlabel_for_schematic_port_0_center" data-x="1.9200000000000002" d
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_pin
 normal
-unnamedsubcircuit11_connectivity_net1" data-x="1.6500000000000001" data-y="-22.825" cx="295.22802896848697" cy="566.8976316304561" r="3" fill="blue" />
+unnamedsubcircuit315_connectivity_net1" data-x="1.6500000000000001" data-y="-22.825" cx="295.22802896848697" cy="566.8976316304561" r="3" fill="blue" />
   </g>
   <g>
     <circle data-type="point" data-label="netlabel_for_netlabel_for_schematic_port_1_center
