@@ -83,7 +83,9 @@ export const debugLayout = (g: BpcGraph) => {
     ),
     partitionIterationGraphics,
     laidOutGraph: remergedGraph,
-    laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph),
+    laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
+      title: "Merged, Laid Out Graph",
+    }),
     laidOutGraphSvg: getSvgFromGraphicsObject(
       getGraphicsForBpcGraph(remergedGraph, {
         title: "Merged, Laid Out Graph",

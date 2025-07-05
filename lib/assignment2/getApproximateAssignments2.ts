@@ -1,4 +1,12 @@
-import type { BpcGraph } from "lib/types"
+import type {
+  BpcGraph,
+  FixedBoxId,
+  FixedNetworkId,
+  FixedPinId,
+  FloatingBoxId,
+  FloatingNetworkId,
+  FloatingPinId,
+} from "lib/types"
 import { AssignmentSolver2 } from "./AssignmentSolver2"
 
 /**
@@ -9,8 +17,9 @@ export const getApproximateAssignments2 = (
   g1: BpcGraph,
   g2: BpcGraph,
 ): {
-  boxAssignment: Record<string, string>
-  networkAssignment: Record<string, string>
+  boxAssignment: Record<FloatingBoxId, FixedBoxId>
+  networkAssignment: Record<FloatingNetworkId, FixedNetworkId>
+  pinAssignment: Record<FloatingBoxId, Record<FloatingPinId, FixedPinId>>
 } => {
   // AssignmentSolver2 expects floatingGraph, fixedGraph
   const solver = new AssignmentSolver2(g1, g2)
@@ -35,5 +44,7 @@ export const getApproximateAssignments2 = (
     networkAssignment[floatingNetId] = fixedNetId
   }
 
-  return { boxAssignment, networkAssignment }
+  const pinAssignment = solver.getPinAssignment()
+
+  return { boxAssignment, networkAssignment, pinAssignment }
 }
