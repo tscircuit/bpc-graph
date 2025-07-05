@@ -15,6 +15,11 @@ import type {
 } from "lib/types"
 
 /**
+ * @deprecated, the approach in netAdaptBpcGraph2 is a lot easier to understand
+ * and is more efficient. This function takes the fixed graph and tries to adapt
+ * the network to the floating graph, in netAdaptBpcGraph2 we just copy the
+ * floating graph and assign positions
+ *
  * This method adapts a source BPC graph to a target BPC graph such that the
  * nets match. At the end, there are the same boxes, the boxes are networked
  * in the same way, and there is a one-to-one mapping of boxes to boxes and
