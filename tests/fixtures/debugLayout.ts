@@ -47,6 +47,7 @@ export const debugLayout = (g: BpcGraph) => {
     } = matchGraph(part.g, corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
+      pushBoxesAsBoxesChangeSize: true,
     })
     return {
       matchedCorpusGraph: fixedCorpusGraph,

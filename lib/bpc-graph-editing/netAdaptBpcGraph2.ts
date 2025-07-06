@@ -1,11 +1,17 @@
 import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
+import { getBoundsOfBpcBox } from "lib/graph-utils/getBoundsOfBpcBox"
+import { getDirectionFromVec2 } from "lib/graph-utils/getDirectionFromVec2"
+import { getDirectionVec2 } from "lib/graph-utils/getDirectionVec2"
+import { getDominantPinSide } from "lib/graph-utils/getDominantPinSide"
 import type { BpcGraph, FloatingBoxId } from "lib/types"
+import { pushFloatingBoxesAdjustingForFixedSizeDelta } from "./pushFloatingBoxesAdjustingForFixedSizeDelta"
 
 export const netAdaptBpcGraph2 = (
   floatingGraph: BpcGraph,
   fixedGraph: BpcGraph,
   opts: {
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
+    pushBoxesAsBoxesChangeSize?: boolean
   } = {},
 ) => {
   const { floatingBoxIdsWithMutablePinOffsets = new Set() } = opts
@@ -40,6 +46,13 @@ export const netAdaptBpcGraph2 = (
         box.kind = "fixed"
       }
     }
+  }
+
+  if (opts.pushBoxesAsBoxesChangeSize) {
+    pushFloatingBoxesAdjustingForFixedSizeDelta(adaptedBpcGraph, fixedGraph, {
+      floatingToFixedBoxAssignment,
+      floatingBoxIdsWithMutablePinOffsets,
+    })
   }
 
   return adaptedBpcGraph
