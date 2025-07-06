@@ -2,7 +2,7 @@ import {
   SchematicPartitionProcessor,
   type PartitionSingletonKey,
 } from "lib/partition-processing/SchematicPartitionProcessor"
-import type { BpcGraph, FixedBpcGraph } from "lib/types"
+import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
 import { mergeBoxSideSubgraphs } from "lib/box-sides/mergeBoxSideSubgraphs"
 import { matchGraph } from "lib/match-graph/matchGraph"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
@@ -16,9 +16,11 @@ export const layoutSchematicGraph = (
     corpus,
     singletonKeys,
     centerPinColors,
+    floatingBoxIdsWithMutablePinOffsets,
   }: {
     singletonKeys?: PartitionSingletonKey[]
     centerPinColors?: string[]
+    floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
   },
 ): FixedBpcGraph => {
@@ -43,6 +45,10 @@ export const layoutSchematicGraph = (
     const adaptedBpcGraph = netAdaptBpcGraph2(
       structuredClone(part.g),
       corpusSource,
+      {
+        floatingBoxIdsWithMutablePinOffsets,
+        pushBoxesAsBoxesChangeSize: true,
+      },
     )
     return {
       adaptedBpcGraph,
