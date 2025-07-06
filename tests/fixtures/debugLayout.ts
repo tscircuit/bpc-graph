@@ -1,5 +1,5 @@
 import type { GraphicsObject } from "graphics-debug"
-import type { BpcGraph, FixedBpcGraph } from "lib/types"
+import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
 import corpus from "@tscircuit/schematic-corpus"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
@@ -9,6 +9,7 @@ import { matchGraph } from "lib/match-graph/matchGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
+import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const debugLayout = (g: BpcGraph) => {
   // 1. Partition the graph
@@ -16,6 +17,14 @@ export const debugLayout = (g: BpcGraph) => {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
   })
+
+  const floatingBoxIdsWithMutablePinOffsets = new Set<FloatingBoxId>()
+  for (const box of g.boxes) {
+    const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
+    if (boxPins.some((bp) => bp.color === "netlabel_center")) {
+      floatingBoxIdsWithMutablePinOffsets.add(box.boxId)
+    }
+  }
 
   const partitionIterationGraphics: GraphicsObject[] = []
   while (!processor.solved && processor.iteration < 1000) {
@@ -32,14 +41,16 @@ export const debugLayout = (g: BpcGraph) => {
   // 4. Net-adapt each canonical partition to its best corpus match
   const adaptedGraphs = canonicalPartitions.map((part) => {
     const {
-      graph: corpusSource,
+      graph: fixedCorpusGraph,
       graphName,
       distance,
     } = matchGraph(part.g, corpus as any)
-    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
+    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
+      floatingBoxIdsWithMutablePinOffsets,
+    })
     return {
-      matchedCorpusGraph: corpusSource,
-      matchedCorpusGraphGraphics: getGraphicsForBpcGraph(corpusSource, {
+      matchedCorpusGraph: fixedCorpusGraph,
+      matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
         title: `Matched ${graphName} (d=${distance.toFixed(2)})`,
       }),
       adaptedBpcGraph,
@@ -83,7 +94,9 @@ export const debugLayout = (g: BpcGraph) => {
     ),
     partitionIterationGraphics,
     laidOutGraph: remergedGraph,
-    laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph),
+    laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
+      title: "Merged, Laid Out Graph",
+    }),
     laidOutGraphSvg: getSvgFromGraphicsObject(
       getGraphicsForBpcGraph(remergedGraph, {
         title: "Merged, Laid Out Graph",

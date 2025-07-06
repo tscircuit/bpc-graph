@@ -45,7 +45,7 @@ export const getCanonicalRightFacingGraph = (
     dirCounts[dir]++
   }
 
-  if (dirCounts["x+"] > dirCounts["x-"]) {
+  if (dirCounts["x+"] >= dirCounts["x-"]) {
     return { g, reflected: false, centerBoxId: largestLeftRightBox.boxId }
   }
 

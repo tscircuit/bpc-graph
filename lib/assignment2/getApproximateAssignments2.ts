@@ -1,4 +1,12 @@
-import type { BpcGraph } from "lib/types"
+import type {
+  BpcGraph,
+  FixedBoxId,
+  FixedNetworkId,
+  FixedPinId,
+  FloatingBoxId,
+  FloatingNetworkId,
+  FloatingPinId,
+} from "lib/types"
 import { AssignmentSolver2 } from "./AssignmentSolver2"
 
 /**
@@ -6,14 +14,18 @@ import { AssignmentSolver2 } from "./AssignmentSolver2"
  * Returns boxAssignment and networkAssignment, but does not return nodeAssignment.
  */
 export const getApproximateAssignments2 = (
-  g1: BpcGraph,
-  g2: BpcGraph,
+  floatingGraph: BpcGraph,
+  fixedGraph: BpcGraph,
 ): {
-  boxAssignment: Record<string, string>
-  networkAssignment: Record<string, string>
+  floatingToFixedBoxAssignment: Record<FloatingBoxId, FixedBoxId>
+  floatingToFixedNetworkAssignment: Record<FloatingNetworkId, FixedNetworkId>
+  floatingToFixedPinAssignment: Record<
+    FloatingBoxId,
+    Record<FloatingPinId, FixedPinId>
+  >
 } => {
   // AssignmentSolver2 expects floatingGraph, fixedGraph
-  const solver = new AssignmentSolver2(g1, g2)
+  const solver = new AssignmentSolver2(floatingGraph, fixedGraph)
 
   // Run the solver until solved or max iterations
   while (!solver.solved && solver.iterations < 1000) {
@@ -35,5 +47,11 @@ export const getApproximateAssignments2 = (
     networkAssignment[floatingNetId] = fixedNetId
   }
 
-  return { boxAssignment, networkAssignment }
+  const pinAssignment = solver.getPinAssignment()
+
+  return {
+    floatingToFixedBoxAssignment: boxAssignment,
+    floatingToFixedNetworkAssignment: networkAssignment,
+    floatingToFixedPinAssignment: pinAssignment,
+  }
 }

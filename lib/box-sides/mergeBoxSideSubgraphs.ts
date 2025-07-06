@@ -1,4 +1,4 @@
-import type { BpcGraph } from "lib/types"
+import type { BoxId, BpcGraph, PinId } from "lib/types"
 
 export const mergeBoxSideSubgraphs = (
   graphs: BpcGraph[],
@@ -16,7 +16,7 @@ export const mergeBoxSideSubgraphs = (
 
   const merged: BpcGraph = { boxes: [], pins: [] }
   const boxMap = new Map<string, BpcGraph["boxes"][0]>()
-  const pinMap = new Map<string, BpcGraph["pins"][0]>()
+  const pinMap = new Map<`${BoxId}-${PinId}`, BpcGraph["pins"][0]>()
 
   const partitionedBoxIds = Object.entries(
     graphs
@@ -63,7 +63,8 @@ export const mergeBoxSideSubgraphs = (
       boxMap.set(box.boxId, modifiedBox)
     }
     for (const pin of g.pins) {
-      if (!pinMap.has(pin.pinId)) pinMap.set(pin.pinId, structuredClone(pin))
+      if (!pinMap.has(`${pin.boxId}-${pin.pinId}`))
+        pinMap.set(`${pin.boxId}-${pin.pinId}`, structuredClone(pin))
     }
   }
 

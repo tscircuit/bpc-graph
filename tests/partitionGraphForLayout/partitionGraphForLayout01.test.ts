@@ -29,6 +29,7 @@ import corpus from "@tscircuit/schematic-corpus/dist/bundled-bpc-graphs.json"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
+import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 test("partitionGraphForLayout01", async () => {
   // export default () => (
@@ -320,7 +321,7 @@ test("partitionGraphForLayout01", async () => {
       graphName,
       distance,
     } = matchGraph(part.g, corpus as any)
-    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
+    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, corpusSource)
     return { adaptedBpcGraph, graphName, distance }
   })
 

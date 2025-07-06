@@ -11,6 +11,10 @@ import type {
   FixedBpcGraph,
   FloatingBpcGraph,
   NetworkId,
+  FloatingBoxId,
+  FixedBoxId,
+  FloatingPinId,
+  FixedPinId,
 } from "lib/types"
 import {
   getBpcGraphWlDistance,
@@ -25,9 +29,6 @@ import { getTotalNetworkLength } from "lib/graph-utils/getTotalNetworkLength"
 import { computeGraphNetworkBagOfAnglesMap } from "lib/network-bag-of-angles-assignment/computeGraphNetworkBagOfAnglesMap"
 import { computeNetworkMappingFromBagsOfAngles } from "lib/network-bag-of-angles-assignment/computeNetworkMappingFromBagsOfAngles"
 import { matchPins } from "./matchPins"
-
-type FloatingBoxId = string
-type FixedBoxId = string
 
 /**
  * Computes an assignment for each floating box to each fixed box by gradually
@@ -255,6 +256,28 @@ export class AssignmentSolver2 {
     }
   }
 
+  getPinAssignment() {
+    const pinAssignment: Record<
+      FloatingBoxId,
+      Record<FloatingPinId, FixedPinId>
+    > = {}
+    const fixedToFloatingBoxAssignment: Record<FixedBoxId, FloatingBoxId> = {}
+    for (const [floatingBoxId, fixedBoxId] of this.assignment) {
+      pinAssignment[floatingBoxId] = {}
+      fixedToFloatingBoxAssignment[fixedBoxId] = floatingBoxId
+    }
+    for (const pin of this.wipGraph.pins) {
+      const fixedBoxId = pin.boxId
+      const floatingBoxId = fixedToFloatingBoxAssignment[fixedBoxId]!
+      // @ts-ignore
+      const floatingPinId = pin._floatingPinId
+      // @ts-ignore
+      const fixedPinId = pin._fixedPinId
+      pinAssignment[floatingBoxId]![floatingPinId] = fixedPinId
+    }
+    return pinAssignment
+  }
+
   step() {
     if (this.solved) return
     if (this.iterations > 1000) {
@@ -338,6 +361,9 @@ export class AssignmentSolver2 {
         return {
           ...fixedPin,
           networkId: this.floatingToFixedNetworkMap.get(floatingPin.networkId)!,
+
+          _floatingPinId: floatingPin.pinId,
+          _fixedPinId: fixedPin.pinId,
         }
       }),
     )
