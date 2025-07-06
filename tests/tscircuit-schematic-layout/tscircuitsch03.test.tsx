@@ -90,7 +90,9 @@ export default () => (
   // Use the same debugLayout-based output structure as tscircuitsch02.test.tsx
 
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
-  const ogBpcGraph = convertCircuitJsonToBpc(circuitJson)
+  const ogBpcGraph = convertCircuitJsonToBpc(circuitJson, {
+    useReadableIds: true,
+  })
 
   // Use the debugLayout utility from tests/fixtures/debugLayout.ts
   const {

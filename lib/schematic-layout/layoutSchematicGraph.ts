@@ -8,6 +8,7 @@ import { matchGraph } from "lib/match-graph/matchGraph"
 import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
+import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const layoutSchematicGraph = (
   g: BpcGraph,
@@ -39,7 +40,10 @@ export const layoutSchematicGraph = (
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
     const { graph: corpusSource } = matchGraph(part.g, corpus as any)
-    const { adaptedBpcGraph } = netAdaptBpcGraph(corpusSource, part.g)
+    const adaptedBpcGraph = netAdaptBpcGraph2(
+      structuredClone(part.g),
+      corpusSource,
+    )
     return {
       adaptedBpcGraph,
       reflected: part.reflected,
