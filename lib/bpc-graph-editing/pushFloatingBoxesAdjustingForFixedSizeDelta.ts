@@ -4,6 +4,10 @@ import { getDirectionVec2 } from "lib/graph-utils/getDirectionVec2"
 import { getDominantPinSide } from "lib/graph-utils/getDominantPinSide"
 import type { BpcGraph, FixedBoxId, FloatingBoxId } from "lib/types"
 
+/**
+ * When a floating box is larger/smaller than the fixed box, shift all other
+ * boxes such that relative pin offsets are the same
+ */
 export const pushFloatingBoxesAdjustingForFixedSizeDelta = (
   adaptedFloatingBpcGraph: BpcGraph,
   fixedGraph: BpcGraph,
@@ -15,8 +19,6 @@ export const pushFloatingBoxesAdjustingForFixedSizeDelta = (
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
   },
 ) => {
-  // When a floating box is larger/smaller than the fixed box, shift all other
-  // boxes such that relative pin offsets are the same
   for (const floatingBox of adaptedFloatingBpcGraph.boxes) {
     const fixedBoxId = floatingToFixedBoxAssignment[floatingBox.boxId]
     if (!fixedBoxId) continue
