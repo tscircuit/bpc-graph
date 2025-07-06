@@ -86,22 +86,6 @@ export const netAdaptBpcGraph2 = (
 
       if (deltaWidth < 0.001 && deltaHeight < 0.001) continue
 
-      console.log({
-        fixedBoxId,
-        floatingBoxId: floatingBox.boxId,
-        fixedDominantPinSide,
-        fixedPins: fixedGraph.pins
-          .filter((p) => p.boxId === fixedBoxId)
-          .map((p) => p.offset),
-        floatingDominantPinSide,
-        floatingPins: floatingGraph.pins
-          .filter((p) => p.boxId === floatingBox.boxId)
-          .map((p) => p.offset),
-        shiftVec,
-        deltaWidth,
-        deltaHeight,
-      })
-
       // If the bounds differ, we can "push" the adapted graph content to one side
       // of the box such that the relative position from the pins to other boxes
       // remains the same

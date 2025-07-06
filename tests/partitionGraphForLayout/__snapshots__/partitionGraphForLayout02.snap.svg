@@ -111,14 +111,14 @@ component_center
 center_schematic_component_1" data-x="-0.9997266500000004" data-y="-2.8215567053541073" cx="153.4683343547194" cy="486.18913569288105" r="3" fill="gray" />
   </g>
   <g>
-    <circle data-type="point" data-label="C1_pin2
-gnd
-unnamedsubcircuit12_connectivity_net1" data-x="-0.9994533000000008" data-y="-3.3727660053541073" cx="153.49843779621392" cy="546.8926180920944" r="3" fill="purple" />
-  </g>
-  <g>
     <circle data-type="point" data-label="C1_pin1
 vcc
 unnamedsubcircuit12_connectivity_net0" data-x="-1" data-y="-2.270347405354107" cx="153.43823091322483" cy="425.4856532936676" r="3" fill="orange" />
+  </g>
+  <g>
+    <circle data-type="point" data-label="C1_pin2
+gnd
+unnamedsubcircuit12_connectivity_net1" data-x="-0.9994533000000008" data-y="-3.3727660053541073" cx="153.49843779621392" cy="546.8926180920944" r="3" fill="purple" />
   </g>
   <g>
     <circle data-type="point" data-label="NL1_pin
