@@ -30,6 +30,9 @@ export const getGraphicsForBpcGraph = (
     { x: number; y: number }
   >()
 
+  // Track positions to detect overlaps
+  const positionGroups = new Map<string, Array<{ box: any; pin: any }>>()
+
   for (const box of g.boxes) {
     const bounds = getBoundsOfBpcBox(g, box.boxId)
     const boundsCenter = center(bounds)
@@ -50,9 +53,61 @@ export const getGraphicsForBpcGraph = (
         x: pin.offset.x + boxCenter.x,
         y: pin.offset.y + boxCenter.y,
       }
+      const positionKey = `${pinPosition.x.toFixed(6)},${pinPosition.y.toFixed(6)}`
+
+      if (!positionGroups.has(positionKey)) {
+        positionGroups.set(positionKey, [])
+      }
+      positionGroups.get(positionKey)!.push({ box, pin })
+
       pinPositions.set(`${box.boxId}.${pin.pinId}`, pinPosition)
+    }
+  }
+
+  // Add points with offset for overlapping positions
+  for (const [positionKey, items] of positionGroups) {
+    const coordinates = positionKey.split(",").map(Number)
+    const baseX = coordinates[0]!
+    const baseY = coordinates[1]!
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]!
+      const { box, pin } = item
+      let adjustedPosition = { x: baseX, y: baseY }
+
+      // Apply small offset for overlapping points towards box center
+      if (items.length > 1) {
+        const boxCenter = box.center ?? { x: 0, y: 0 }
+        const directionX = boxCenter.x - baseX
+        const directionY = boxCenter.y - baseY
+        const distance = Math.sqrt(
+          directionX * directionX + directionY * directionY,
+        )
+
+        // Create unit vector towards box center, with fallback if distance is 0
+        let unitX = 0
+        let unitY = 0
+        if (distance > 0) {
+          unitX = directionX / distance
+          unitY = directionY / distance
+        } else {
+          // Fallback to circular distribution if pin is exactly at box center
+          const offsetAngle = (i * 2 * Math.PI) / items.length
+          unitX = Math.cos(offsetAngle)
+          unitY = Math.sin(offsetAngle)
+        }
+
+        adjustedPosition = {
+          x: baseX + 0.01 * unitX,
+          y: baseY + 0.01 * unitY,
+        }
+      }
+
+      // Update the position map with adjusted position
+      pinPositions.set(`${box.boxId}.${pin.pinId}`, adjustedPosition)
+
       graphics.points.push({
-        ...pinPosition,
+        ...adjustedPosition,
         label: [pin.pinId, pin.color, pin.networkId].join("\n"),
         color: translateColor(pin.color),
       })
@@ -76,9 +131,9 @@ export const getGraphicsForBpcGraph = (
     }))
 
     for (let i = 0; i < pinsInNetworkWithPosition.length; i++) {
-      const { pin: pin1, position: pos1 } = pinsInNetworkWithPosition[i]!
+      const { position: pos1 } = pinsInNetworkWithPosition[i]!
       for (let j = i + 1; j < pinsInNetworkWithPosition.length; j++) {
-        const { position: pos2, pin: pin2 } = pinsInNetworkWithPosition[j]!
+        const { position: pos2 } = pinsInNetworkWithPosition[j]!
         graphics.lines.push({
           points: [pos1, pos2],
           strokeColor: opts?.grayNetworks
