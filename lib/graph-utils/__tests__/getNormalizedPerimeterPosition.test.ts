@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { describe, it, expect } from "bun:test"
 import { getNormalizedPerimeterPosition } from "../getNormalizedPerimeterPosition"
 import type { Bounds, Vec2 } from "lib/types"
 
@@ -12,7 +12,7 @@ function check(
   const { side, cwDistanceFromCorner } = getNormalizedPerimeterPosition(
     bounds,
     pos,
-  )
+  )!
   expect(side).toBe(expectedSide)
   expect(cwDistanceFromCorner).toBeCloseTo(expectedDist, 5)
 }
@@ -43,8 +43,7 @@ describe("getNormalizedPerimeterPosition", () => {
   })
 
   it("throws if the point is not on the perimeter", () => {
-    expect(() =>
-      getNormalizedPerimeterPosition(bounds, { x: 5, y: 5 }),
-    ).toThrow()
+    const result = getNormalizedPerimeterPosition(bounds, { x: 5, y: 5 })
+    expect(result).toBeNull()
   })
 })
