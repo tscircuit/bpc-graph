@@ -1,3 +1,5 @@
+import { getBoundsOfPinList } from "lib/graph-utils/getBoundsOfPinList"
+import { getNormalizedPerimeterPosition } from "lib/graph-utils/getNormalizedPerimeterPosition"
 import { circularDistance } from "lib/network-bag-of-angles-assignment/computeBagOfAnglesDistance"
 import type { BpcPin } from "lib/types"
 
@@ -12,6 +14,9 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
   const matchedPin1Ids = new Set<string>()
   const matchedPin2Ids = new Set<string>()
 
+  const bounds1 = getBoundsOfPinList(pinList1)
+  const bounds2 = getBoundsOfPinList(pinList2)
+
   for (const pin1 of pinList1) {
     console.log("\n\n", pin1.pinId)
     const matchingPinsByColor = pinList2
@@ -22,25 +27,31 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
       unmatchedPin1Ids.add(pin1.pinId)
       continue
     }
-    let bestAngleDistance = Infinity
-    let bestMatchingPin2: BpcPin = matchingPinsByColor[0]!
-    for (const pin2 of matchingPinsByColor) {
-      const angleDistance = circularDistance(
-        Math.atan2(pin1.offset.y, pin1.offset.x),
-        Math.atan2(pin2.offset.y, pin2.offset.x),
-      )
-      console.log(
-        `angleDistance[${pin1.pinId} -> ${pin2.pinId}]`,
-        angleDistance,
 
-        Math.atan2(pin1.offset.y, pin1.offset.x),
-        Math.atan2(pin2.offset.y, pin2.offset.x),
-      )
-      if (angleDistance < bestAngleDistance) {
-        bestAngleDistance = angleDistance
-        bestMatchingPin2 = pin2
-      }
-    }
+    const normalizedPerimeterPosition1 = getNormalizedPerimeterPosition(
+      bounds1,
+      pin1.offset,
+    )
+
+    // let bestAngleDistance = Infinity
+    // let bestMatchingPin2: BpcPin = matchingPinsByColor[0]!
+    // for (const pin2 of matchingPinsByColor) {
+    //   const angleDistance = circularDistance(
+    //     Math.atan2(pin1.offset.y, pin1.offset.x),
+    //     Math.atan2(pin2.offset.y, pin2.offset.x),
+    //   )
+    //   console.log(
+    //     `angleDistance[${pin1.pinId} -> ${pin2.pinId}]`,
+    //     angleDistance,
+
+    //     Math.atan2(pin1.offset.y, pin1.offset.x),
+    //     Math.atan2(pin2.offset.y, pin2.offset.x),
+    //   )
+    //   if (angleDistance < bestAngleDistance) {
+    //     bestAngleDistance = angleDistance
+    //     bestMatchingPin2 = pin2
+    //   }
+    // }
     matchedPins.push([pin1, bestMatchingPin2])
     matchedPin1Ids.add(pin1.pinId)
     matchedPin2Ids.add(bestMatchingPin2.pinId)
