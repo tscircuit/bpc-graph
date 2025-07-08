@@ -1,4 +1,5 @@
 import { getBoundsOfPinList } from "lib/graph-utils/getBoundsOfPinList"
+import { getNormalizedPerimeterDistance } from "lib/graph-utils/getNormalizedPerimeterDistance"
 import { getNormalizedPerimeterPosition } from "lib/graph-utils/getNormalizedPerimeterPosition"
 import { circularDistance } from "lib/network-bag-of-angles-assignment/computeBagOfAnglesDistance"
 import type { BpcPin } from "lib/types"
@@ -18,11 +19,9 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
   const bounds2 = getBoundsOfPinList(pinList2)
 
   for (const pin1 of pinList1) {
-    console.log("\n\n", pin1.pinId)
     const matchingPinsByColor = pinList2
       .filter((p2) => p2.color === pin1.color)
       .filter((p2) => !matchedPin2Ids.has(p2.pinId))
-    console.log("matchingPinsByColor", matchingPinsByColor)
     if (matchingPinsByColor.length === 0) {
       unmatchedPin1Ids.add(pin1.pinId)
       continue
@@ -32,26 +31,32 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
       bounds1,
       pin1.offset,
     )
+    if (normalizedPerimeterPosition1 === null) {
+      unmatchedPin1Ids.add(pin1.pinId)
+      continue
+    }
 
-    // let bestAngleDistance = Infinity
-    // let bestMatchingPin2: BpcPin = matchingPinsByColor[0]!
-    // for (const pin2 of matchingPinsByColor) {
-    //   const angleDistance = circularDistance(
-    //     Math.atan2(pin1.offset.y, pin1.offset.x),
-    //     Math.atan2(pin2.offset.y, pin2.offset.x),
-    //   )
-    //   console.log(
-    //     `angleDistance[${pin1.pinId} -> ${pin2.pinId}]`,
-    //     angleDistance,
+    let bestPerimeterDistance = Infinity
+    let bestMatchingPin2: BpcPin = matchingPinsByColor[0]!
 
-    //     Math.atan2(pin1.offset.y, pin1.offset.x),
-    //     Math.atan2(pin2.offset.y, pin2.offset.x),
-    //   )
-    //   if (angleDistance < bestAngleDistance) {
-    //     bestAngleDistance = angleDistance
-    //     bestMatchingPin2 = pin2
-    //   }
-    // }
+    for (const pin2 of matchingPinsByColor) {
+      const normalizedPerimeterPosition2 = getNormalizedPerimeterPosition(
+        bounds2,
+        pin2.offset,
+      )
+      if (normalizedPerimeterPosition2 === null) {
+        continue
+      }
+      const { minDistance } = getNormalizedPerimeterDistance(
+        normalizedPerimeterPosition1,
+        normalizedPerimeterPosition2,
+      )
+      if (minDistance < bestPerimeterDistance) {
+        bestPerimeterDistance = minDistance
+        bestMatchingPin2 = pin2
+      }
+    }
+
     matchedPins.push([pin1, bestMatchingPin2])
     matchedPin1Ids.add(pin1.pinId)
     matchedPin2Ids.add(bestMatchingPin2.pinId)
