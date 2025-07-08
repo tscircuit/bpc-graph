@@ -92,7 +92,6 @@ export default function CorpusMatchPage() {
   }
 
   const performMatch = (graph: BpcGraph, ignoreTop: boolean) => {
-    console.log("performing match")
     const { scores, bestTemplate } = computeMatchScores(graph, ignoreTop)
     setResults(scores)
 
@@ -102,7 +101,6 @@ export default function CorpusMatchPage() {
 
       try {
         const adaptedGraph = generateAdaptedMatch(graph, bestTemplate.graph)
-        console.log("adaptedGraph", adaptedGraph)
         setAdaptedMatchSvgDataUrl(graphToSvgDataUrl(adaptedGraph))
       } catch (error: any) {
         console.error("Error generating adapted match:", error)
