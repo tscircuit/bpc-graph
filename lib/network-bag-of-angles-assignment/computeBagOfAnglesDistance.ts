@@ -3,11 +3,15 @@
  * Always in [0, π].
  */
 export const circularDistance = (a: number, b: number): number => {
-  const TAU = 2 * Math.PI // 360 °
-  const raw = Math.abs(a - b) % TAU
-  return Math.min(raw, TAU - raw)
-}
+  const TAU = 2 * Math.PI
 
+  // normalize to [0, TAU)
+  const normA = ((a % TAU) + TAU) % TAU
+  const normB = ((b % TAU) + TAU) % TAU
+
+  const diff = Math.abs(normA - normB)
+  return Math.min(diff, TAU - diff)
+}
 /**
  * Symmetric “average-nearest-neighbour” distance between two bags of angles.
  *

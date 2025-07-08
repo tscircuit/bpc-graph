@@ -13,9 +13,11 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
   const matchedPin2Ids = new Set<string>()
 
   for (const pin1 of pinList1) {
+    console.log("\n\n", pin1.pinId)
     const matchingPinsByColor = pinList2
       .filter((p2) => p2.color === pin1.color)
       .filter((p2) => !matchedPin2Ids.has(p2.pinId))
+    console.log("matchingPinsByColor", matchingPinsByColor)
     if (matchingPinsByColor.length === 0) {
       unmatchedPin1Ids.add(pin1.pinId)
       continue
@@ -24,6 +26,13 @@ export const matchPins = (pinList1: BpcPin[], pinList2: BpcPin[]) => {
     let bestMatchingPin2: BpcPin = matchingPinsByColor[0]!
     for (const pin2 of matchingPinsByColor) {
       const angleDistance = circularDistance(
+        Math.atan2(pin1.offset.y, pin1.offset.x),
+        Math.atan2(pin2.offset.y, pin2.offset.x),
+      )
+      console.log(
+        `angleDistance[${pin1.pinId} -> ${pin2.pinId}]`,
+        angleDistance,
+
         Math.atan2(pin1.offset.y, pin1.offset.x),
         Math.atan2(pin2.offset.y, pin2.offset.x),
       )
