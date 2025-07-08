@@ -46,7 +46,7 @@ export default () => (
 )
   `
 
-test("tscircuitsch04", async () => {
+test("tscircuitsch05", async () => {
   /* ── run the schematic JSX through tscircuit ── */
   const circuitJson = await runTscircuitCode(tscircuitCode)
 
@@ -77,7 +77,7 @@ test("tscircuitsch04", async () => {
 
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
-    "tscircuitsch04-input-circuit",
+    "tscircuitsch05-input-circuit",
   )
   expect(
     getSvgFromGraphicsObject(
