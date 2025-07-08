@@ -360,7 +360,9 @@ export class AssignmentSolver2 {
         const [floatingPin, fixedPin] = p
         return {
           ...fixedPin,
-          networkId: this.floatingToFixedNetworkMap.get(floatingPin.networkId)!,
+          // Use the floating network id for the working graph so that WL
+          // distance comparisons operate in the floating network space.
+          networkId: this.fixedToFloatingNetworkMap.get(fixedPin.networkId)!,
 
           _floatingPinId: floatingPin.pinId,
           _fixedPinId: fixedPin.pinId,
