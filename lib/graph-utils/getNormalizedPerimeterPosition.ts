@@ -15,7 +15,7 @@ const EPS = 1e-6 // tolerance for “on-edge” comparisons
 export const getNormalizedPerimeterPosition = (
   bounds: Bounds,
   position: Vec2,
-): NormalizedPerimeterPosition => {
+): NormalizedPerimeterPosition | null => {
   const { minX, minY, maxX, maxY } = bounds
 
   const near = (a: number, b: number) => Math.abs(a - b) < EPS
@@ -32,11 +32,11 @@ export const getNormalizedPerimeterPosition = (
     side = "x+"
     cwDistanceFromCorner = (maxY - position.y) / (maxY - minY)
   } else if (
-    near(position.y, maxY) &&               // TOP edge  (y+)
+    near(position.y, maxY) && // TOP edge  (y+)
     position.x <= maxX + EPS &&
     position.x >= minX - EPS
   ) {
-    side = "y+"                             // TOP = y+
+    side = "y+" // TOP = y+
     // start at top-left corner, go clockwise to top-right
     cwDistanceFromCorner = (position.x - minX) / (maxX - minX)
   } else if (
@@ -48,15 +48,15 @@ export const getNormalizedPerimeterPosition = (
     side = "x-"
     cwDistanceFromCorner = (position.y - minY) / (maxY - minY)
   } else if (
-    near(position.y, minY) &&               // BOTTOM edge (y-)
+    near(position.y, minY) && // BOTTOM edge (y-)
     position.x >= minX - EPS &&
     position.x <= maxX + EPS
   ) {
-    side = "y-"                             // BOTTOM = y-
+    side = "y-" // BOTTOM = y-
     // start at bottom-right corner, go clockwise to bottom-left
     cwDistanceFromCorner = (maxX - position.x) / (maxX - minX)
   } else {
-    throw new Error("Position is not on the perimeter of the supplied bounds.")
+    return null
   }
 
   // Clamp to [0, 1] to guard against floating-point drift
