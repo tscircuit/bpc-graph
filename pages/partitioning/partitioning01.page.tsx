@@ -187,7 +187,7 @@ function PartitioningDebugger() {
   const [iteration, setIteration] = useState(0)
   const [playInterval, setPlayInterval] = useState<NodeJS.Timeout | null>(null)
   const [processor] = useState(
-    () => new SchematicPartitionProcessor(floatingBpc),
+    () => new SchematicPartitionProcessor(floatingBpc as any),
   )
   const isPlaying = playInterval !== null
 
