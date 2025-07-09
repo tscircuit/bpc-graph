@@ -1,9 +1,4 @@
 import { test, expect } from "bun:test"
-import { runTscircuitCode } from "tscircuit"
-import {
-  convertCircuitJsonToBpc,
-  generateImplicitNetLabels,
-} from "circuit-json-to-bpc"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getGraphicsForBpcGraph, type FloatingBpcGraph } from "lib/index"
 import { debugLayout } from "tests/fixtures/debugLayout"
@@ -12,6 +7,7 @@ import {
   stackGraphicsHorizontally,
   stackGraphicsVertically,
 } from "graphics-debug"
+import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
 
 const floatingBpc: FloatingBpcGraph = {
   boxes: [
@@ -205,7 +201,9 @@ test("repro01-schematic-no-net-label", async () => {
     laidOutGraphGraphics,
     matchedCorpusGraphs,
     matchedCorpusGraphGraphics,
-  } = debugLayout(floatingBpc)
+  } = debugLayout(floatingBpc, {
+    corpus: corpusNoNetLabel,
+  })
 
   expect(
     getSvgFromGraphicsObject(

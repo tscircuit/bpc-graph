@@ -29,7 +29,7 @@
     "tscircuit": "^0.0.514",
     "tsup": "^8.5.0",
     "vite": "^6.3.5",
-    "@tscircuit/schematic-corpus": "^0.0.44",
+    "@tscircuit/schematic-corpus": "^0.0.52",
     "circuit-json-to-bpc": "^0.0.10"
   },
   "peerDependencies": {
