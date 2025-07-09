@@ -3,6 +3,7 @@ import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
+import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
 
 export default function InteractiveSchematicLayoutPage() {
   const [tscircuitCode, setTscircuitCode] = useState(`export default () => (
@@ -36,8 +37,13 @@ export default function InteractiveSchematicLayoutPage() {
     setError(null)
     try {
       const circuitJson = await runTscircuitCode(tscircuitCode)
-      const bpcGraph = convertCircuitJsonToBpc(circuitJson)
-      const result = debugLayout(bpcGraph)
+      const circuitJsonNoNetLabels = circuitJson.filter(
+        (elm) => elm.type !== "schematic_net_label",
+      )
+      const bpcGraph = convertCircuitJsonToBpc(circuitJsonNoNetLabels)
+      const result = debugLayout(bpcGraph, {
+        corpus: corpusNoNetLabel,
+      })
       setLayoutResult(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
