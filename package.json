@@ -9,6 +9,7 @@
   "scripts": {
     "start": "cosmos",
     "build": "tsup-node ./lib/index.ts --format esm --dts -d dist",
+    "build:site": "cosmos-export",
     "format": "biome format --write .",
     "format:check": "biome format ."
   },
