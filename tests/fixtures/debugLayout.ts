@@ -57,13 +57,14 @@ export const debugLayout = (
     const {
       graph: fixedCorpusGraph,
       graphName,
-      distance,
+      corpusScores,
     } = matchGraph(part.g, opts.corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
       pushBoxesAsBoxesChangeSize: true,
     })
     return {
+      corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
       matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
         title: `Matched ${graphName} (d=${distance.toFixed(2)})`,
@@ -92,6 +93,7 @@ export const debugLayout = (
 
   // 7. Prepare graphics and SVG
   return {
+    adaptedGraphs,
     partitions,
     partitionGraphics: partitions.map((p, idx) =>
       getGraphicsForBpcGraph(p, {
