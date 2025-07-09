@@ -5,6 +5,7 @@ import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
 import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
+import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 
 export default function InteractiveSchematicLayoutPage() {
   const [tscircuitCode, setTscircuitCode] = useState(`export default () => (
@@ -207,23 +208,189 @@ export default function InteractiveSchematicLayoutPage() {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {layoutResult.matchedCorpusGraphGraphics.map(
-                (graphics: any, idx: number) => (
-                  <div
-                    key={idx}
-                    style={{ border: "1px solid #ccc", padding: "10px" }}
-                  >
-                    <h4>Matched Template {idx + 1}</h4>
+                (graphics: any, idx: number) => {
+                  const matchDetail = layoutResult.matchDetails?.[idx]
+                  return (
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: getSvgFromGraphicsObject(graphics, {
-                          backgroundColor: "white",
-                          svgWidth: 300,
-                          svgHeight: 200,
-                        }),
-                      }}
-                    />
-                  </div>
-                ),
+                      key={idx}
+                      style={{ border: "1px solid #ccc", padding: "10px" }}
+                    >
+                      <h4>
+                        Matched Template {idx + 1}
+                        {matchDetail && (
+                          <>
+                            : {matchDetail.designName} (d=
+                            {matchDetail.distance?.toFixed(2)})
+                          </>
+                        )}
+                      </h4>
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <div>
+                          <h5 style={{ margin: "0 0 5px 0", fontSize: "12px" }}>
+                            BPC Graph
+                          </h5>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: getSvgFromGraphicsObject(graphics, {
+                                backgroundColor: "white",
+                                svgWidth: 300,
+                                svgHeight: 200,
+                              }),
+                            }}
+                          />
+                        </div>
+                        {matchDetail && (
+                          <div>
+                            <h5
+                              style={{ margin: "0 0 5px 0", fontSize: "12px" }}
+                            >
+                              Circuit Form
+                            </h5>
+                            <img
+                              src={matchDetail.designSvgUrl}
+                              alt={`Circuit form for ${matchDetail.designName}`}
+                              style={{
+                                width: "300px",
+                                height: "200px",
+                                objectFit: "contain",
+                                border: "1px solid #ddd",
+                                backgroundColor: "white",
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {matchDetail && (
+                        <details style={{ marginTop: "10px" }}>
+                          <summary
+                            style={{ cursor: "pointer", fontSize: "12px" }}
+                          >
+                            Match Details
+                          </summary>
+                          <div style={{ fontSize: "11px", marginTop: "5px" }}>
+                            <h5>Corpus Scores:</h5>
+                            <div
+                              style={{ maxHeight: "200px", overflowY: "auto" }}
+                            >
+                              {Object.entries(matchDetail.corpusScores || {})
+                                .sort(
+                                  ([, a], [, b]) =>
+                                    (a as number) - (b as number),
+                                )
+                                .map(([name, score]) => (
+                                  <div
+                                    key={name}
+                                    style={{
+                                      marginBottom: "10px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                    }}
+                                  >
+                                    <div
+                                      style={{ display: "flex", gap: "4px" }}
+                                    >
+                                      <div>
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          BPC
+                                        </div>
+                                        <div
+                                          style={{
+                                            width: "60px",
+                                            height: "40px",
+                                            border: "1px solid #ddd",
+                                            backgroundColor: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "8px",
+                                            color: "#666",
+                                          }}
+                                        >
+                                          {layoutResult.corpus &&
+                                          layoutResult.corpus[name] ? (
+                                            <img
+                                              src={`data:image/svg+xml;base64,${btoa(
+                                                getSvgFromGraphicsObject(
+                                                  getGraphicsForBpcGraph(
+                                                    layoutResult.corpus[name],
+                                                    {
+                                                      title: "",
+                                                    },
+                                                  ),
+                                                  {
+                                                    backgroundColor: "white",
+                                                    svgWidth: 320,
+                                                    svgHeight: 240,
+                                                  },
+                                                ),
+                                              )}`}
+                                              alt={`BPC graph for ${name}`}
+                                              style={{
+                                                width: "58px",
+                                                height: "38px",
+                                                objectFit: "fill",
+                                              }}
+                                            />
+                                          ) : (
+                                            "N/A"
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          Circuit
+                                        </div>
+                                        <img
+                                          src={`https://schematic-corpus.tscircuit.com/${name}.svg`}
+                                          alt={`Circuit form for ${name}`}
+                                          style={{
+                                            width: "60px",
+                                            height: "40px",
+                                            objectFit: "contain",
+                                            border: "1px solid #ddd",
+                                            backgroundColor: "white",
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <strong>
+                                        {name === matchDetail.designName
+                                          ? "→ "
+                                          : ""}
+                                      </strong>
+                                      <span
+                                        style={{
+                                          color:
+                                            name === matchDetail.designName
+                                              ? "#28a745"
+                                              : "#007bff",
+                                        }}
+                                      >
+                                        {name}
+                                      </span>
+                                      : {(score as number).toFixed(3)}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  )
+                },
               )}
             </div>
           </div>

@@ -58,6 +58,7 @@ export const debugLayout = (
       graph: fixedCorpusGraph,
       graphName,
       corpusScores,
+      distance,
     } = matchGraph(part.g, opts.corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
@@ -67,10 +68,11 @@ export const debugLayout = (
       corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
       matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
-        title: `Matched ${graphName} (d=${distance.toFixed(2)})`,
+        title: `Matched ${graphName}`,
       }),
       adaptedBpcGraph,
       graphName,
+      distance,
       reflected: part.reflected,
       centerBoxId: part.centerBoxId,
     }
@@ -109,6 +111,14 @@ export const debugLayout = (
         title: `Net Adapted ${g.graphName}`,
       }),
     ),
+    matchDetails: adaptedGraphs.map((g) => ({
+      designName: g.graphName,
+      distance: g.distance,
+      designSvgUrl: `https://schematic-corpus.tscircuit.com/${g.graphName}.svg`,
+      corpusScores: g.corpusScores,
+      matchedCorpusGraph: g.matchedCorpusGraph,
+    })),
+    corpus: opts.corpus,
     partitionIterationGraphics,
     laidOutGraph: remergedGraph,
     laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
