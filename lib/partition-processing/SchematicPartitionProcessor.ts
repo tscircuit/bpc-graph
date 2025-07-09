@@ -271,9 +271,7 @@ export class SchematicPartitionProcessor {
       const netDiff = this.pinNetworkSize[aKey]! - this.pinNetworkSize[bKey]!
       if (netDiff !== 0) return netDiff
 
-      return (
-        this.pinConnectionCount[aKey]! - this.pinConnectionCount[bKey]!
-      )
+      return this.pinConnectionCount[aKey]! - this.pinConnectionCount[bKey]!
     })
 
     /* ――― no more work to do? ――― */
