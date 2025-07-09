@@ -147,6 +147,7 @@ export const getGraphicsForBpcGraph = (
   const bounds = getBounds(graphics)
 
   if (opts?.title) {
+    graphics.title = opts.title
     graphics.texts.push({
       text: opts.title,
       x: bounds.minX,
