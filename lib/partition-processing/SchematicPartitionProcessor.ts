@@ -68,6 +68,16 @@ export class SchematicPartitionProcessor {
   pinConnectionCount: Record<`${string}:${string}`, number>
 
   /**
+   * #pins on each network      key = networkId
+   */
+  networkSize: Record<string, number>
+
+  /**
+   * Network-size for each pin  key = `${boxId}:${pinId}`
+   */
+  pinNetworkSize: Record<`${string}:${string}`, number>
+
+  /**
    * Boxes that have been split into multiple partitions
    *   key = boxId
    */
@@ -138,6 +148,20 @@ export class SchematicPartitionProcessor {
     //       title: "Initial Graph",
     //     }),
     //   )
+
+    // Pre-compute how many pins are on every network
+    const netCounts: Record<string, number> = {}
+    for (const p of this.initialGraph.pins) {
+      netCounts[p.networkId] = (netCounts[p.networkId] ?? 0) + 1
+    }
+    this.networkSize = netCounts
+
+    // Store that size per pin for quick look-up
+    const pNetSize: Record<`${string}:${string}`, number> = {}
+    for (const p of this.initialGraph.pins) {
+      pNetSize[`${p.boxId}:${p.pinId}`] = netCounts[p.networkId]!
+    }
+    this.pinNetworkSize = pNetSize
   }
   initializeBoxSingletonKeys() {
     const boxSingletonKeys: Record<BoxId, Set<string>> = {}
@@ -238,12 +262,17 @@ export class SchematicPartitionProcessor {
         `  explored=${this.exploredPins.size}`,
     )
 
-    // Always explore pins with the smallest fan-out first
-    this.unexploredPins.sort(
-      (a, b) =>
-        this.pinConnectionCount[`${a.boxId}:${a.pinId}`]! -
-        this.pinConnectionCount[`${b.boxId}:${b.pinId}`]!,
-    )
+    // Always explore pins on the smallest nets first; if equal, prefer smaller fan-out
+    // Explore pins that sit on the smallest networks first (tie-break by fan-out)
+    this.unexploredPins.sort((a, b) => {
+      const aKey = `${a.boxId}:${a.pinId}` as const
+      const bKey = `${b.boxId}:${b.pinId}` as const
+
+      const netDiff = this.pinNetworkSize[aKey]! - this.pinNetworkSize[bKey]!
+      if (netDiff !== 0) return netDiff
+
+      return this.pinConnectionCount[aKey]! - this.pinConnectionCount[bKey]!
+    })
 
     /* ――― no more work to do? ――― */
     if (this.unexploredPins.length === 0) {
