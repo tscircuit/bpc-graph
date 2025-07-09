@@ -7,6 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       lib: resolve(import.meta.dirname, "lib"),
+      tests: resolve(import.meta.dirname, "tests"),
     },
   },
 })
