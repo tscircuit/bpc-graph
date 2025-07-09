@@ -102,7 +102,8 @@ export default function InteractiveSchematicLayoutPage() {
           <div style={{ marginBottom: "30px" }}>
             <h3>Step 1: Input Circuit</h3>
             <p>
-              The original circuit from the TSCircuit code before any layout processing.
+              The original circuit from the TSCircuit code before any layout
+              processing.
             </p>
             {circuitJson && (
               <div
@@ -123,7 +124,13 @@ export default function InteractiveSchematicLayoutPage() {
 
           <div style={{ marginBottom: "30px" }}>
             <details>
-              <summary style={{ cursor: "pointer", fontSize: "18px", fontWeight: "bold" }}>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                }}
+              >
                 Step 2: Partition Iteration Process
               </summary>
               <p>
@@ -131,7 +138,14 @@ export default function InteractiveSchematicLayoutPage() {
                 convergence.
               </p>
               {layoutResult.partitionIterationGraphics.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                    marginTop: "10px",
+                  }}
+                >
                   {layoutResult.partitionIterationGraphics
                     .slice(0, 10)
                     .map((graphics: any, idx: number) => (

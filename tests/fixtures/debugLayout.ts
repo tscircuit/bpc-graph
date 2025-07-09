@@ -18,19 +18,27 @@ export const debugLayout = (
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
+
+  const floatingBoxIdsWithMutablePinOffsets = new Set(
+    g.boxes
+      .filter((box) => {
+        const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
+        const nonCenterBoxPins = boxPins.filter(
+          (bp) => !bp.color.includes("center"),
+        )
+        if (nonCenterBoxPins.length <= 2) {
+          return true
+        }
+        return false
+      })
+      .map((b) => b.boxId),
+  )
+
   // 1. Partition the graph
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
   })
-
-  const floatingBoxIdsWithMutablePinOffsets = new Set<FloatingBoxId>()
-  for (const box of g.boxes) {
-    const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
-    if (boxPins.some((bp) => bp.color === "netlabel_center")) {
-      floatingBoxIdsWithMutablePinOffsets.add(box.boxId)
-    }
-  }
 
   const partitionIterationGraphics: GraphicsObject[] = []
   while (!processor.solved && processor.iteration < 1000) {
