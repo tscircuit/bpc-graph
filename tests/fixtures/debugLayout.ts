@@ -1,6 +1,6 @@
 import type { GraphicsObject } from "graphics-debug"
 import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
-import corpus from "@tscircuit/schematic-corpus"
+import mainCorpus from "@tscircuit/schematic-corpus"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { mergeBoxSideSubgraphs } from "lib/box-sides/mergeBoxSideSubgraphs"
@@ -11,7 +11,13 @@ import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanoni
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
-export const debugLayout = (g: BpcGraph) => {
+export const debugLayout = (
+  g: BpcGraph,
+  opts: {
+    corpus?: Record<string, BpcGraph>
+  } = {},
+) => {
+  opts.corpus ??= mainCorpus
   // 1. Partition the graph
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys: ["vcc/2", "gnd/2"],
@@ -44,7 +50,7 @@ export const debugLayout = (g: BpcGraph) => {
       graph: fixedCorpusGraph,
       graphName,
       distance,
-    } = matchGraph(part.g, corpus as any)
+    } = matchGraph(part.g, opts.corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
       pushBoxesAsBoxesChangeSize: true,
