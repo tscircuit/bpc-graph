@@ -12,13 +12,65 @@ import { getSvgFromGraphicsObject } from "graphics-debug"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const debugLayout = (
-  g: BpcGraph,
+  g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
   opts: {
     corpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
 
+  // Handle floatingGraphInputVariants
+  let selectedGraph: BpcGraph
+  let selectedVariantName = "Default"
+  const variantResults: Array<{ variantName: string; distance: number }> = []
+
+  if (Array.isArray(g)) {
+    // Process each variant to find the one with lowest distance
+    let bestVariant: {
+      variantName: string
+      floatingGraph: BpcGraph
+      distance: number
+    } | null = null
+
+    for (const variant of g) {
+      // Quick distance calculation for each variant
+      const quickResult = debugLayoutSingle(variant.floatingGraph, opts)
+      const totalDistance = quickResult.adaptedGraphs.reduce(
+        (sum, ag) => sum + (ag.distance || 0),
+        0,
+      )
+
+      variantResults.push({
+        variantName: variant.variantName,
+        distance: totalDistance,
+      })
+
+      if (!bestVariant || totalDistance < bestVariant.distance) {
+        bestVariant = { ...variant, distance: totalDistance }
+      }
+    }
+
+    selectedGraph = bestVariant!.floatingGraph
+    selectedVariantName = bestVariant!.variantName
+  } else {
+    selectedGraph = g
+  }
+
+  const result = debugLayoutSingle(selectedGraph, opts)
+
+  return {
+    ...result,
+    selectedVariantName,
+    variantResults,
+  }
+}
+
+const debugLayoutSingle = (
+  g: BpcGraph,
+  opts: {
+    corpus?: Record<string, BpcGraph>
+  } = {},
+) => {
   const floatingBoxIdsWithMutablePinOffsets = new Set(
     g.boxes
       .filter((box) => {

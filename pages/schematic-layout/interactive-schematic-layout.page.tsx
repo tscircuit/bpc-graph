@@ -4,8 +4,18 @@ import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
+import type { BpcGraph } from "lib/types"
 import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
+
+function createNotConnectedBecomesNormalVariant(bpcGraph: BpcGraph): BpcGraph {
+  return {
+    ...bpcGraph,
+    pins: bpcGraph.pins.map((pin) =>
+      pin.color === "not_connected" ? { ...pin, color: "normal" } : pin,
+    ),
+  }
+}
 
 export default function InteractiveSchematicLayoutPage() {
   const [tscircuitCode, setTscircuitCode] = useState(`export default () => (
@@ -34,6 +44,7 @@ export default function InteractiveSchematicLayoutPage() {
   const [circuitJson, setCircuitJson] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedVariant, setSelectedVariant] = useState<string>("auto")
 
   const runLayout = async () => {
     setLoading(true)
@@ -45,9 +56,31 @@ export default function InteractiveSchematicLayoutPage() {
         (elm) => elm.type !== "schematic_net_label",
       )
       const bpcGraph = convertCircuitJsonToBpc(circuitJsonNoNetLabels)
-      const result = debugLayout(bpcGraph, {
-        corpus: corpusNoNetLabel,
-      })
+
+      let result
+      if (selectedVariant === "auto") {
+        // Use floatingGraphInputVariants approach
+        const variants = [
+          { variantName: "Default", floatingGraph: bpcGraph },
+          {
+            variantName: "NotConnectedBecomesNormal",
+            floatingGraph: createNotConnectedBecomesNormalVariant(bpcGraph),
+          },
+        ]
+        result = debugLayout(variants, {
+          corpus: corpusNoNetLabel,
+        })
+      } else {
+        // Use specific variant
+        let graphToUse = bpcGraph
+        if (selectedVariant === "NotConnectedBecomesNormal") {
+          graphToUse = createNotConnectedBecomesNormalVariant(bpcGraph)
+        }
+        result = debugLayout(graphToUse, {
+          corpus: corpusNoNetLabel,
+        })
+      }
+
       setLayoutResult(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
@@ -75,25 +108,81 @@ export default function InteractiveSchematicLayoutPage() {
             padding: "8px",
           }}
         />
-        <button
-          onClick={runLayout}
-          disabled={loading}
-          style={{
-            marginTop: "10px",
-            padding: "10px 20px",
-            backgroundColor: loading ? "#ccc" : "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Processing..." : "Run Layout Debug"}
-        </button>
+        <div style={{ marginTop: "10px" }}>
+          <div style={{ marginBottom: "10px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>
+              Input Variant:
+            </label>
+            <select
+              value={selectedVariant}
+              onChange={(e) => setSelectedVariant(e.target.value)}
+              style={{
+                padding: "5px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                backgroundColor: "white",
+              }}
+            >
+              <option value="auto">Auto-select (lowest distance)</option>
+              <option value="Default">Default</option>
+              <option value="NotConnectedBecomesNormal">
+                NotConnectedBecomesNormal
+              </option>
+            </select>
+          </div>
+          <button
+            onClick={runLayout}
+            disabled={loading}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: loading ? "#ccc" : "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Processing..." : "Run Layout Debug"}
+          </button>
+        </div>
       </div>
 
       {error && (
         <div style={{ color: "red", marginBottom: "20px" }}>Error: {error}</div>
+      )}
+
+      {layoutResult && layoutResult.variantResults && (
+        <div style={{ marginBottom: "20px" }}>
+          <h2>Variant Selection Results</h2>
+          <p>
+            Selected Variant:{" "}
+            <strong>{layoutResult.selectedVariantName}</strong>
+          </p>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            {layoutResult.variantResults.map((variant: any, idx: number) => (
+              <div
+                key={idx}
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  backgroundColor:
+                    variant.variantName === layoutResult.selectedVariantName
+                      ? "#e7f3ff"
+                      : "white",
+                }}
+              >
+                <h4>{variant.variantName}</h4>
+                <p>Distance: {variant.distance.toFixed(3)}</p>
+                {variant.variantName === layoutResult.selectedVariantName && (
+                  <p style={{ color: "#007bff", fontWeight: "bold" }}>
+                    ← Selected
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {layoutResult && (
