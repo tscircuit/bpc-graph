@@ -246,7 +246,7 @@ const ogGraph: MixedBpcGraph = {
 /* ──────────────── test ──────────────── */
 test("partitionGraphForLayout02 – layoutSchematicGraph pipeline", () => {
   // 1. run the high-level layout helper
-  const laidOut = layoutSchematicGraph(ogGraph, {
+  const { fixedGraph: laidOut } = layoutSchematicGraph(ogGraph, {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
     corpus,

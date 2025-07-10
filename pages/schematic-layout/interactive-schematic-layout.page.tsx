@@ -4,7 +4,18 @@ import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
+import type { BpcGraph } from "lib/types"
 import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
+import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
+
+function createNotConnectedBecomesNormalVariant(bpcGraph: BpcGraph): BpcGraph {
+  return {
+    ...bpcGraph,
+    pins: bpcGraph.pins.map((pin) =>
+      pin.color === "not_connected" ? { ...pin, color: "normal" } : pin,
+    ),
+  }
+}
 
 export default function InteractiveSchematicLayoutPage() {
   const [tscircuitCode, setTscircuitCode] = useState(`export default () => (
@@ -33,6 +44,7 @@ export default function InteractiveSchematicLayoutPage() {
   const [circuitJson, setCircuitJson] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedVariant, setSelectedVariant] = useState<string>("auto")
 
   const runLayout = async () => {
     setLoading(true)
@@ -44,9 +56,31 @@ export default function InteractiveSchematicLayoutPage() {
         (elm) => elm.type !== "schematic_net_label",
       )
       const bpcGraph = convertCircuitJsonToBpc(circuitJsonNoNetLabels)
-      const result = debugLayout(bpcGraph, {
-        corpus: corpusNoNetLabel,
-      })
+
+      let result
+      if (selectedVariant === "auto") {
+        // Use floatingGraphInputVariants approach
+        const variants = [
+          { variantName: "Default", floatingGraph: bpcGraph },
+          {
+            variantName: "NotConnectedBecomesNormal",
+            floatingGraph: createNotConnectedBecomesNormalVariant(bpcGraph),
+          },
+        ]
+        result = debugLayout(variants, {
+          corpus: corpusNoNetLabel,
+        })
+      } else {
+        // Use specific variant
+        let graphToUse = bpcGraph
+        if (selectedVariant === "NotConnectedBecomesNormal") {
+          graphToUse = createNotConnectedBecomesNormalVariant(bpcGraph)
+        }
+        result = debugLayout(graphToUse, {
+          corpus: corpusNoNetLabel,
+        })
+      }
+
       setLayoutResult(result)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
@@ -74,25 +108,81 @@ export default function InteractiveSchematicLayoutPage() {
             padding: "8px",
           }}
         />
-        <button
-          onClick={runLayout}
-          disabled={loading}
-          style={{
-            marginTop: "10px",
-            padding: "10px 20px",
-            backgroundColor: loading ? "#ccc" : "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-        >
-          {loading ? "Processing..." : "Run Layout Debug"}
-        </button>
+        <div style={{ marginTop: "10px" }}>
+          <div style={{ marginBottom: "10px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>
+              Input Variant:
+            </label>
+            <select
+              value={selectedVariant}
+              onChange={(e) => setSelectedVariant(e.target.value)}
+              style={{
+                padding: "5px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+                backgroundColor: "white",
+              }}
+            >
+              <option value="auto">Auto-select (lowest distance)</option>
+              <option value="Default">Default</option>
+              <option value="NotConnectedBecomesNormal">
+                NotConnectedBecomesNormal
+              </option>
+            </select>
+          </div>
+          <button
+            onClick={runLayout}
+            disabled={loading}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: loading ? "#ccc" : "#007bff",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+          >
+            {loading ? "Processing..." : "Run Layout Debug"}
+          </button>
+        </div>
       </div>
 
       {error && (
         <div style={{ color: "red", marginBottom: "20px" }}>Error: {error}</div>
+      )}
+
+      {layoutResult && layoutResult.variantResults && (
+        <div style={{ marginBottom: "20px" }}>
+          <h2>Variant Selection Results</h2>
+          <p>
+            Selected Variant:{" "}
+            <strong>{layoutResult.selectedVariantName}</strong>
+          </p>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            {layoutResult.variantResults.map((variant: any, idx: number) => (
+              <div
+                key={idx}
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  backgroundColor:
+                    variant.variantName === layoutResult.selectedVariantName
+                      ? "#e7f3ff"
+                      : "white",
+                }}
+              >
+                <h4>{variant.variantName}</h4>
+                <p>Distance: {variant.distance.toFixed(3)}</p>
+                {variant.variantName === layoutResult.selectedVariantName && (
+                  <p style={{ color: "#007bff", fontWeight: "bold" }}>
+                    ← Selected
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {layoutResult && (
@@ -102,7 +192,8 @@ export default function InteractiveSchematicLayoutPage() {
           <div style={{ marginBottom: "30px" }}>
             <h3>Step 1: Input Circuit</h3>
             <p>
-              The original circuit from the TSCircuit code before any layout processing.
+              The original circuit from the TSCircuit code before any layout
+              processing.
             </p>
             {circuitJson && (
               <div
@@ -123,7 +214,13 @@ export default function InteractiveSchematicLayoutPage() {
 
           <div style={{ marginBottom: "30px" }}>
             <details>
-              <summary style={{ cursor: "pointer", fontSize: "18px", fontWeight: "bold" }}>
+              <summary
+                style={{
+                  cursor: "pointer",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                }}
+              >
                 Step 2: Partition Iteration Process
               </summary>
               <p>
@@ -131,7 +228,14 @@ export default function InteractiveSchematicLayoutPage() {
                 convergence.
               </p>
               {layoutResult.partitionIterationGraphics.length > 0 && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                    marginTop: "10px",
+                  }}
+                >
                   {layoutResult.partitionIterationGraphics
                     .slice(0, 10)
                     .map((graphics: any, idx: number) => (
@@ -193,23 +297,189 @@ export default function InteractiveSchematicLayoutPage() {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {layoutResult.matchedCorpusGraphGraphics.map(
-                (graphics: any, idx: number) => (
-                  <div
-                    key={idx}
-                    style={{ border: "1px solid #ccc", padding: "10px" }}
-                  >
-                    <h4>Matched Template {idx + 1}</h4>
+                (graphics: any, idx: number) => {
+                  const matchDetail = layoutResult.matchDetails?.[idx]
+                  return (
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: getSvgFromGraphicsObject(graphics, {
-                          backgroundColor: "white",
-                          svgWidth: 300,
-                          svgHeight: 200,
-                        }),
-                      }}
-                    />
-                  </div>
-                ),
+                      key={idx}
+                      style={{ border: "1px solid #ccc", padding: "10px" }}
+                    >
+                      <h4>
+                        Matched Template {idx + 1}
+                        {matchDetail && (
+                          <>
+                            : {matchDetail.designName} (d=
+                            {matchDetail.distance?.toFixed(2)})
+                          </>
+                        )}
+                      </h4>
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        <div>
+                          <h5 style={{ margin: "0 0 5px 0", fontSize: "12px" }}>
+                            BPC Graph
+                          </h5>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: getSvgFromGraphicsObject(graphics, {
+                                backgroundColor: "white",
+                                svgWidth: 300,
+                                svgHeight: 200,
+                              }),
+                            }}
+                          />
+                        </div>
+                        {matchDetail && (
+                          <div>
+                            <h5
+                              style={{ margin: "0 0 5px 0", fontSize: "12px" }}
+                            >
+                              Circuit Form
+                            </h5>
+                            <img
+                              src={matchDetail.designSvgUrl}
+                              alt={`Circuit form for ${matchDetail.designName}`}
+                              style={{
+                                width: "300px",
+                                height: "200px",
+                                objectFit: "contain",
+                                border: "1px solid #ddd",
+                                backgroundColor: "white",
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      {matchDetail && (
+                        <details style={{ marginTop: "10px" }}>
+                          <summary
+                            style={{ cursor: "pointer", fontSize: "12px" }}
+                          >
+                            Match Details
+                          </summary>
+                          <div style={{ fontSize: "11px", marginTop: "5px" }}>
+                            <h5>Corpus Scores:</h5>
+                            <div
+                              style={{ maxHeight: "200px", overflowY: "auto" }}
+                            >
+                              {Object.entries(matchDetail.corpusScores || {})
+                                .sort(
+                                  ([, a], [, b]) =>
+                                    (a as number) - (b as number),
+                                )
+                                .map(([name, score]) => (
+                                  <div
+                                    key={name}
+                                    style={{
+                                      marginBottom: "10px",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      gap: "8px",
+                                    }}
+                                  >
+                                    <div
+                                      style={{ display: "flex", gap: "4px" }}
+                                    >
+                                      <div>
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          BPC
+                                        </div>
+                                        <div
+                                          style={{
+                                            width: "60px",
+                                            height: "40px",
+                                            border: "1px solid #ddd",
+                                            backgroundColor: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "8px",
+                                            color: "#666",
+                                          }}
+                                        >
+                                          {layoutResult.corpus &&
+                                          layoutResult.corpus[name] ? (
+                                            <img
+                                              src={`data:image/svg+xml;base64,${btoa(
+                                                getSvgFromGraphicsObject(
+                                                  getGraphicsForBpcGraph(
+                                                    layoutResult.corpus[name],
+                                                    {
+                                                      title: "",
+                                                    },
+                                                  ),
+                                                  {
+                                                    backgroundColor: "white",
+                                                    svgWidth: 320,
+                                                    svgHeight: 240,
+                                                  },
+                                                ),
+                                              )}`}
+                                              alt={`BPC graph for ${name}`}
+                                              style={{
+                                                width: "58px",
+                                                height: "38px",
+                                                objectFit: "fill",
+                                              }}
+                                            />
+                                          ) : (
+                                            "N/A"
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          Circuit
+                                        </div>
+                                        <img
+                                          src={`https://schematic-corpus.tscircuit.com/${name}.svg`}
+                                          alt={`Circuit form for ${name}`}
+                                          style={{
+                                            width: "60px",
+                                            height: "40px",
+                                            objectFit: "contain",
+                                            border: "1px solid #ddd",
+                                            backgroundColor: "white",
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <strong>
+                                        {name === matchDetail.designName
+                                          ? "→ "
+                                          : ""}
+                                      </strong>
+                                      <span
+                                        style={{
+                                          color:
+                                            name === matchDetail.designName
+                                              ? "#28a745"
+                                              : "#007bff",
+                                        }}
+                                      >
+                                        {name}
+                                      </span>
+                                      : {(score as number).toFixed(3)}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  )
+                },
               )}
             </div>
           </div>

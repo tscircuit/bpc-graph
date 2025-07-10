@@ -12,25 +12,85 @@ import { getSvgFromGraphicsObject } from "graphics-debug"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const debugLayout = (
-  g: BpcGraph,
+  g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
   opts: {
     corpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
+
+  // Handle floatingGraphInputVariants
+  let selectedGraph: BpcGraph
+  let selectedVariantName = "Default"
+  const variantResults: Array<{ variantName: string; distance: number }> = []
+
+  if (Array.isArray(g)) {
+    // Process each variant to find the one with lowest distance
+    let bestVariant: {
+      variantName: string
+      floatingGraph: BpcGraph
+      distance: number
+    } | null = null
+
+    for (const variant of g) {
+      // Quick distance calculation for each variant
+      const quickResult = debugLayoutSingle(variant.floatingGraph, opts)
+      const totalDistance = quickResult.adaptedGraphs.reduce(
+        (sum, ag) => sum + (ag.distance || 0),
+        0,
+      )
+
+      variantResults.push({
+        variantName: variant.variantName,
+        distance: totalDistance,
+      })
+
+      if (!bestVariant || totalDistance < bestVariant.distance) {
+        bestVariant = { ...variant, distance: totalDistance }
+      }
+    }
+
+    selectedGraph = bestVariant!.floatingGraph
+    selectedVariantName = bestVariant!.variantName
+  } else {
+    selectedGraph = g
+  }
+
+  const result = debugLayoutSingle(selectedGraph, opts)
+
+  return {
+    ...result,
+    selectedVariantName,
+    variantResults,
+  }
+}
+
+const debugLayoutSingle = (
+  g: BpcGraph,
+  opts: {
+    corpus?: Record<string, BpcGraph>
+  } = {},
+) => {
+  const floatingBoxIdsWithMutablePinOffsets = new Set(
+    g.boxes
+      .filter((box) => {
+        const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
+        const nonCenterBoxPins = boxPins.filter(
+          (bp) => !bp.color.includes("center"),
+        )
+        if (nonCenterBoxPins.length <= 2) {
+          return true
+        }
+        return false
+      })
+      .map((b) => b.boxId),
+  )
+
   // 1. Partition the graph
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
   })
-
-  const floatingBoxIdsWithMutablePinOffsets = new Set<FloatingBoxId>()
-  for (const box of g.boxes) {
-    const boxPins = g.pins.filter((p) => p.boxId === box.boxId)
-    if (boxPins.some((bp) => bp.color === "netlabel_center")) {
-      floatingBoxIdsWithMutablePinOffsets.add(box.boxId)
-    }
-  }
 
   const partitionIterationGraphics: GraphicsObject[] = []
   while (!processor.solved && processor.iteration < 1000) {
@@ -49,6 +109,7 @@ export const debugLayout = (
     const {
       graph: fixedCorpusGraph,
       graphName,
+      corpusScores,
       distance,
     } = matchGraph(part.g, opts.corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
@@ -56,12 +117,14 @@ export const debugLayout = (
       pushBoxesAsBoxesChangeSize: true,
     })
     return {
+      corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
       matchedCorpusGraphGraphics: getGraphicsForBpcGraph(fixedCorpusGraph, {
-        title: `Matched ${graphName} (d=${distance.toFixed(2)})`,
+        title: `Matched ${graphName}`,
       }),
       adaptedBpcGraph,
       graphName,
+      distance,
       reflected: part.reflected,
       centerBoxId: part.centerBoxId,
     }
@@ -84,6 +147,7 @@ export const debugLayout = (
 
   // 7. Prepare graphics and SVG
   return {
+    adaptedGraphs,
     partitions,
     partitionGraphics: partitions.map((p, idx) =>
       getGraphicsForBpcGraph(p, {
@@ -99,6 +163,14 @@ export const debugLayout = (
         title: `Net Adapted ${g.graphName}`,
       }),
     ),
+    matchDetails: adaptedGraphs.map((g) => ({
+      designName: g.graphName,
+      distance: g.distance,
+      designSvgUrl: `https://schematic-corpus.tscircuit.com/${g.graphName}.svg`,
+      corpusScores: g.corpusScores,
+      matchedCorpusGraph: g.matchedCorpusGraph,
+    })),
+    corpus: opts.corpus,
     partitionIterationGraphics,
     laidOutGraph: remergedGraph,
     laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
