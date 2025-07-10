@@ -16,14 +16,14 @@ export const layoutSchematicGraphVariants = (
     corpus: Record<string, FixedBpcGraph>
   },
 ): {
-  result: FixedBpcGraph
+  fixedGraph: FixedBpcGraph
   selectedVariantName: string
   variantResults: Array<{ variantName: string; distance: number }>
 } => {
   const variantResults: Array<{ variantName: string; distance: number }> = []
   let bestVariant: {
     variantName: string
-    result: FixedBpcGraph
+    fixedGraph: FixedBpcGraph
     distance: number
   } | null = null
 
@@ -46,14 +46,14 @@ export const layoutSchematicGraphVariants = (
     if (!bestVariant || distance < bestVariant.distance) {
       bestVariant = {
         variantName: variant.variantName,
-        result: fixedGraph,
+        fixedGraph,
         distance,
       }
     }
   }
 
   return {
-    result: bestVariant!.result,
+    fixedGraph: bestVariant!.fixedGraph,
     selectedVariantName: bestVariant!.variantName,
     variantResults,
   }
