@@ -23,7 +23,7 @@ export const layoutSchematicGraph = (
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
   },
-): FixedBpcGraph => {
+): { fixedGraph: FixedBpcGraph; distance: number } => {
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys,
     centerPinColors,
@@ -41,7 +41,7 @@ export const layoutSchematicGraph = (
 
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
-    const { graph: corpusSource } = matchGraph(part.g, corpus as any)
+    const { graph: corpusSource, distance } = matchGraph(part.g, corpus as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(
       structuredClone(part.g),
       corpusSource,
@@ -54,6 +54,7 @@ export const layoutSchematicGraph = (
       adaptedBpcGraph,
       reflected: part.reflected,
       centerBoxId: part.centerBoxId,
+      distance,
     }
   })
 
@@ -72,6 +73,15 @@ export const layoutSchematicGraph = (
   /* ───────── merge the adapted sub-graphs back together ───────── */
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
 
+  /* ───────── calculate total distance ───────── */
+  const totalDistance = adaptedGraphs.reduce(
+    (sum, ag) => sum + (ag.distance || 0),
+    0,
+  )
+
   /*  The merged result is fully fixed―cast to satisfy the signature.  */
-  return remergedGraph as FixedBpcGraph
+  return {
+    fixedGraph: remergedGraph as FixedBpcGraph,
+    distance: totalDistance,
+  }
 }
