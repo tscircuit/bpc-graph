@@ -16,7 +16,7 @@ test("tscircuitsch02", async () => {
 import { sel } from "tscircuit"
 
 export default () => (
-  <board routingDisabled matchAdapt>
+  <board routingDisabled>
       <chip
         name="U1"
         manufacturerPartNumber="I2C_SENSOR"
