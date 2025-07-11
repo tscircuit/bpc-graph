@@ -15,6 +15,7 @@ export const debugLayout = (
   g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
@@ -69,6 +70,7 @@ const debugLayoutSingle = (
   g: BpcGraph,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   const floatingBoxIdsWithMutablePinOffsets = new Set(
@@ -112,10 +114,16 @@ const debugLayoutSingle = (
       corpusScores,
       distance,
     } = matchGraph(part.g, opts.corpus as any)
+    const accessorySource = opts.accessoryCorpus?.[graphName]
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
       pushBoxesAsBoxesChangeSize: true,
     })
+    const accessoryGraph = accessorySource
+      ? netAdaptBpcGraph2(structuredClone(accessorySource), fixedCorpusGraph, {
+          pushBoxesAsBoxesChangeSize: true,
+        })
+      : undefined
     return {
       corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
@@ -123,6 +131,7 @@ const debugLayoutSingle = (
         title: `Matched ${graphName}`,
       }),
       adaptedBpcGraph,
+      accessoryGraph,
       graphName,
       distance,
       reflected: part.reflected,
@@ -142,8 +151,24 @@ const debugLayoutSingle = (
     },
   )
 
+  const accessoryUnreflectedGraphs = adaptedGraphs
+    .map(({ accessoryGraph, reflected, centerBoxId }) => {
+      if (!accessoryGraph) return undefined
+      if (!reflected) return accessoryGraph
+      return reflectGraph({
+        graph: accessoryGraph,
+        axis: "x",
+        centerBoxId: centerBoxId!,
+      })
+    })
+    .filter((g): g is FixedBpcGraph => !!g)
+
   // 6. Merge the adapted sub-graphs back together
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
+  const accessoryRemergedGraph =
+    accessoryUnreflectedGraphs.length > 0
+      ? (mergeBoxSideSubgraphs(accessoryUnreflectedGraphs) as FixedBpcGraph)
+      : undefined
 
   // 7. Prepare graphics and SVG
   return {
@@ -184,5 +209,6 @@ const debugLayoutSingle = (
         backgroundColor: "white",
       },
     ),
+    accessoryGraph: accessoryRemergedGraph,
   }
 }
