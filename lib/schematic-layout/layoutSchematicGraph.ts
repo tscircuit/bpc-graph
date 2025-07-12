@@ -9,6 +9,7 @@ import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
+import { netAdaptAccessoryGraph } from "lib/bpc-graph-editing/netAdaptAccessoryGraph"
 
 export const layoutSchematicGraph = (
   g: BpcGraph,
@@ -17,6 +18,7 @@ export const layoutSchematicGraph = (
     singletonKeys,
     centerPinColors,
     floatingBoxIdsWithMutablePinOffsets,
+    accessoryCorpus,
   }: {
     singletonKeys?: PartitionSingletonKey[]
     centerPinColors?: string[]
@@ -56,17 +58,34 @@ export const layoutSchematicGraph = (
 
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
-    const { graph: corpusSource, distance } = matchGraph(part.g, corpus as any)
+    const {
+      graph: corpusFixedGraph,
+      distance,
+      graphName,
+    } = matchGraph(part.g, corpus as any)
+    const accessoryCorpusFixedGraph = accessoryCorpus?.[graphName]
+
     const adaptedBpcGraph = netAdaptBpcGraph2(
       structuredClone(part.g),
-      corpusSource,
+      corpusFixedGraph,
       {
         floatingBoxIdsWithMutablePinOffsets,
         pushBoxesAsBoxesChangeSize: true,
       },
     )
+
+    let adaptedAccessoryGraph: BpcGraph | undefined
+    if (accessoryCorpusFixedGraph) {
+      adaptedAccessoryGraph = netAdaptAccessoryGraph({
+        floatingGraph: structuredClone(part.g),
+        fixedCorpusMatch: corpusFixedGraph,
+        fixedAccessoryCorpusMatch: accessoryCorpusFixedGraph,
+      })
+    }
+
     return {
       adaptedBpcGraph,
+      adaptedAccessoryGraph,
       reflected: part.reflected,
       centerBoxId: part.centerBoxId,
       distance,
@@ -85,8 +104,39 @@ export const layoutSchematicGraph = (
     },
   )
 
+  let adaptedUnreflectedAccessoryGraphs: FixedBpcGraph[] | undefined
+  if (accessoryCorpus) {
+    adaptedUnreflectedAccessoryGraphs = adaptedGraphs
+      .filter(
+        (
+          g,
+        ): g is {
+          adaptedAccessoryGraph: BpcGraph
+          adaptedBpcGraph: BpcGraph
+          reflected: boolean
+          centerBoxId: string | null
+          distance: number
+        } => g.adaptedAccessoryGraph !== undefined && g.centerBoxId !== null,
+      )
+      .map(({ adaptedAccessoryGraph, reflected, centerBoxId }) => {
+        if (!reflected) return adaptedAccessoryGraph as FixedBpcGraph
+        return reflectGraph({
+          graph: adaptedAccessoryGraph as BpcGraph,
+          axis: "x",
+          centerBoxId: centerBoxId!,
+        }) as FixedBpcGraph
+      })
+  }
+
   /* ───────── merge the adapted sub-graphs back together ───────── */
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
+
+  let remergedAccessoryGraph: BpcGraph | undefined
+  if (accessoryCorpus) {
+    remergedAccessoryGraph = mergeBoxSideSubgraphs(
+      adaptedUnreflectedAccessoryGraphs as FixedBpcGraph[],
+    )
+  }
 
   /* ───────── calculate total distance ───────── */
   const totalDistance = adaptedGraphs.reduce(
@@ -97,6 +147,7 @@ export const layoutSchematicGraph = (
   /*  The merged result is fully fixed―cast to satisfy the signature.  */
   return {
     fixedGraph: remergedGraph as FixedBpcGraph,
+    accessoryFixedGraph: remergedAccessoryGraph as FixedBpcGraph,
     distance: totalDistance,
   }
 }
