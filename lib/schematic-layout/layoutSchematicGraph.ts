@@ -5,7 +5,6 @@ import {
 import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
 import { mergeBoxSideSubgraphs } from "lib/box-sides/mergeBoxSideSubgraphs"
 import { matchGraph } from "lib/match-graph/matchGraph"
-import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
@@ -14,6 +13,7 @@ export const layoutSchematicGraph = (
   g: BpcGraph,
   {
     corpus,
+    accessoryCorpus,
     singletonKeys,
     centerPinColors,
     floatingBoxIdsWithMutablePinOffsets,
@@ -22,8 +22,13 @@ export const layoutSchematicGraph = (
     centerPinColors?: string[]
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
+    accessoryCorpus?: Record<string, FixedBpcGraph>
   },
-): { fixedGraph: FixedBpcGraph; distance: number } => {
+): {
+  fixedGraph: FixedBpcGraph
+  distance: number
+  accessoryGraph?: FixedBpcGraph
+} => {
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys,
     centerPinColors,
@@ -41,7 +46,12 @@ export const layoutSchematicGraph = (
 
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
-    const { graph: corpusSource, distance } = matchGraph(part.g, corpus as any)
+    const {
+      graph: corpusSource,
+      graphName,
+      distance,
+    } = matchGraph(part.g, corpus as any)
+    const accessorySource = accessoryCorpus?.[graphName]
     const adaptedBpcGraph = netAdaptBpcGraph2(
       structuredClone(part.g),
       corpusSource,
@@ -50,8 +60,14 @@ export const layoutSchematicGraph = (
         pushBoxesAsBoxesChangeSize: true,
       },
     )
+    const accessoryGraph = accessorySource
+      ? (netAdaptBpcGraph2(structuredClone(accessorySource), corpusSource, {
+          pushBoxesAsBoxesChangeSize: true,
+        }) as FixedBpcGraph)
+      : undefined
     return {
       adaptedBpcGraph,
+      accessoryGraph,
       reflected: part.reflected,
       centerBoxId: part.centerBoxId,
       distance,
@@ -70,8 +86,24 @@ export const layoutSchematicGraph = (
     },
   )
 
+  const accessoryUnreflectedGraphs = adaptedGraphs
+    .map(({ accessoryGraph, reflected, centerBoxId }) => {
+      if (!accessoryGraph) return undefined
+      if (!reflected) return accessoryGraph
+      return reflectGraph({
+        graph: accessoryGraph,
+        axis: "x",
+        centerBoxId: centerBoxId!,
+      })
+    })
+    .filter((g): g is FixedBpcGraph => !!g)
+
   /* ───────── merge the adapted sub-graphs back together ───────── */
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
+  const accessoryRemergedGraph =
+    accessoryUnreflectedGraphs.length > 0
+      ? (mergeBoxSideSubgraphs(accessoryUnreflectedGraphs) as FixedBpcGraph)
+      : undefined
 
   /* ───────── calculate total distance ───────── */
   const totalDistance = adaptedGraphs.reduce(
@@ -83,5 +115,6 @@ export const layoutSchematicGraph = (
   return {
     fixedGraph: remergedGraph as FixedBpcGraph,
     distance: totalDistance,
+    accessoryGraph: accessoryRemergedGraph,
   }
 }

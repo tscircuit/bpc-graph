@@ -2,10 +2,10 @@ import { useState } from "react"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
 import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
-import { getSvgFromGraphicsObject } from "graphics-debug"
+import { getSvgFromGraphicsObject, mergeGraphics } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
 import type { BpcGraph } from "lib/types"
-import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
+import corpus, { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 
 function createNotConnectedBecomesNormalVariant(bpcGraph: BpcGraph): BpcGraph {
@@ -69,6 +69,7 @@ export default function InteractiveSchematicLayoutPage() {
         ]
         result = debugLayout(variants, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: corpus,
         })
       } else {
         // Use specific variant
@@ -78,6 +79,7 @@ export default function InteractiveSchematicLayoutPage() {
         }
         result = debugLayout(graphToUse, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: corpus,
         })
       }
 
@@ -540,6 +542,41 @@ export default function InteractiveSchematicLayoutPage() {
               />
             </div>
           </div>
+
+          {layoutResult.accessoryGraph && (
+            <div style={{ marginBottom: "30px" }}>
+              <h3>Step 7: Accessory Graph Overlay</h3>
+              <p>
+                Optional accessory boxes like net labels after adaptation,
+                overlaid on the final layout.
+              </p>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  display: "inline-block",
+                }}
+              >
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: getSvgFromGraphicsObject(
+                      mergeGraphics(
+                        layoutResult.laidOutGraphGraphics,
+                        getGraphicsForBpcGraph(layoutResult.accessoryGraph, {
+                          title: "Accessory Graph",
+                        }),
+                      ),
+                      {
+                        backgroundColor: "white",
+                        svgWidth: 600,
+                        svgHeight: 400,
+                      },
+                    ),
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
