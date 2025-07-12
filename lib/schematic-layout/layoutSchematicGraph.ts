@@ -22,8 +22,23 @@ export const layoutSchematicGraph = (
     centerPinColors?: string[]
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
+    /**
+     * A corpus with extra boxes that is associated with the main corpus.
+     *
+     * If the accessoryCorpus is provided, we'll keep track of "accessory boxes"
+     * which are boxes that aren't matched but may be useful outside of the
+     * layout process. For example, this is often used for netlabels, which
+     * don't effect the layout but it's useful to keep track of their positions
+     * in the corpus so that you can use the netlabel positions outside of the
+     * layout process.
+     */
+    accessoryCorpus?: Record<string, FixedBpcGraph>
   },
-): { fixedGraph: FixedBpcGraph; distance: number } => {
+): {
+  fixedGraph: FixedBpcGraph
+  accessoryFixedGraph?: FixedBpcGraph
+  distance: number
+} => {
   const processor = new SchematicPartitionProcessor(g, {
     singletonKeys,
     centerPinColors,
