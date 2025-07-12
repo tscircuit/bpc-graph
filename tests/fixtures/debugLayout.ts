@@ -144,10 +144,10 @@ const debugLayoutSingle = (
     }
 
     const accessoryBoxes = fullCorpusGraph.boxes.filter(
-      (b) => !matchedFixedBoxIds.has(b.boxId),
+      (b) => !matchedFixedBoxIds.has(b.boxId) || b.boxId === part.centerBoxId,
     )
     const accessoryPins = fullCorpusGraph.pins
-      .filter((p) => !matchedFixedBoxIds.has(p.boxId))
+      .filter((p) => !matchedFixedBoxIds.has(p.boxId) || p.boxId === part.centerBoxId)
       .map((p) => {
         const newPin = structuredClone(p)
         if (fixedToFloatingNetworkMap[newPin.networkId]) {

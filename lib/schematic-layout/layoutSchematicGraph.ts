@@ -78,15 +78,15 @@ export const layoutSchematicGraph = (
     }
 
     const accessoryBoxes = corpusGraphForAccessories.boxes.filter(
-      (b) => !matchedFixedBoxIds.has(b.boxId),
+      (b) => !matchedFixedBoxIds.has(b.boxId) || b.boxId === part.centerBoxId,
     )
     const accessoryPins = corpusGraphForAccessories.pins
-      .filter((p) => !matchedFixedBoxIds.has(p.boxId))
+      .filter((p) => !matchedFixedBoxIds.has(p.boxId) || p.boxId === part.centerBoxId)
       .map((p) => {
         const newPin = structuredClone(p)
         // map network id if possible
         if (fixedToFloatingNetworkMap[newPin.networkId]) {
-          newPin.networkId = fixedToFloatingNetworkMap[newPin.networkId]
+          newPin.networkId = fixedToFloatingNetworkMap[newPin.networkId] ?? newPin.networkId
         }
         return newPin
       })
