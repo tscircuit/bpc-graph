@@ -17,6 +17,7 @@ export const layoutSchematicGraphVariants = (
   },
 ): {
   fixedGraph: FixedBpcGraph
+  accessoryGraph: FixedBpcGraph
   selectedVariantName: string
   variantResults: Array<{ variantName: string; distance: number }>
 } => {
@@ -24,11 +25,12 @@ export const layoutSchematicGraphVariants = (
   let bestVariant: {
     variantName: string
     fixedGraph: FixedBpcGraph
+    accessoryGraph: FixedBpcGraph
     distance: number
   } | null = null
 
   for (const variant of variants) {
-    const { fixedGraph, distance } = layoutSchematicGraph(
+    const { fixedGraph, accessoryGraph, distance } = layoutSchematicGraph(
       variant.floatingGraph,
       {
         corpus,
@@ -47,6 +49,7 @@ export const layoutSchematicGraphVariants = (
       bestVariant = {
         variantName: variant.variantName,
         fixedGraph,
+        accessoryGraph,
         distance,
       }
     }
@@ -54,6 +57,7 @@ export const layoutSchematicGraphVariants = (
 
   return {
     fixedGraph: bestVariant!.fixedGraph,
+    accessoryGraph: bestVariant!.accessoryGraph,
     selectedVariantName: bestVariant!.variantName,
     variantResults,
   }

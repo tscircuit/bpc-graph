@@ -1,15 +1,14 @@
 import type { GraphicsObject } from "graphics-debug"
-import type { BpcGraph, FixedBpcGraph, FloatingBoxId } from "lib/types"
+import type { BpcGraph, FixedBpcGraph } from "lib/types"
 import mainCorpus from "@tscircuit/schematic-corpus"
 import { SchematicPartitionProcessor } from "lib/partition-processing/SchematicPartitionProcessor"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 import { mergeBoxSideSubgraphs } from "lib/box-sides/mergeBoxSideSubgraphs"
-import { netAdaptBpcGraph } from "lib/bpc-graph-editing/netAdaptBpcGraph"
+import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 import { matchGraph } from "lib/match-graph/matchGraph"
 import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
-import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
 
 export const debugLayout = (
   g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
@@ -145,9 +144,64 @@ const debugLayoutSingle = (
   // 6. Merge the adapted sub-graphs back together
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
 
+  /* ───────── build accessory graph (extra boxes present only in the full corpus that includes net-labels) ───────── */
+  const accessoryParts = adaptedGraphs
+    .map((adapted) => {
+      const { graphName, matchedCorpusGraph } = adapted
+
+      if (!graphName || !mainCorpus[graphName]) return null
+
+      const fullCorpusGraph = mainCorpus[graphName] as FixedBpcGraph
+
+      // Determine boxes that are only present in the full corpus graph (usually netlabel boxes)
+      const extraBoxes = fullCorpusGraph.boxes.filter(
+        (b) => !matchedCorpusGraph.boxes.some((nb) => nb.boxId === b.boxId),
+      )
+
+      if (extraBoxes.length === 0) return null
+
+      const extraPins = fullCorpusGraph.pins.filter((p) =>
+        extraBoxes.some((b) => b.boxId === p.boxId),
+      )
+
+      let subGraph: BpcGraph = {
+        boxes: structuredClone(extraBoxes),
+        pins: structuredClone(extraPins),
+      }
+
+      // Undo reflection if necessary to align with final layout
+      if (adapted.reflected && adapted.centerBoxId) {
+        const centreBox = fullCorpusGraph.boxes.find(
+          (b) => b.boxId === adapted.centerBoxId,
+        )
+        if (centreBox) {
+          subGraph = reflectGraph({
+            graph: {
+              boxes: [structuredClone(centreBox), ...subGraph.boxes],
+              pins: subGraph.pins,
+            },
+            axis: "x",
+            centerBoxId: adapted.centerBoxId,
+          })
+          subGraph.boxes = subGraph.boxes.filter(
+            (b) => b.boxId !== adapted.centerBoxId,
+          )
+        }
+      }
+
+      return subGraph as FixedBpcGraph
+    })
+    .filter(Boolean) as FixedBpcGraph[]
+
+  const accessoryGraph =
+    accessoryParts.length > 0
+      ? (mergeBoxSideSubgraphs(accessoryParts) as FixedBpcGraph)
+      : { boxes: [], pins: [] }
+
   // 7. Prepare graphics and SVG
   return {
     adaptedGraphs,
+    accessoryGraph,
     partitions,
     partitionGraphics: partitions.map((p, idx) =>
       getGraphicsForBpcGraph(p, {
@@ -175,6 +229,9 @@ const debugLayoutSingle = (
     laidOutGraph: remergedGraph,
     laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
       title: "Merged, Laid Out Graph",
+    }),
+    accessoryGraphGraphics: getGraphicsForBpcGraph(accessoryGraph, {
+      title: "Accessory Graph (Net-Labels)",
     }),
     laidOutGraphSvg: getSvgFromGraphicsObject(
       getGraphicsForBpcGraph(remergedGraph, {

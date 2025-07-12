@@ -540,6 +540,37 @@ export default function InteractiveSchematicLayoutPage() {
               />
             </div>
           </div>
+
+          {layoutResult.accessoryGraphGraphics && (
+            <div style={{ marginBottom: "30px" }}>
+              <h3>Step 7: Accessory Graph (Net Labels)</h3>
+              <p>
+                Additional boxes (e.g., net labels) taken from the full corpus
+                that can be overlaid on the final layout to indicate optimal
+                label placement.
+              </p>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  display: "inline-block",
+                }}
+              >
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: getSvgFromGraphicsObject(
+                      layoutResult.accessoryGraphGraphics,
+                      {
+                        backgroundColor: "white",
+                        svgWidth: 600,
+                        svgHeight: 400,
+                      },
+                    ),
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
