@@ -32,5 +32,5 @@
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
   },
-  "exclude": ["tests"]
+  "exclude": ["tests", "pages", "cosmos.decorator.tsx"]
 }

@@ -164,7 +164,7 @@ export default function InteractiveSchematicLayoutPage() {
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
             {layoutResult.variantResults.map((variant: any, idx: number) => (
               <div
-                key={idx}
+                key={variant.variantName}
                 style={{
                   border: "1px solid #ccc",
                   padding: "10px",
@@ -241,12 +241,12 @@ export default function InteractiveSchematicLayoutPage() {
                 >
                   {layoutResult.partitionIterationGraphics
                     .slice(0, 10)
-                    .map((graphics: any, idx: number) => (
+                    .map((graphics: any, iterIdx: number) => (
                       <div
-                        key={idx}
+                        key={`iter-${iterIdx}`}
                         style={{ border: "1px solid #ccc", padding: "10px" }}
                       >
-                        <h4>Iteration {idx + 1}</h4>
+                        <h4>Iteration {iterIdx + 1}</h4>
                         <div
                           dangerouslySetInnerHTML={{
                             __html: getSvgFromGraphicsObject(graphics, {
@@ -271,12 +271,12 @@ export default function InteractiveSchematicLayoutPage() {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {layoutResult.partitionGraphics.map(
-                (graphics: any, idx: number) => (
+                (graphics: any, partIdx: number) => (
                   <div
-                    key={idx}
+                    key={`partition-${partIdx}`}
                     style={{ border: "1px solid #ccc", padding: "10px" }}
                   >
-                    <h4>Partition {idx + 1}</h4>
+                    <h4>Partition {partIdx + 1}</h4>
                     <div
                       dangerouslySetInnerHTML={{
                         __html: getSvgFromGraphicsObject(graphics, {
@@ -300,15 +300,15 @@ export default function InteractiveSchematicLayoutPage() {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {layoutResult.matchedCorpusGraphGraphics.map(
-                (graphics: any, idx: number) => {
-                  const matchDetail = layoutResult.matchDetails?.[idx]
+                (graphics: any, matchIdx: number) => {
+                  const matchDetail = layoutResult.matchDetails?.[matchIdx]
                   return (
                     <div
-                      key={idx}
+                      key={`match-${matchIdx}`}
                       style={{ border: "1px solid #ccc", padding: "10px" }}
                     >
                       <h4>
-                        Matched Template {idx + 1}
+                        Matched Template {matchIdx + 1}
                         {matchDetail && (
                           <>
                             : {matchDetail.designName} (d=
@@ -495,12 +495,12 @@ export default function InteractiveSchematicLayoutPage() {
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
               {layoutResult.adaptedGraphGraphics.map(
-                (graphics: any, idx: number) => (
+                (graphics: any, adaptIdx: number) => (
                   <div
-                    key={idx}
+                    key={`adapt-${adaptIdx}`}
                     style={{ border: "1px solid #ccc", padding: "10px" }}
                   >
-                    <h4>Adapted Graph {idx + 1}</h4>
+                    <h4>Adapted Graph {adaptIdx + 1}</h4>
                     <div
                       dangerouslySetInnerHTML={{
                         __html: getSvgFromGraphicsObject(graphics, {
