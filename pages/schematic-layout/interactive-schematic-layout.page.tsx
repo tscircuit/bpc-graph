@@ -159,9 +159,9 @@ export default function InteractiveSchematicLayoutPage() {
             <strong>{layoutResult.selectedVariantName}</strong>
           </p>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-            {layoutResult.variantResults.map((variant: any, idx: number) => (
+            {layoutResult.variantResults.map((variant: any) => (
               <div
-                key={idx}
+                key={variant.variantName}
                 style={{
                   border: "1px solid #ccc",
                   padding: "10px",

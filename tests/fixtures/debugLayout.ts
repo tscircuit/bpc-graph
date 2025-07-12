@@ -149,9 +149,8 @@ const debugLayoutSingle = (
     .map((adapted) => {
       const { graphName, matchedCorpusGraph } = adapted
 
-      if (!graphName || !mainCorpus[graphName]) return null
-
-      const fullCorpusGraph = mainCorpus[graphName] as FixedBpcGraph
+      const fullCorpusGraph = mainCorpus?.[graphName] as FixedBpcGraph | undefined
+      if (!graphName || !fullCorpusGraph) return null
 
       // Determine boxes that are only present in the full corpus graph (usually netlabel boxes)
       const extraBoxes = fullCorpusGraph.boxes.filter(

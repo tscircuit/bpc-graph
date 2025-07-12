@@ -93,9 +93,9 @@ export const layoutSchematicGraph = (
       const graphName = adapted.graphName
 
       // If the accessory corpus doesn't have this design, skip.
-      if (!graphName || !accessoryCorpus![graphName]) return null
+      const fullCorpusGraph = accessoryCorpus?.[graphName]
+      if (!graphName || !fullCorpusGraph) return null
 
-      const fullCorpusGraph = accessoryCorpus![graphName]
       const primaryCorpusGraph = adapted.corpusGraph
 
       // Collect boxes that are present in the full corpus but NOT in the primary (no-label) corpus.
