@@ -6,7 +6,7 @@
     "indentStyle": "space"
   },
   "files": {
-    "includes": ["**", "!**/cosmos-export", "!**/dist", "!**/package.json"]
+    "includes": ["**", "!pages/**", "!tests/**", "!**/cosmos-export", "!**/dist", "!**/package.json"]
   },
   "javascript": {
     "formatter": {
