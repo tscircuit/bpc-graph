@@ -1,3 +1,4 @@
+/** biome-ignore lint/react/noDanger: raw SVG is required for debug visualisations */
 import { useState } from "react"
 import { runTscircuitCode } from "tscircuit"
 import { convertCircuitJsonToBpc } from "circuit-json-to-bpc"
