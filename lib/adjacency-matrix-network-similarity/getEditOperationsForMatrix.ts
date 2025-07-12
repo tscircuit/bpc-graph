@@ -79,11 +79,11 @@ export const getEditOperationsForMatrix = (params: {
 
   const operations: EditOperation[] = []
 
-  let currentFixedAdjMatrix = structuredClone(fixedAdjMatrix)
-  let newFloatingToFixedNodeAssignment = structuredClone(
+  const currentFixedAdjMatrix = structuredClone(fixedAdjMatrix)
+  const newFloatingToFixedNodeAssignment = structuredClone(
     floatingToFixedNodeAssignment,
   )
-  let currentFixedMatrixMapping = structuredClone(fixedMatrixMapping)
+  const currentFixedMatrixMapping = structuredClone(fixedMatrixMapping)
 
   // Step 1: If the source matrix is larger than the target matrix,
   // we just need to remove rows/columns in the source matrix that are not

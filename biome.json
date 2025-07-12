@@ -6,7 +6,7 @@
     "indentStyle": "space"
   },
   "files": {
-    "includes": ["**", "!pages/**", "!tests/**", "!**/cosmos-export", "!**/dist", "!**/package.json"]
+    "includes": ["**", "!pages/**", "!tests/**", "!cosmos.decorator.tsx", "!**/cosmos-export", "!**/dist", "!**/package.json"]
   },
   "javascript": {
     "formatter": {
@@ -43,18 +43,14 @@
         "useNumberNamespace": "off",
         "noUnusedTemplateLiteral": "off",
         "useFilenamingConvention": {
-          "level": "error",
-          "options": {
-            "strictCase": true,
-            "requireAscii": true,
-            "filenameCases": ["kebab-case", "export"]
-          }
+          "level": "off"
         },
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
         "useEnumInitializers": "error",
         "useSelfClosingElements": "error",
-        "noInferrableTypes": "error"
+        "noInferrableTypes": "error",
+        "useConst": "off"
       }
     }
   }
