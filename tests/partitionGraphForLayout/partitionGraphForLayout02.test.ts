@@ -250,6 +250,7 @@ test("partitionGraphForLayout02 – layoutSchematicGraph pipeline", () => {
     singletonKeys: ["vcc/2", "gnd/2"],
     centerPinColors: ["netlabel_center", "component_center"],
     corpus,
+    accessoryCorpus: corpus,
   })
 
   // 2. create before/after graphics for snapshot

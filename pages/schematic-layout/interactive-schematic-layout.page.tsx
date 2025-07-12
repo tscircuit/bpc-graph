@@ -6,6 +6,7 @@ import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
 import type { BpcGraph } from "lib/types"
 import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
+import mainCorpus from "@tscircuit/schematic-corpus"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 
 function createNotConnectedBecomesNormalVariant(bpcGraph: BpcGraph): BpcGraph {
@@ -69,6 +70,7 @@ export default function InteractiveSchematicLayoutPage() {
         ]
         result = debugLayout(variants, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: mainCorpus,
         })
       } else {
         // Use specific variant
@@ -78,6 +80,7 @@ export default function InteractiveSchematicLayoutPage() {
         }
         result = debugLayout(graphToUse, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: mainCorpus,
         })
       }
 
@@ -540,6 +543,37 @@ export default function InteractiveSchematicLayoutPage() {
               />
             </div>
           </div>
+
+          {layoutResult.accessoryGraphGraphics && (
+            <div style={{ marginBottom: "30px" }}>
+              <h3>Step 7: Accessory Graph (Net Labels & Extra Boxes)</h3>
+              <p>
+                Boxes from the corpus templates that were not matched to any
+                floating boxes. These often include net labels or other
+                annotations.
+              </p>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  display: "inline-block",
+                }}
+              >
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: getSvgFromGraphicsObject(
+                      layoutResult.accessoryGraphGraphics,
+                      {
+                        backgroundColor: "white",
+                        svgWidth: 600,
+                        svgHeight: 400,
+                      },
+                    ),
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

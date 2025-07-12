@@ -10,14 +10,17 @@ import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
+import { getApproximateAssignments2 } from "lib/assignment2/getApproximateAssignments2"
 
 export const debugLayout = (
   g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
+  opts.accessoryCorpus ??= mainCorpus
 
   // Handle floatingGraphInputVariants
   let selectedGraph: BpcGraph
@@ -69,6 +72,7 @@ const debugLayoutSingle = (
   g: BpcGraph,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   const floatingBoxIdsWithMutablePinOffsets = new Set(
@@ -112,10 +116,52 @@ const debugLayoutSingle = (
       corpusScores,
       distance,
     } = matchGraph(part.g, opts.corpus as any)
+
+    const fullCorpusGraph =
+      ((opts.accessoryCorpus || opts.corpus)?.[graphName] as BpcGraph) ||
+      fixedCorpusGraph
+
     const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
       floatingBoxIdsWithMutablePinOffsets,
       pushBoxesAsBoxesChangeSize: true,
     })
+
+    // accessory graph computation
+    const {
+      floatingToFixedBoxAssignment,
+      floatingToFixedNetworkAssignment,
+    } = getApproximateAssignments2(part.g, fullCorpusGraph)
+
+    const matchedFixedBoxIds = new Set<string>(
+      Object.values(floatingToFixedBoxAssignment),
+    )
+
+    const fixedToFloatingNetworkMap: Record<string, string> = {}
+    for (const [floatingNet, fixedNet] of Object.entries(
+      floatingToFixedNetworkAssignment,
+    )) {
+      fixedToFloatingNetworkMap[fixedNet] = floatingNet
+    }
+
+    const accessoryBoxes = fullCorpusGraph.boxes.filter(
+      (b) => !matchedFixedBoxIds.has(b.boxId),
+    )
+    const accessoryPins = fullCorpusGraph.pins
+      .filter((p) => !matchedFixedBoxIds.has(p.boxId))
+      .map((p) => {
+        const newPin = structuredClone(p)
+        if (fixedToFloatingNetworkMap[newPin.networkId]) {
+          newPin.networkId =
+            fixedToFloatingNetworkMap[newPin.networkId] as string
+        }
+        return newPin
+      })
+
+    const accessoryGraphPartition: BpcGraph = {
+      boxes: accessoryBoxes.map((b) => ({ ...structuredClone(b), kind: "fixed" })) as any,
+      pins: accessoryPins,
+    }
+
     return {
       corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
@@ -123,6 +169,7 @@ const debugLayoutSingle = (
         title: `Matched ${graphName}`,
       }),
       adaptedBpcGraph,
+      accessoryGraphPartition,
       graphName,
       distance,
       reflected: part.reflected,
@@ -142,8 +189,23 @@ const debugLayoutSingle = (
     },
   )
 
+  // 5b. Undo reflections for accessory graphs
+  const accessoryUnreflectedGraphs = adaptedGraphs.map(
+    ({ accessoryGraphPartition, reflected, centerBoxId }) => {
+      if (!reflected) return accessoryGraphPartition
+      return reflectGraph({
+        graph: accessoryGraphPartition,
+        axis: "x",
+        centerBoxId: centerBoxId!,
+      })
+    },
+  )
+
   // 6. Merge the adapted sub-graphs back together
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
+
+  // 6b. Merge accessory graphs together
+  const remergedAccessoryGraph = mergeBoxSideSubgraphs(accessoryUnreflectedGraphs)
 
   // 7. Prepare graphics and SVG
   return {
@@ -184,5 +246,9 @@ const debugLayoutSingle = (
         backgroundColor: "white",
       },
     ),
+    accessoryGraph: remergedAccessoryGraph,
+    accessoryGraphGraphics: getGraphicsForBpcGraph(remergedAccessoryGraph, {
+      title: "Accessory Graph",
+    }),
   }
 }
