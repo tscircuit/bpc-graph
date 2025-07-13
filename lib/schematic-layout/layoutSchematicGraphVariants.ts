@@ -6,6 +6,7 @@ export const layoutSchematicGraphVariants = (
   variants: Array<{ variantName: string; floatingGraph: BpcGraph }>,
   {
     corpus,
+    accessoryCorpus = {},
     singletonKeys,
     centerPinColors,
     floatingBoxIdsWithMutablePinOffsets,
@@ -14,6 +15,7 @@ export const layoutSchematicGraphVariants = (
     centerPinColors?: string[]
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
+    accessoryCorpus?: Record<string, FixedBpcGraph>
   },
 ): {
   fixedGraph: FixedBpcGraph
@@ -32,6 +34,7 @@ export const layoutSchematicGraphVariants = (
       variant.floatingGraph,
       {
         corpus,
+        accessoryCorpus,
         singletonKeys,
         centerPinColors,
         floatingBoxIdsWithMutablePinOffsets,

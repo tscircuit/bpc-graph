@@ -14,6 +14,7 @@ export const layoutSchematicGraph = (
   g: BpcGraph,
   {
     corpus,
+    accessoryCorpus = {},
     singletonKeys,
     centerPinColors,
     floatingBoxIdsWithMutablePinOffsets,
@@ -22,6 +23,7 @@ export const layoutSchematicGraph = (
     centerPinColors?: string[]
     floatingBoxIdsWithMutablePinOffsets?: Set<FloatingBoxId>
     corpus: Record<string, FixedBpcGraph>
+    accessoryCorpus?: Record<string, FixedBpcGraph>
   },
 ): { fixedGraph: FixedBpcGraph; distance: number } => {
   const processor = new SchematicPartitionProcessor(g, {
@@ -41,7 +43,10 @@ export const layoutSchematicGraph = (
 
   /* ───────── net-adapt each canonical partition to its best corpus match ───────── */
   const adaptedGraphs = canonicalPartitions.map((part) => {
-    const { graph: corpusSource, distance } = matchGraph(part.g, corpus as any)
+    const { graph: corpusSource, distance } = matchGraph(part.g, {
+      ...corpus,
+      ...accessoryCorpus,
+    } as any)
     const adaptedBpcGraph = netAdaptBpcGraph2(
       structuredClone(part.g),
       corpusSource,
