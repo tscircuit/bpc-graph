@@ -25,7 +25,30 @@ export const netAdaptAccessoryGraph = (params: {
     floatingToFixedNetworkAssignment,
   } = getApproximateAssignments2(floatingGraph, fixedCorpusMatch)
 
-  // TODO
+  const fixedToFloatingNetworkAssignment: Record<string, string> = {}
+  for (const [floatingNet, fixedNet] of Object.entries(
+    floatingToFixedNetworkAssignment,
+  )) {
+    fixedToFloatingNetworkAssignment[fixedNet] = floatingNet
+  }
 
-  throw new Error("Not implemented")
+  const accessoryGraph: FixedBpcGraph = {
+    boxes: [],
+    pins: [],
+  }
+
+  for (const box of fixedAccessoryCorpusMatch.boxes) {
+    accessoryGraph.boxes.push(structuredClone(box))
+  }
+
+  for (const pin of fixedAccessoryCorpusMatch.pins) {
+    const networkId =
+      fixedToFloatingNetworkAssignment[pin.networkId] ?? pin.networkId
+    accessoryGraph.pins.push({
+      ...structuredClone(pin),
+      networkId,
+    })
+  }
+
+  return accessoryGraph
 }

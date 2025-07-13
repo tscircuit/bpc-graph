@@ -120,6 +120,9 @@ export const layoutSchematicGraph = (
       )
       .map(({ adaptedAccessoryGraph, reflected, centerBoxId }) => {
         if (!reflected) return adaptedAccessoryGraph as FixedBpcGraph
+        if (!adaptedAccessoryGraph.boxes.find((b) => b.boxId === centerBoxId)) {
+          return adaptedAccessoryGraph as FixedBpcGraph
+        }
         return reflectGraph({
           graph: adaptedAccessoryGraph as BpcGraph,
           axis: "x",
