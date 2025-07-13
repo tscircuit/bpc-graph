@@ -18,7 +18,10 @@ export const debugLayout = (
     accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
-  console.log("[debugLayout] accessoryCorpus keys", Object.keys(opts.accessoryCorpus ?? {}))
+  console.log(
+    "[debugLayout] accessoryCorpus keys",
+    Object.keys(opts.accessoryCorpus ?? {}),
+  )
   opts.corpus ??= mainCorpus
 
   // Handle floatingGraphInputVariants
@@ -233,6 +236,8 @@ const debugLayoutSingle = (
       corpusScores: g.corpusScores,
       matchedCorpusGraph: g.matchedCorpusGraph,
     })),
+    adaptedAccessoryUnreflectedGraphs,
+    remergedAccessoryGraph,
     corpus: opts.corpus,
     accessoryCorpus: accCorpus,
     adaptedAccessoryGraphGraphics,

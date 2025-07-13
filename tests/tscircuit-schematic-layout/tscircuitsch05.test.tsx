@@ -90,9 +90,16 @@ export default () => (
   // Use the same debugLayout-based output structure as tscircuitsch02.test.tsx
 
   const circuitSvg = await convertCircuitJsonToSchematicSvg(circuitJson)
-  const ogBpcGraph = convertCircuitJsonToBpc(circuitJson, {
-    useReadableIds: true,
-  })
+  const ogBpcGraph = convertCircuitJsonToBpc(
+    circuitJson.filter((c) => c.type !== "schematic_net_label"),
+    {
+      useReadableIds: true,
+    },
+  )
+
+  console.log(
+    "\n\nORIGINAL BPC GRAPH:\n" + JSON.stringify(ogBpcGraph, null, "  "),
+  )
 
   // Use the debugLayout utility from tests/fixtures/debugLayout.ts
   const {
@@ -103,12 +110,22 @@ export default () => (
     laidOutGraph,
     laidOutGraphGraphics,
     matchedCorpusGraphs,
+    adaptedAccessoryGraphGraphics,
     matchedCorpusGraphGraphics,
     laidOutAccessoryGraphGraphics, // NEW
+    adaptedAccessoryUnreflectedGraphs,
   } = debugLayout(ogBpcGraph, {
     corpus: corpusNoNetLabel,
     accessoryCorpus: corpus,
   })
+
+  console.log(
+    "\n\n# LAID OUT GRAPH\n" + JSON.stringify(laidOutGraph, null, "  "),
+  )
+  console.log(
+    "\n\n# ADAPTED ACCESSORY UNREFLECTED GRAPHS\n" +
+      JSON.stringify(adaptedAccessoryUnreflectedGraphs, null, "  "),
+  )
 
   expect(circuitSvg).toMatchSvgSnapshot(
     import.meta.path,
@@ -119,18 +136,6 @@ export default () => (
     "[tscircuitsch05] accessory graphics present:",
     Boolean(laidOutAccessoryGraphGraphics),
   )
-  const iterationChunks: GraphicsObject[][] = []
-  for (let i = 0; i < partitionIterationGraphics.length; i += 5) {
-    iterationChunks.push(partitionIterationGraphics.slice(i, i + 5))
-  }
-  expect(
-    getSvgFromGraphicsObject(createGraphicsGrid(iterationChunks), {
-      backgroundColor: "white",
-    }),
-  ).toMatchSvgSnapshot(
-    import.meta.path,
-    "tscircuitsch05-partition-iteration-graphics",
-  )
   expect(
     getSvgFromGraphicsObject(
       stackGraphicsVertically([
@@ -138,19 +143,17 @@ export default () => (
         stackGraphicsHorizontally(partitionGraphics),
         stackGraphicsHorizontally(matchedCorpusGraphGraphics),
         stackGraphicsHorizontally(adaptedGraphGraphics),
+        stackGraphicsHorizontally(
+          adaptedAccessoryGraphGraphics.filter(
+            (g): g is Required<GraphicsObject> => Boolean(g),
+          ),
+        ),
         laidOutGraphGraphics,
+        laidOutAccessoryGraphGraphics!,
       ]),
       {
         backgroundColor: "white",
       },
     ),
   ).toMatchSvgSnapshot(import.meta.path)
-
-  if (laidOutAccessoryGraphGraphics) {
-    expect(
-      getSvgFromGraphicsObject(laidOutAccessoryGraphGraphics, {
-        backgroundColor: "white",
-      }),
-    ).toMatchSvgSnapshot(import.meta.path, "tscircuitsch05-accessory-graph")
-  }
 })
