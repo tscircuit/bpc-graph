@@ -6,6 +6,10 @@ import { getDominantPinSide } from "lib/graph-utils/getDominantPinSide"
 import type { BpcGraph, FloatingBoxId } from "lib/types"
 import { pushFloatingBoxesAdjustingForFixedSizeDelta } from "./pushFloatingBoxesAdjustingForFixedSizeDelta"
 
+/**
+ * Returns a fixed position version of the floatingGraph that inherits matched
+ * pins from the fixed graph
+ */
 export const netAdaptBpcGraph2 = (
   floatingGraph: BpcGraph,
   fixedGraph: BpcGraph,
