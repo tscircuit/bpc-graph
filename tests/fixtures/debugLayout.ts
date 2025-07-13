@@ -18,6 +18,7 @@ export const debugLayout = (
     accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
+  console.log("[debugLayout] accessoryCorpus keys", Object.keys(opts.accessoryCorpus ?? {}))
   opts.corpus ??= mainCorpus
 
   // Handle floatingGraphInputVariants
@@ -185,6 +186,12 @@ const debugLayoutSingle = (
   const remergedAccessoryGraph = accessoryGraphsToMerge.length
     ? mergeBoxSideSubgraphs(accessoryGraphsToMerge)
     : null
+
+  console.log(
+    "[debugLayout] remergedAccessoryGraph exists",
+    Boolean(remergedAccessoryGraph),
+    remergedAccessoryGraph?.boxes.length ?? 0,
+  )
 
   // 7. Prepare graphics and SVG
   const adaptedAccessoryGraphGraphics = adaptedAccessoryUnreflectedGraphs.map(
