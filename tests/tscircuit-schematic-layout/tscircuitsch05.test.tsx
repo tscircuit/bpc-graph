@@ -109,6 +109,7 @@ export default () => (
     adaptedGraphGraphics,
     laidOutGraph,
     laidOutGraphGraphics,
+    matchDetails,
     matchedCorpusGraphs,
     adaptedAccessoryGraphGraphics,
     matchedCorpusGraphGraphics,
@@ -118,6 +119,10 @@ export default () => (
     corpus: corpusNoNetLabel,
     accessoryCorpus: corpus,
   })
+
+  console.log(
+    "\n\n# MATCH DETAILS\n" + JSON.stringify(matchDetails, null, "  "),
+  )
 
   console.log(
     "\n\n# LAID OUT GRAPH\n" + JSON.stringify(laidOutGraph, null, "  "),
