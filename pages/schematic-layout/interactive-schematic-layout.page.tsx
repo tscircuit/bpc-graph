@@ -431,6 +431,44 @@ export default function InteractiveSchematicLayoutPage() {
                                           )}
                                         </div>
                                       </div>
+                                      {/* ── NEW – BPC Acc (accessory) preview ── */}
+                                      <div>
+                                        <div style={{ fontSize: "10px", marginBottom: "2px" }}>BPC Acc</div>
+                                        <div
+                                          style={{
+                                            width: "60px",
+                                            height: "40px",
+                                            border: "1px solid #ddd",
+                                            backgroundColor: "white",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            fontSize: "8px",
+                                            color: "#666",
+                                          }}
+                                        >
+                                          {layoutResult.accessoryCorpus?.[name] ? (
+                                            <img
+                                              src={`data:image/svg+xml;base64,${btoa(
+                                                getSvgFromGraphicsObject(
+                                                  getGraphicsForBpcGraph(layoutResult.accessoryCorpus[name], {
+                                                    title: "",
+                                                  }),
+                                                  {
+                                                    backgroundColor: "white",
+                                                    svgWidth: 320,
+                                                    svgHeight: 240,
+                                                  },
+                                                ),
+                                              )}`}
+                                              alt={`Accessory BPC graph for ${name}`}
+                                              style={{ width: "58px", height: "38px", objectFit: "fill" }}
+                                            />
+                                          ) : (
+                                            "N/A"
+                                          )}
+                                        </div>
+                                      </div>
                                       <div>
                                         <div
                                           style={{
