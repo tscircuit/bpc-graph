@@ -545,6 +545,23 @@ export default function InteractiveSchematicLayoutPage() {
                         }),
                       }}
                     />
+                    {layoutResult?.adaptedAccessoryGraphGraphics?.[idx] && (
+                      <details style={{ marginTop: "10px" }}>
+                        <summary style={{ cursor: "pointer" }}>Accessory Graph</summary>
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: getSvgFromGraphicsObject(
+                              layoutResult.adaptedAccessoryGraphGraphics[idx],
+                              {
+                                backgroundColor: "white",
+                                svgWidth: 300,
+                                svgHeight: 200,
+                              },
+                            ),
+                          }}
+                        />
+                      </details>
+                    )}
                   </div>
                 ),
               )}
@@ -576,6 +593,23 @@ export default function InteractiveSchematicLayoutPage() {
                   ),
                 }}
               />
+              {layoutResult?.laidOutAccessoryGraphGraphics && (
+                <details style={{ marginTop: "10px" }}>
+                  <summary style={{ cursor: "pointer" }}>Accessory Graph</summary>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: getSvgFromGraphicsObject(
+                        layoutResult.laidOutAccessoryGraphGraphics,
+                        {
+                          backgroundColor: "white",
+                          svgWidth: 600,
+                          svgHeight: 400,
+                        },
+                      ),
+                    }}
+                  />
+                </details>
+              )}
             </div>
           </div>
         </div>

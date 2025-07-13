@@ -15,6 +15,7 @@ export const debugLayout = (
   g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
   opts.corpus ??= mainCorpus
@@ -69,8 +70,12 @@ const debugLayoutSingle = (
   g: BpcGraph,
   opts: {
     corpus?: Record<string, BpcGraph>
+    accessoryCorpus?: Record<string, BpcGraph>
   } = {},
 ) => {
+  opts.corpus ??= mainCorpus
+  const accCorpus = opts.accessoryCorpus ?? {}
+
   const floatingBoxIdsWithMutablePinOffsets = new Set(
     g.boxes
       .filter((box) => {
@@ -116,6 +121,20 @@ const debugLayoutSingle = (
       floatingBoxIdsWithMutablePinOffsets,
       pushBoxesAsBoxesChangeSize: true,
     })
+
+    // NEW: accessory graph adaptation
+    let adaptedAccessoryBpcGraph: BpcGraph | null = null
+    if (accCorpus[graphName]) {
+      adaptedAccessoryBpcGraph = netAdaptBpcGraph2(
+        part.g,
+        accCorpus[graphName],
+        {
+          floatingBoxIdsWithMutablePinOffsets,
+          pushBoxesAsBoxesChangeSize: true,
+        },
+      )
+    }
+
     return {
       corpusScores,
       matchedCorpusGraph: fixedCorpusGraph,
@@ -123,6 +142,7 @@ const debugLayoutSingle = (
         title: `Matched ${graphName}`,
       }),
       adaptedBpcGraph,
+      adaptedAccessoryBpcGraph,
       graphName,
       distance,
       reflected: part.reflected,
@@ -142,10 +162,46 @@ const debugLayoutSingle = (
     },
   )
 
+  // 5b. Undo reflections for accessory graphs
+  const adaptedAccessoryUnreflectedGraphs = adaptedGraphs.map(
+    ({ adaptedAccessoryBpcGraph, reflected, centerBoxId }) => {
+      if (!adaptedAccessoryBpcGraph) return null
+      if (!reflected) return adaptedAccessoryBpcGraph
+      return reflectGraph({
+        graph: adaptedAccessoryBpcGraph,
+        axis: "x",
+        centerBoxId: centerBoxId!,
+      })
+    },
+  )
+
   // 6. Merge the adapted sub-graphs back together
   const remergedGraph = mergeBoxSideSubgraphs(adaptedUnreflectedGraphs)
 
+  // 6b. Merge accessory graphs if any
+  const accessoryGraphsToMerge = adaptedAccessoryUnreflectedGraphs.filter(
+    (g): g is BpcGraph => !!g,
+  )
+  const remergedAccessoryGraph = accessoryGraphsToMerge.length
+    ? mergeBoxSideSubgraphs(accessoryGraphsToMerge)
+    : null
+
   // 7. Prepare graphics and SVG
+  const adaptedAccessoryGraphGraphics = adaptedAccessoryUnreflectedGraphs.map(
+    (g, idx) =>
+      g
+        ? getGraphicsForBpcGraph(g, {
+            title: `Accessory Net Adapted ${adaptedGraphs[idx]!.graphName}`,
+          })
+        : undefined,
+  )
+
+  const laidOutAccessoryGraphGraphics = remergedAccessoryGraph
+    ? getGraphicsForBpcGraph(remergedAccessoryGraph, {
+        title: "Merged Accessory Graph",
+      })
+    : undefined
+
   return {
     adaptedGraphs,
     partitions,
@@ -171,6 +227,9 @@ const debugLayoutSingle = (
       matchedCorpusGraph: g.matchedCorpusGraph,
     })),
     corpus: opts.corpus,
+    accessoryCorpus: accCorpus,
+    adaptedAccessoryGraphGraphics,
+    laidOutAccessoryGraphGraphics,
     partitionIterationGraphics,
     laidOutGraph: remergedGraph,
     laidOutGraphGraphics: getGraphicsForBpcGraph(remergedGraph, {
