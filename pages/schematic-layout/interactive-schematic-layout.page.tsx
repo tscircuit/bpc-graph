@@ -433,7 +433,14 @@ export default function InteractiveSchematicLayoutPage() {
                                       </div>
                                       {/* ── NEW – BPC Acc (accessory) preview ── */}
                                       <div>
-                                        <div style={{ fontSize: "10px", marginBottom: "2px" }}>BPC Acc</div>
+                                        <div
+                                          style={{
+                                            fontSize: "10px",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          BPC Acc
+                                        </div>
                                         <div
                                           style={{
                                             width: "60px",
@@ -447,13 +454,19 @@ export default function InteractiveSchematicLayoutPage() {
                                             color: "#666",
                                           }}
                                         >
-                                          {layoutResult.accessoryCorpus?.[name] ? (
+                                          {layoutResult.accessoryCorpus?.[
+                                            name
+                                          ] ? (
                                             <img
                                               src={`data:image/svg+xml;base64,${btoa(
                                                 getSvgFromGraphicsObject(
-                                                  getGraphicsForBpcGraph(layoutResult.accessoryCorpus[name], {
-                                                    title: "",
-                                                  }),
+                                                  getGraphicsForBpcGraph(
+                                                    layoutResult
+                                                      .accessoryCorpus[name],
+                                                    {
+                                                      title: "",
+                                                    },
+                                                  ),
                                                   {
                                                     backgroundColor: "white",
                                                     svgWidth: 320,
@@ -462,7 +475,11 @@ export default function InteractiveSchematicLayoutPage() {
                                                 ),
                                               )}`}
                                               alt={`Accessory BPC graph for ${name}`}
-                                              style={{ width: "58px", height: "38px", objectFit: "fill" }}
+                                              style={{
+                                                width: "58px",
+                                                height: "38px",
+                                                objectFit: "fill",
+                                              }}
                                             />
                                           ) : (
                                             "N/A"
@@ -547,7 +564,9 @@ export default function InteractiveSchematicLayoutPage() {
                     />
                     {layoutResult?.adaptedAccessoryGraphGraphics?.[idx] && (
                       <details style={{ marginTop: "10px" }}>
-                        <summary style={{ cursor: "pointer" }}>Accessory Graph</summary>
+                        <summary style={{ cursor: "pointer" }}>
+                          Accessory Graph
+                        </summary>
                         <div
                           dangerouslySetInnerHTML={{
                             __html: getSvgFromGraphicsObject(
@@ -595,7 +614,9 @@ export default function InteractiveSchematicLayoutPage() {
               />
               {layoutResult?.laidOutAccessoryGraphGraphics && (
                 <details style={{ marginTop: "10px" }}>
-                  <summary style={{ cursor: "pointer" }}>Accessory Graph</summary>
+                  <summary style={{ cursor: "pointer" }}>
+                    Accessory Graph
+                  </summary>
                   <div
                     dangerouslySetInnerHTML={{
                       __html: getSvgFromGraphicsObject(
