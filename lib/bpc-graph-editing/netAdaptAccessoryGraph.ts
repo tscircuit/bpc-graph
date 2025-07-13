@@ -59,6 +59,13 @@ export const netAdaptAccessoryGraph = (params: {
       console.log("[netAdaptAccessoryGraph] SKIP already-matched accessory box", box.boxId)
       continue
     }
+    
+    // Skip boxes without center - they can't be properly positioned
+    if (!box.center) {
+      console.log("[netAdaptAccessoryGraph] SKIP box without center", box.boxId)
+      continue
+    }
+    
     console.log("[netAdaptAccessoryGraph] ADD accessory box", box.boxId)
 
     // Remap every pin’s network if we have a mapping; otherwise keep the
@@ -70,9 +77,10 @@ export const netAdaptAccessoryGraph = (params: {
         networkId: fixedToFloatingNetworkAssignment[p.networkId] ?? p.networkId,
       }))
 
-    boxes.push({ ...box, kind: "fixed" })
+    boxes.push({ ...box, kind: "fixed" as const, center: box.center })
     pins.push(...remappedPins)
   }
+
 
   console.log(
     "[netAdaptAccessoryGraph] FINISH",

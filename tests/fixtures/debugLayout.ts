@@ -10,6 +10,7 @@ import { reflectGraph } from "lib/graph-utils/reflectGraph"
 import { getCanonicalRightFacingGraph } from "lib/partition-processing/getCanonicalRightFacingGraph"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { netAdaptBpcGraph2 } from "lib/bpc-graph-editing/netAdaptBpcGraph2"
+import { netAdaptAccessoryGraph } from "lib/bpc-graph-editing/netAdaptAccessoryGraph"
 
 export const debugLayout = (
   g: BpcGraph | Array<{ variantName: string; floatingGraph: BpcGraph }>,
@@ -114,7 +115,7 @@ const debugLayoutSingle = (
   const canonicalPartitions = partitions.map(getCanonicalRightFacingGraph)
 
   // 4. Net-adapt each canonical partition to its best corpus match
-  const adaptedGraphs = canonicalPartitions.map((part) => {
+  const adaptedGraphs = canonicalPartitions.map((part, partitionIndex) => {
     const {
       graph: fixedCorpusGraph,
       graphName,
@@ -129,14 +130,25 @@ const debugLayoutSingle = (
     // NEW: accessory graph adaptation
     let adaptedAccessoryBpcGraph: BpcGraph | null = null
     if (accCorpus[graphName]) {
-      adaptedAccessoryBpcGraph = netAdaptBpcGraph2(
-        part.g,
-        accCorpus[graphName],
-        {
-          floatingBoxIdsWithMutablePinOffsets,
-          pushBoxesAsBoxesChangeSize: true,
-        },
-      )
+      adaptedAccessoryBpcGraph = netAdaptAccessoryGraph({
+        floatingGraph: part.g,
+        fixedCorpusMatch: fixedCorpusGraph,
+        fixedAccessoryCorpusMatch: accCorpus[graphName],
+      })
+      
+      // Make accessory box IDs unique by prefixing with partition index
+      if (adaptedAccessoryBpcGraph) {
+        adaptedAccessoryBpcGraph = {
+          boxes: adaptedAccessoryBpcGraph.boxes.map(box => ({
+            ...box,
+            boxId: `partition${partitionIndex}_${box.boxId}`
+          })),
+          pins: adaptedAccessoryBpcGraph.pins.map(pin => ({
+            ...pin,
+            boxId: `partition${partitionIndex}_${pin.boxId}`
+          }))
+        }
+      }
     }
 
     return {
@@ -168,14 +180,41 @@ const debugLayoutSingle = (
 
   // 5b. Undo reflections for accessory graphs
   const adaptedAccessoryUnreflectedGraphs = adaptedGraphs.map(
-    ({ adaptedAccessoryBpcGraph, reflected, centerBoxId }) => {
+    ({ adaptedAccessoryBpcGraph, reflected, centerBoxId }, index) => {
       if (!adaptedAccessoryBpcGraph) return null
       if (!reflected) return adaptedAccessoryBpcGraph
-      return reflectGraph({
-        graph: adaptedAccessoryBpcGraph,
+      
+      // Find the center box position from the main adapted graph
+      const mainGraph = adaptedUnreflectedGraphs[index]
+      if (!mainGraph) {
+        console.warn(`[debugLayout] Cannot reflect accessory graph - main graph at index ${index} not found`)
+        return adaptedAccessoryBpcGraph
+      }
+      
+      const centerBox = mainGraph.boxes.find(b => b.boxId === centerBoxId)
+      
+      if (!centerBox || !centerBox.center) {
+        console.warn(`[debugLayout] Cannot reflect accessory graph - center box ${centerBoxId} not found`)
+        return adaptedAccessoryBpcGraph
+      }
+      
+      // Create a combined graph with the center box and accessory boxes for reflection
+      const combinedGraph: BpcGraph = {
+        boxes: [centerBox, ...adaptedAccessoryBpcGraph.boxes],
+        pins: [...adaptedAccessoryBpcGraph.pins] // Don't include center box pins to avoid duplication
+      }
+      
+      const reflectedCombined = reflectGraph({
+        graph: combinedGraph,
         axis: "x",
         centerBoxId: centerBoxId!,
       })
+      
+      // Return only the accessory boxes from the reflected graph
+      return {
+        boxes: reflectedCombined.boxes.filter(b => b.boxId !== centerBoxId),
+        pins: reflectedCombined.pins
+      }
     },
   )
 
@@ -195,6 +234,11 @@ const debugLayoutSingle = (
     Boolean(remergedAccessoryGraph),
     remergedAccessoryGraph?.boxes.length ?? 0,
   )
+  
+  if (remergedAccessoryGraph) {
+    console.log("[debugLayout] Final accessory graph boxes:", remergedAccessoryGraph.boxes.map(b => b.boxId))
+    console.log("[debugLayout] Final accessory graph pins:", remergedAccessoryGraph.pins.map(p => p.pinId))
+  }
 
   // 7. Prepare graphics and SVG
   const adaptedAccessoryGraphGraphics = adaptedAccessoryUnreflectedGraphs.map(
