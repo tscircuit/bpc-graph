@@ -122,18 +122,22 @@ const debugLayoutSingle = (
       corpusScores,
       distance,
     } = matchGraph(part.g, opts.corpus as any)
-    const adaptedBpcGraph = netAdaptBpcGraph2(part.g, fixedCorpusGraph, {
-      floatingBoxIdsWithMutablePinOffsets,
-      pushBoxesAsBoxesChangeSize: true,
-    })
+    const adaptedBpcGraph = netAdaptBpcGraph2(
+      part.g,
+      structuredClone(fixedCorpusGraph),
+      {
+        floatingBoxIdsWithMutablePinOffsets,
+        pushBoxesAsBoxesChangeSize: true,
+      },
+    )
 
     // NEW: accessory graph adaptation
     let adaptedAccessoryBpcGraph: BpcGraph | null = null
     if (accCorpus[graphName]) {
       adaptedAccessoryBpcGraph = netAdaptAccessoryGraph({
         floatingGraph: part.g,
-        fixedCorpusMatch: fixedCorpusGraph,
-        fixedAccessoryCorpusMatch: accCorpus[graphName],
+        fixedCorpusMatch: structuredClone(fixedCorpusGraph),
+        fixedAccessoryCorpusMatch: structuredClone(accCorpus[graphName]),
       })
 
       // Make accessory box IDs unique by prefixing with partition index
