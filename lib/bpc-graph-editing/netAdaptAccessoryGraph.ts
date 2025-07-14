@@ -3,10 +3,11 @@ import type { FixedBpcGraph, BpcGraph, FixedBoxId } from "lib/types"
 
 /**
  * Returns a fixed position version of the floatingGraph that contains accessory
- * graph information (extra boxes from the fixedAccessoryCorpusMatch)
+ * graph information (all boxes from the fixedAccessoryCorpusMatch)
  *
- * - We only add boxes from the fixedAccessoryCorpusMatch graph that were not
- *   matched
+ * - We add all boxes from the fixedAccessoryCorpusMatch graph (both matched and unmatched)
+ * - For matched boxes, we use the original floating box ID for consistency
+ * - For unmatched boxes, we use the accessory corpus box ID
  * - We rewrite networkIds to be compatible with the floatingGraph
  *
  * If for whatever reason we don't have a network assignment, we don't add that
@@ -47,18 +48,19 @@ export const netAdaptAccessoryGraph = (params: {
   const boxes: FixedBpcGraph['boxes'] = []
   const pins: FixedBpcGraph['pins'] = []
 
-  // Helper: which fixed boxes are already matched (so we only add new ones)
+  // Helper: which fixed boxes are already matched and their floating counterparts
   const matchedFixedBoxIds = new Set(Object.values(floatingToFixedBoxAssignment))
+  const fixedToFloatingBoxAssignment: Record<string, string> = {}
+  for (const [floatingId, fixedId] of Object.entries(floatingToFixedBoxAssignment)) {
+    fixedToFloatingBoxAssignment[fixedId] = floatingId
+  }
 
   // ------------------------------------------------------------------
-  //  Iterate over accessory boxes
+  //  Iterate over all accessory boxes (both matched and unmatched)
   // ------------------------------------------------------------------
   for (const box of fixedAccessoryCorpusMatch.boxes) {
-    // Skip accessory boxes that were already matched to a floating box
-    if (matchedFixedBoxIds.has(box.boxId)) {
-      console.log("[netAdaptAccessoryGraph] SKIP already-matched accessory box", box.boxId)
-      continue
-    }
+    const isMatchedBox = matchedFixedBoxIds.has(box.boxId)
+    const boxIdToUse = isMatchedBox ? (fixedToFloatingBoxAssignment[box.boxId] ?? box.boxId) : box.boxId
     
     // Skip boxes without center - they can't be properly positioned
     if (!box.center) {
@@ -66,7 +68,7 @@ export const netAdaptAccessoryGraph = (params: {
       continue
     }
     
-    console.log("[netAdaptAccessoryGraph] ADD accessory box", box.boxId)
+    console.log(`[netAdaptAccessoryGraph] ADD accessory box ${box.boxId} (${isMatchedBox ? 'matched' : 'unmatched'}) as ${boxIdToUse}`)
 
     // Remap every pin’s network if we have a mapping; otherwise keep the
     // original fixed-corpus network id.
@@ -74,10 +76,11 @@ export const netAdaptAccessoryGraph = (params: {
       .filter(p => p.boxId === box.boxId)
       .map(p => ({
         ...p,
+        boxId: boxIdToUse,
         networkId: fixedToFloatingNetworkAssignment[p.networkId] ?? p.networkId,
       }))
 
-    boxes.push({ ...box, kind: "fixed" as const, center: box.center })
+    boxes.push({ ...box, kind: "fixed" as const, center: box.center, boxId: boxIdToUse })
     pins.push(...remappedPins)
   }
 
