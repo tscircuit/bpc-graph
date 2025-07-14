@@ -5,7 +5,7 @@ import { convertCircuitJsonToSchematicSvg } from "circuit-to-svg"
 import { getSvgFromGraphicsObject } from "graphics-debug"
 import { debugLayout } from "tests/fixtures/debugLayout"
 import type { BpcGraph } from "lib/types"
-import { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
+import corpus, { corpusNoNetLabel } from "@tscircuit/schematic-corpus"
 import { getGraphicsForBpcGraph } from "lib/debug/getGraphicsForBpcGraph"
 
 function createNotConnectedBecomesNormalVariant(bpcGraph: BpcGraph): BpcGraph {
@@ -69,6 +69,7 @@ export default function InteractiveSchematicLayoutPage() {
         ]
         result = debugLayout(variants, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: corpus,
         })
       } else {
         // Use specific variant
@@ -78,6 +79,7 @@ export default function InteractiveSchematicLayoutPage() {
         }
         result = debugLayout(graphToUse, {
           corpus: corpusNoNetLabel,
+          accessoryCorpus: corpus,
         })
       }
 
