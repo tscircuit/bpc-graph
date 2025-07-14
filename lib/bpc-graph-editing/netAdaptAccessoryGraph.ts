@@ -26,16 +26,17 @@ export const netAdaptAccessoryGraph = (params: {
     floatingToFixedNetworkAssignment,
   } = getApproximateAssignments2(floatingGraph, fixedCorpusMatch)
 
-  console.log(
-    "[netAdaptAccessoryGraph] START",
-    { floatingBoxes: floatingGraph.boxes.length,
-      fixedBoxes: fixedCorpusMatch.boxes.length,
-      accessoryBoxes: fixedAccessoryCorpusMatch.boxes.length },
-  )
+  console.log("[netAdaptAccessoryGraph] START", {
+    floatingBoxes: floatingGraph.boxes.length,
+    fixedBoxes: fixedCorpusMatch.boxes.length,
+    accessoryBoxes: fixedAccessoryCorpusMatch.boxes.length,
+  })
 
   // Build reverse network assignment: fixedNet -> floatingNet
   const fixedToFloatingNetworkAssignment: Record<string, string> = {}
-  for (const [floatNet, fixedNet] of Object.entries(floatingToFixedNetworkAssignment)) {
+  for (const [floatNet, fixedNet] of Object.entries(
+    floatingToFixedNetworkAssignment,
+  )) {
     fixedToFloatingNetworkAssignment[fixedNet] = floatNet
   }
 
@@ -45,13 +46,17 @@ export const netAdaptAccessoryGraph = (params: {
   })
 
   // Prepare result arrays
-  const boxes: FixedBpcGraph['boxes'] = []
-  const pins: FixedBpcGraph['pins'] = []
+  const boxes: FixedBpcGraph["boxes"] = []
+  const pins: FixedBpcGraph["pins"] = []
 
   // Helper: which fixed boxes are already matched and their floating counterparts
-  const matchedFixedBoxIds = new Set(Object.values(floatingToFixedBoxAssignment))
+  const matchedFixedBoxIds = new Set(
+    Object.values(floatingToFixedBoxAssignment),
+  )
   const fixedToFloatingBoxAssignment: Record<string, string> = {}
-  for (const [floatingId, fixedId] of Object.entries(floatingToFixedBoxAssignment)) {
+  for (const [floatingId, fixedId] of Object.entries(
+    floatingToFixedBoxAssignment,
+  )) {
     fixedToFloatingBoxAssignment[fixedId] = floatingId
   }
 
@@ -60,35 +65,43 @@ export const netAdaptAccessoryGraph = (params: {
   // ------------------------------------------------------------------
   for (const box of fixedAccessoryCorpusMatch.boxes) {
     const isMatchedBox = matchedFixedBoxIds.has(box.boxId)
-    const boxIdToUse = isMatchedBox ? (fixedToFloatingBoxAssignment[box.boxId] ?? box.boxId) : box.boxId
-    
+    const boxIdToUse = isMatchedBox
+      ? (fixedToFloatingBoxAssignment[box.boxId] ?? box.boxId)
+      : box.boxId
+
     // Skip boxes without center - they can't be properly positioned
     if (!box.center) {
       console.log("[netAdaptAccessoryGraph] SKIP box without center", box.boxId)
       continue
     }
-    
-    console.log(`[netAdaptAccessoryGraph] ADD accessory box ${box.boxId} (${isMatchedBox ? 'matched' : 'unmatched'}) as ${boxIdToUse}`)
+
+    console.log(
+      `[netAdaptAccessoryGraph] ADD accessory box ${box.boxId} (${isMatchedBox ? "matched" : "unmatched"}) as ${boxIdToUse}`,
+    )
 
     // Remap every pin’s network if we have a mapping; otherwise keep the
     // original fixed-corpus network id.
     const remappedPins = fixedAccessoryCorpusMatch.pins
-      .filter(p => p.boxId === box.boxId)
-      .map(p => ({
+      .filter((p) => p.boxId === box.boxId)
+      .map((p) => ({
         ...p,
         boxId: boxIdToUse,
         networkId: fixedToFloatingNetworkAssignment[p.networkId] ?? p.networkId,
       }))
 
-    boxes.push({ ...box, kind: "fixed" as const, center: box.center, boxId: boxIdToUse })
+    boxes.push({
+      ...box,
+      kind: "fixed" as const,
+      center: box.center,
+      boxId: boxIdToUse,
+    })
     pins.push(...remappedPins)
   }
 
-
-  console.log(
-    "[netAdaptAccessoryGraph] FINISH",
-    { addedBoxes: boxes.length, addedPins: pins.length },
-  )
+  console.log("[netAdaptAccessoryGraph] FINISH", {
+    addedBoxes: boxes.length,
+    addedPins: pins.length,
+  })
 
   return { boxes, pins }
 }
