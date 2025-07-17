@@ -36,7 +36,6 @@
     "zod": "3"
   },
   "peerDependencies": {
-    "typescript": "^5",
-    "@tscircuit/schematic-corpus": "*"
+    "typescript": "^5"
   }
 }
