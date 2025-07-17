@@ -31,6 +31,8 @@ This repository provides utilities for manipulating and comparing BPC graphs.
     - [mergeBoxSideSubgraphs(graphs)](#mergeboxsidesubgraphsgraphs)
     - [convertToFlatBpcGraph(graph)](#converttoflatbpcgraphgraph)
     - [convertFromFlatBpcGraph(flatBpcGraph)](#convertfromflatbpcgraphflatbpcgraph)
+    - [layoutSchematic(graph, options)](#layoutschematicgraph-options)
+    - [layoutSchematicWithInputVariants(variants, options)](#layoutschematicwithinputvariantsvariants-options)
 
 ## Where BPC graphs are used
 
@@ -224,3 +226,31 @@ from a 2 layer hierarchy to a flat list of nodes and edges.
 ### convertFromFlatBpcGraph(flatBpcGraph)
 
 Rebuild a BPC graph from the flat representation
+
+### layoutSchematic(graph, options)
+
+Automatically partition, match and lay out a floating BPC graph using a corpus of fixed graph layouts.
+
+```ts
+import { layoutSchematicGraph } from "bpc-graph"
+
+const { fixedGraph } = layoutSchematicGraph(floatingGraph, { corpus })
+```
+
+![layout schematic example](tests/tscircuit-schematic-layout/__snapshots__/tscircuitsch05.snap.svg)
+
+### layoutSchematicWithInputVariants(variants, options)
+
+Try multiple input variants of a floating graph and pick the one that best
+matches the corpus.
+
+```ts
+import { layoutSchematicGraphVariants } from "bpc-graph"
+
+const { fixedGraph, selectedVariantName } = layoutSchematicGraphVariants(
+  variants,
+  { corpus },
+)
+```
+
+![layout schematic variants example](tests/readme/__snapshots__/layoutSchematicVariantsExample.snap.svg)
