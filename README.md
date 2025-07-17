@@ -229,8 +229,7 @@ Rebuild a BPC graph from the flat representation
 
 ### layoutSchematic(graph, options)
 
-Automatically partition, match and lay out a floating BPC graph using a corpus of
-known subcircuits.
+Automatically partition, match and lay out a floating BPC graph using a corpus of fixed graph layouts.
 
 ```ts
 import { layoutSchematicGraph } from "bpc-graph"
@@ -238,7 +237,7 @@ import { layoutSchematicGraph } from "bpc-graph"
 const { fixedGraph } = layoutSchematicGraph(floatingGraph, { corpus })
 ```
 
-![layout schematic example](tests/readme/__snapshots__/layoutSchematicExample.snap.svg)
+![layout schematic example](tests/tscircuit-schematic-layout/__snapshots__/tscircuitsch05.snap.svg)
 
 ### layoutSchematicWithInputVariants(variants, options)
 
