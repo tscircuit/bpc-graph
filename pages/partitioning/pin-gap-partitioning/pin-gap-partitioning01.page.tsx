@@ -96,6 +96,7 @@ export default () => {
           </button>
         </div>
       </div>
+      <div className="m-2 text-red-500">{error}</div>
       <InteractiveGraphics graphics={pinSpacePartitionProcessor.visualize()} />
     </div>
   )
