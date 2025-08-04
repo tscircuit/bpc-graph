@@ -54,6 +54,7 @@ export default () => {
       inputGraph: bpcGraph,
       minGap: 0.25,
       centerBoxId: "U1",
+      centerPinColors: ["component_center"],
     })
   }, [bpcGraph])
 
@@ -78,7 +79,10 @@ export default () => {
       <div>
         <div className="mt-2 mb-1 mx-2 flex justify-between">
           <div>Pin Space Partitioning Toolbar</div>
-          <div>{pinSpacePartitionProcessor.iteration} iterations</div>
+          <div className="flex gap-2">
+            <div>{pinSpacePartitionProcessor.iteration} iterations</div>
+            <div>stage: {pinSpacePartitionProcessor.stage}</div>
+          </div>
         </div>
         <div className="ml-1">
           <button
