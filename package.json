@@ -17,6 +17,7 @@
     "@biomejs/biome": "^2.0.0",
     "@react-hook/resize-observer": "^2.0.2",
     "@tscircuit/schematic-corpus": "^0.0.55",
+    "@tscircuit/schematic-viewer": "^2.0.24",
     "@types/bun": "latest",
     "@types/debug": "^4.1.12",
     "@vitejs/plugin-react": "^4.5.2",
