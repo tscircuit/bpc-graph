@@ -22,6 +22,7 @@
     "@types/debug": "^4.1.12",
     "@vitejs/plugin-react": "^4.5.2",
     "bun-match-svg": "^0.0.12",
+    "calculate-packing": "^0.0.10",
     "circuit-json-to-bpc": "^0.0.13",
     "circuit-to-svg": "^0.0.164",
     "debug": "^4.4.1",
