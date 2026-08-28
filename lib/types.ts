@@ -85,3 +85,20 @@ export type FloatingPinId = string
 export type FixedPinId = string
 export type FloatingNetworkId = string
 export type FixedNetworkId = string
+
+/**
+ * Represents a contiguous range of pins on a specific box
+ */
+export interface PinRange {
+  boxId: string
+  startPinIndex: number
+  endPinIndex: number // exclusive, so [startPinIndex, endPinIndex)
+}
+
+/**
+ * A BpcGraph partition containing only pins from specific pin ranges
+ */
+export interface PinRangePartition {
+  ranges: PinRange[]
+  graph: BpcGraph
+}
